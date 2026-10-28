@@ -181,12 +181,12 @@ export function ics(p) {
 /* ---------- posta ---------- */
 /* Usa Resend (resend.com): chiave gratuita, 3.000 mail al mese.
    Senza RESEND_API_KEY non manda niente e lo scrive nel log: il resto funziona lo stesso. */
-export async function posta({ a, oggetto, testo: corpo, allegaICS }) {
+export async function posta({ a, oggetto, testo: corpo, html, allegaICS }) {
   const chiave = process.env.RESEND_API_KEY;
   const da = process.env.MAIL_MITTENTE || "prenotazioni@example.com";
   if (!chiave) { console.log("[posta saltata]", a, oggetto); return { saltata: true }; }
   const body = {
-    from: da, to: Array.isArray(a) ? a : [a], subject: oggetto, text: corpo,
+    from: da, to: Array.isArray(a) ? a : [a], subject: oggetto, text: corpo, ...(html ? { html } : {}),
     ...(allegaICS ? { attachments: [{ filename: "serata.ics", content: Buffer.from(allegaICS).toString("base64") }] } : {})
   };
   const r = await fetch("https://api.resend.com/emails", {

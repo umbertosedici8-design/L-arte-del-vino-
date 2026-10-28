@@ -7,6 +7,7 @@ import { regole, disponibilita, nuovoRif, salva, json, errore, preflight, troppi
 import { conta } from "./_listino.mjs";
 import { tutte } from "./_magazzino.mjs";
 import { viva } from "./_comune.mjs";
+import { mailRicevuta, mailATeNuova } from "./_mail.mjs";
 
 const str = (v, max = 200) =>
   String(v ?? "").replace(/[\u0000-\u001F\u007F]/g, " ").trim().slice(0, max);
@@ -93,6 +94,12 @@ async function gestisci(req) {
     p.stato = "annullata"; p.scade = null; p.note = (p.note ? p.note + " " : "") + "[sala piena al controllo]";
     await salva(p);
     return errore("quella sera è appena andata al completo", 409);
+  }
+  /* Con il bonifico parte subito la mail con i dati per pagare, e a te l'avviso.
+     Se la posta ha un problema la prenotazione resta valida lo stesso. */
+  if (pagamento === "bank") {
+    try { await mailRicevuta(p); } catch (e) { console.error("[mail ricevuta]", e); }
+    try { await mailATeNuova(p); } catch (e) { console.error("[mail a te]", e); }
   }
   return json({ rif: p.rif, scade: p.scade, data: p.data, ora: p.ora, posti: persone, tema });
 };

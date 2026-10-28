@@ -8,6 +8,7 @@ import {
   ammesso, chiaveDi, salva, regole, ics, posta, nuovoRif, viva,
   json, errore, preflight, jsonPrivato, CORS_PRIVATO, troppiTentativi, ripulisciRegole, dataVera, corpo
 } from "./_comune.mjs";
+import { mailConfermata, mailAnnullata, mailATeConfermata } from "./_mail.mjs";
 import { leggi, scrivi, tutte } from "./_magazzino.mjs";
 
 async function gestisci(req) {
@@ -36,17 +37,8 @@ async function gestisci(req) {
       if (!p) return jsonPrivato({ errore: "non trovata" }, 404);
       p.stato = "confermata"; p.scade = null; p.confermataIl = new Date().toISOString();
       await salva(p);
-      const invito = ics(p);
-      await posta({ a: process.env.MAIL_TUA, oggetto: `Confermata ${p.data} ${p.ora} · ${p.nome}`,
-                    testo: `Rif. ${p.rif} — ${p.totale} €`, allegaICS: invito });
-      if (p.email) await posta({
-        a: p.email,
-        oggetto: p.lingua === "de" ? `Buchung bestätigt · ${p.data}` : `Prenotazione confermata · ${p.data}`,
-        testo: p.lingua === "de"
-          ? `Alles klar: ${p.data} um ${p.ora}. Buchungsnummer ${p.rif}. Bis bald — Christian · L'Arte del Vino`
-          : `Tutto a posto: ${p.data} alle ${p.ora}. Numero ${p.rif}. A presto — Christian · L'Arte del Vino`,
-        allegaICS: invito
-      });
+      try { await mailATeConfermata(p); } catch (e) { console.error("[mail a te]", e); }
+      try { await mailConfermata(p); } catch (e) { console.error("[mail confermata]", e); }
       return jsonPrivato({ ok: true, prenotazione: p });
     }
 
@@ -56,13 +48,7 @@ async function gestisci(req) {
       p.stato = "annullata"; p.scade = null; p.annullataIl = new Date().toISOString();
       if (b.motivo) p.note = (p.note || "") + " [" + String(b.motivo).slice(0, 200) + "]";
       await salva(p);
-      if (p.email && b.avvisa !== false) await posta({
-        a: p.email,
-        oggetto: p.lingua === "de" ? `Buchung storniert · ${p.data}` : `Prenotazione annullata · ${p.data}`,
-        testo: p.lingua === "de"
-          ? `Die Buchung ${p.rif} vom ${p.data} wurde storniert. Melde dich bei Fragen. — Christian`
-          : `La prenotazione ${p.rif} del ${p.data} è stata annullata. Scrivimi pure per qualsiasi cosa. — Christian`
-      });
+      if (b.avvisa !== false) { try { await mailAnnullata(p); } catch (e) { console.error("[mail annullata]", e); } }
       return jsonPrivato({ ok: true });
     }
 

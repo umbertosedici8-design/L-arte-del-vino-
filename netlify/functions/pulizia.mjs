@@ -4,6 +4,7 @@
 
 import { salva, viva, json } from "./_comune.mjs";
 import { tutte } from "./_magazzino.mjs";
+import { mailScaduta } from "./_mail.mjs";
 
 export default async () => {
   const adesso = Date.now();
@@ -13,6 +14,7 @@ export default async () => {
       p.stato = "scaduta";
       await salva(p);
       liberati++;
+      try { await mailScaduta(p); } catch (e) { console.error("[mail scaduta]", e); }
     }
   }
   if (liberati) console.log(`[pulizia] ${liberati} blocchi sciolti`);
