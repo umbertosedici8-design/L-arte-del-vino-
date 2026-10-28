@@ -1,0 +1,2417 @@
+<!DOCTYPE html>
+<!--
+  ============================================================================
+  L'ARTE DEL VINO — Christian Scognamiglio, Berlino.
+  Il sito dei servizi. File unico: apri e funziona.
+  DA COMPILARE PRIMA DI PUBBLICARE (cerca queste stringhe nel file):
+    MAIL                → christian@lartedelvino.de (registra il dominio!)
+    4915207030279       → numero WhatsApp e telefono (compare più volte)
+    tuo.profilo         → profilo Instagram
+    QUOTES              → recensioni vere al posto dei [Nome]
+    EVENTS              → date reali delle serate aperte
+    "ph"                → campi evidenziati in Impressum e Datenschutz
+  INTERRUTTORI (tutti a null finché non hai il servizio):
+    SLOTS_URL  → file JSON delle disponibilità, il calendario si aggiorna da solo
+    AGENT_URL  → funzione server con la chiave Anthropic: la chat passa all'IA
+    PASS_URL   → funzione che firma i pass Apple/Google Wallet
+  LISTINO: const P — un punto solo per tutti i prezzi.
+  CODICI SCONTO: const PROMOS — il volantino usa PRIMA10.
+  ============================================================================
+-->
+
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>L'Arte del Vino — Degustazioni e lezioni di vino a Berlino</title>
+<meta name="theme-color" content="#4A1226">
+<meta property="og:type" content="website">
+<meta property="og:title" content="L'Arte del Vino — Degustazioni e lezioni di vino a Berlino">
+<meta property="og:image" content="logo-icona.png">
+<meta property="og:description" content="Degustazioni guidate da Partenope 081 a Berlino, corsi serali, ripetizioni WSET e formazione di sala. In italiano, tedesco, spagnolo o inglese.">
+<meta property="og:url" content="https://lartedelvino.de/">
+<meta property="og:locale" content="it_IT">
+<meta property="og:locale:alternate" content="de_DE">
+<meta property="og:site_name" content="L'Arte del Vino">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://lartedelvino.de/">
+<meta name="description" content="L'Arte del Vino — Christian Scognamiglio, sommelier a Berlino: degustazioni a casa, corsi serali, ripetizioni WSET e formazione per il personale di sala. In quattro lingue.">
+<style>
+/* ------------------------------------------------------------------
+   I CARATTERI STANNO QUI ACCANTO, non sui server di Google.
+   Prima c'era una riga @import che li chiedeva a fonts.googleapis.com:
+   a ogni visita l'indirizzo IP del visitatore partiva verso gli Stati
+   Uniti, prima di qualunque consenso. Su quello c'e' una sentenza del
+   Landgericht Muenchen I del 20 gennaio 2022 e l'ondata di diffide che
+   ne e' seguita. Adesso i file sono nella cartella fonts/ e non esce
+   piu' niente verso l'esterno.
+   font-display:swap = il testo si legge subito col carattere di
+   sistema e cambia quando il font e' pronto, invece di restare bianco.
+   ------------------------------------------------------------------ */
+@font-face{font-family:'Manrope';font-style:normal;font-weight:400;font-display:swap;src:url('fonts/manrope-400.woff2') format('woff2')}
+@font-face{font-family:'Manrope';font-style:normal;font-weight:500;font-display:swap;src:url('fonts/manrope-500.woff2') format('woff2')}
+@font-face{font-family:'Manrope';font-style:normal;font-weight:600;font-display:swap;src:url('fonts/manrope-600.woff2') format('woff2')}
+@font-face{font-family:'Manrope';font-style:normal;font-weight:700;font-display:swap;src:url('fonts/manrope-700.woff2') format('woff2')}
+@font-face{font-family:'Manrope';font-style:normal;font-weight:800;font-display:swap;src:url('fonts/manrope-800.woff2') format('woff2')}
+@font-face{font-family:'Lora';font-style:normal;font-weight:500;font-display:swap;src:url('fonts/lora-500.woff2') format('woff2')}
+@font-face{font-family:'Lora';font-style:normal;font-weight:600;font-display:swap;src:url('fonts/lora-600.woff2') format('woff2')}
+@font-face{font-family:'Lora';font-style:normal;font-weight:700;font-display:swap;src:url('fonts/lora-700.woff2') format('woff2')}
+
+:root{
+  /* superfici */
+  --bg:#F4F1EC; --bg2:#EFE9E0; --card:#FFFFFF; --cream:#FBF7F0;
+  --ink:#1C1A17; --muted:#655D56; --faint:#6A625B;
+  --line:#EFE9E0; --line2:#E6DFD4;
+  /* vino */
+  --wine:#7A1230; --wine-deep:#4A1226; --wine-soft:#F6E7EB; --wine-ink:#74203A;
+  /* oro */
+  --gold:#A9762C; --gold-text:#8C6220; --gold-soft:#FBF0D8; --gold-ink:#6B5111; --sticker:#F0C544;
+  /* altri */
+  --green:#2E7A51; --green-soft:#E8F1EA; --green-ink:#1F5436;
+  --rose:#C2185B; --rose-soft:#FCE4EC;
+  /* ombre: morbide, mai righe dure */
+  --sh-1:0 1px 2px rgba(45,28,18,.06), 0 2px 6px rgba(45,28,18,.05);
+  --sh-2:0 2px 4px rgba(45,28,18,.07), 0 8px 20px rgba(45,28,18,.09);
+  --sh-3:0 6px 12px rgba(45,28,18,.10), 0 18px 40px rgba(45,28,18,.14);
+  --r:26px; --r-sm:16px; --r-xs:12px;
+  /* ---- scala delle scritte: dieci gradini, non ventisei ---- */
+  --t-micro:12px; --t-xs:13.5px; --t-sm:15px; --t-md:16.5px; --t-base:17.5px;
+  --t-lg:20.5px; --t-xl:23.5px;
+  --t-2xl:clamp(26px,4.8vw,31px);
+  --t-3xl:clamp(30px,6vw,41px);
+  --t-4xl:clamp(35px,8.6vw,56px);
+  /* ---- interlinee: quattro, non dieci ---- */
+  --lh-tight:1.14; --lh-snug:1.32; --lh-ui:1.45; --lh-read:1.62;
+  /* ---- spazi: tutti multipli di quattro ---- */
+  --s1:4px; --s2:10px; --s3:14px; --s4:19px; --s5:26px; --s6:37px; --s7:52px; --s8:74px;
+  --serif:'Lora',Georgia,'Times New Roman',serif;
+  --sans:'Manrope',system-ui,-apple-system,'Segoe UI',sans-serif;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+[hidden]{display:none!important}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:var(--t-base);font-weight:500;
+  line-height:var(--lh-read);-webkit-font-smoothing:antialiased;padding-bottom:calc(118px + env(safe-area-inset-bottom,0px));max-width:100%;overflow-x:hidden}
+img,svg{max-width:100%}
+a{color:inherit;text-decoration:none}
+:focus-visible{outline:2.5px solid var(--wine);outline-offset:3px;border-radius:8px}
+button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
+h1,h2,h3,h4{font-family:var(--serif);font-weight:700;line-height:var(--lh-tight);
+  letter-spacing:-.012em;text-wrap:balance}
+h1{letter-spacing:-.022em}
+.wrap{max-width:1040px;margin:0 auto;padding:0 20px}
+section{padding:var(--s7) 0}
+@media(min-width:820px){section{padding:56px 0}}
+/* .wrap azzerava il respiro verticale delle sezioni (la regola con la classe
+   vince su quella col solo nome del tag): per questo le sezioni sembravano
+   incollate l'una all'altra. Qui lo rimettiamo, un poco piu' ampio. */
+section.wrap{padding-top:var(--s7);padding-bottom:var(--s7)}
+@media(min-width:820px){section.wrap{padding-top:64px;padding-bottom:64px}}
+.view>section:first-of-type{padding-top:28px}
+.num{font-variant-numeric:tabular-nums}
+h2{font-size:clamp(25px,5.6vw,36px);margin-bottom:8px}
+h3{font-size:var(--t-xl);line-height:var(--lh-tight)}
+.sub{max-width:46ch;margin-bottom:var(--s6);color:var(--muted);font-weight:500;
+  font-size:var(--t-md);line-height:var(--lh-ui)}
+.credits,.note{font-size:var(--t-xs);color:var(--faint);margin-top:var(--s3);line-height:var(--lh-ui)}
+.ph{background:var(--gold-soft);color:var(--gold-ink);padding:1px 5px;border-radius:5px}
+
+/* ---------- etichette in maiuscoletto (dalla scheda vini) ---------- */
+.tagline,.pill,.tk-kind,.tk-of,.seats,.meta,.soon,.lvl em,.cal-legend,.tk-grid span,.tk-incl span,
+.pm-iban span,.field label,.pm-fields label,.breakdown,.recap{letter-spacing:.02em}
+/* le maiuscolette: stessa spaziatura dappertutto, e mai più piccole di 11px */
+.tagline,.pill,.tk-kind,.tk-of,.seats,.meta,.soon,.field label,.pm-fields label,
+.tk-grid span,.tk-incl span,.pm-iban span,.pm-one,.stats div small,.cal-dow span,
+.event .d small,.tk-code,.tkb,.cp{letter-spacing:.1em;line-height:var(--lh-snug)}
+
+/* ============================================================
+   BARRE: alto (marchio + lingua) e basso (dock + capsula)
+   ============================================================ */
+#progress{position:fixed;top:0;left:0;height:3px;width:0;z-index:60;
+  background:linear-gradient(90deg,var(--gold),var(--wine));border-radius:0 3px 3px 0;transition:height .25s}
+.top{position:fixed;top:12px;left:12px;right:12px;display:flex;justify-content:space-between;
+  align-items:center;z-index:55;pointer-events:none;gap:10px;
+  transition:transform .32s cubic-bezier(.22,1,.36,1),opacity .25s}
+.top.via{transform:translateY(calc(-100% - 18px));opacity:0}
+.top>*{pointer-events:auto}
+.brand{display:flex;align-items:center;gap:9px;background:var(--card);border-radius:999px;padding:6px 16px 6px 7px;
+  box-shadow:var(--sh-2);font-family:var(--serif);font-weight:700;font-size:var(--t-sm);color:var(--ink)}
+.brand-txt{display:grid;line-height:var(--lh-tight)}
+.brand-txt b{font-size:var(--t-sm);letter-spacing:-.01em}
+.brand-txt small{font-family:var(--sans);font-size:var(--t-micro);font-weight:700;color:var(--muted);
+  text-transform:uppercase;letter-spacing:.09em}
+.brand-art{width:26px;height:26px;object-fit:contain;background:var(--wine-soft);border-radius:50%;padding:3px}
+.lang{display:flex;background:var(--card);border-radius:999px;padding:4px;box-shadow:var(--sh-2)}
+.lang button{font-size:var(--t-xs);font-weight:800;color:var(--muted);padding:12px 16px;border-radius:999px;
+  transition:background .25s,color .25s}
+.lang button[aria-pressed="true"]{background:var(--wine);color:#fff}
+
+#dockbar{position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:70;
+  display:flex;align-items:center;gap:8px;max-width:calc(100vw - 14px)}
+#dockbar.compact{transform:translateX(-50%) scale(.93)}
+#dock{display:flex;gap:2px;padding:6px;background:var(--card);border-radius:999px;box-shadow:var(--sh-3)}
+#dock a{display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 13px;min-width:58px;
+  border-radius:999px;line-height:1;color:var(--muted);transition:background .25s,color .25s}
+#dock a svg{width:23px;height:23px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+#dock a span{font-size:var(--t-micro);font-weight:700;transition:opacity .25s,max-height .3s,margin .3s;max-height:14px;overflow:hidden}
+#dock a.on{background:var(--wine-soft);color:var(--wine)}
+#dock a.cta{background:var(--wine);color:#fff}
+#dockbar.tight #dock a span,#dockbar.compact #dock a span{opacity:0;max-height:0;max-width:0;margin-top:-3px}
+#dockbar.tight #dock a,#dockbar.compact #dock a{padding:9px 12px;min-width:46px}
+#aux{display:flex;gap:2px;padding:6px;background:var(--card);border-radius:999px;box-shadow:var(--sh-3);position:relative}
+#cartbtn,#chatbtn{position:relative;display:flex;flex-direction:column;align-items:center;gap:3px;
+  padding:8px 13px;min-width:56px;border-radius:999px;color:var(--muted);transition:background .25s,color .25s,transform .3s}
+#cartbtn svg,#chatbtn svg{width:23px;height:23px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+#cartbtn .lab,#chatbtn .lab{font-size:var(--t-micro);font-weight:700;transition:opacity .25s,max-height .3s,margin .3s;max-height:14px;overflow:hidden}
+#dockbar.tight #cartbtn .lab,#dockbar.tight #chatbtn .lab,#dockbar.compact #cartbtn .lab,#dockbar.compact #chatbtn .lab{opacity:0;max-height:0;max-width:0;margin-top:-3px}
+#dockbar.tight #cartbtn,#dockbar.tight #chatbtn,#dockbar.compact #cartbtn,#dockbar.compact #chatbtn{padding:9px 12px;min-width:46px}
+#cartbtn.full{background:var(--gold-soft);color:var(--gold-ink)}
+#chatbtn[aria-expanded="true"]{background:var(--wine-soft);color:var(--wine)}
+#cartbtn .badge,#chatbtn .badge{position:absolute;top:2px;right:6px;min-width:18px;height:18px;border-radius:999px;
+  background:var(--wine);color:#fff;font-size:var(--t-micro);font-weight:800;display:none;place-items:center;border:2px solid var(--card)}
+#cartbtn.bump{animation:bump .45s cubic-bezier(.22,1,.36,1)}
+@keyframes bump{0%{transform:scale(1)}40%{transform:scale(1.18) rotate(-5deg)}100%{transform:scale(1)}}
+@media (hover:hover) and (pointer:fine){#dock a:hover,#cartbtn:hover,#chatbtn:hover{background:var(--bg2);color:var(--ink)}
+  #dock a.on:hover{background:var(--wine-soft);color:var(--wine)}#dock a.cta:hover{background:var(--wine-deep);color:#fff}}
+@media(max-width:420px){#dockbar{gap:6px;bottom:calc(14px + env(safe-area-inset-bottom,0px))}#dock a,#cartbtn,#chatbtn{padding:8px 10px;min-width:50px}}
+@media(max-width:360px){#dock a span,#cartbtn .lab,#chatbtn .lab{display:none}}
+
+/* ============================================================
+   TESTATE: blocco bordeaux
+   ============================================================ */
+.hero,.phero{position:relative;overflow:hidden;background:linear-gradient(160deg,var(--wine) 0%,var(--wine-deep) 72%);
+  color:#fff;border-radius:0 0 30px 30px;box-shadow:var(--sh-2)}
+.hero{padding:84px 0 36px}
+.phero{padding:80px 0 30px}
+.hero:after,.phero:after{content:"";position:absolute;right:-70px;top:-90px;width:260px;height:260px;border-radius:50%;
+  background:radial-gradient(circle,rgba(185,135,58,.30),transparent 68%);pointer-events:none}
+.hero .wrap,.phero .wrap{position:relative;z-index:1}
+.pill{display:inline-block;border:1px solid rgba(255,255,255,.34);color:rgba(255,255,255,.92);
+  padding:5px 13px;border-radius:999px;font-size:var(--t-micro);font-weight:800;text-transform:uppercase;
+  letter-spacing:.14em;margin-bottom:14px}
+.hero h1{font-size:var(--t-4xl);font-weight:700}
+.phero h1{font-size:clamp(30px,7.4vw,44px)}
+.hero h1 i,.phero h1 i{font-style:normal;color:var(--sticker)}
+.hero p,.phero p{margin-top:var(--s4);font-size:var(--t-md);max-width:42ch;line-height:var(--lh-ui);color:rgba(255,255,255,.80);font-weight:500}
+.hero-art,.phero-art{position:absolute;right:-34px;bottom:-38px;width:124px;opacity:.15;pointer-events:none}
+@media(min-width:820px){.hero p,.phero p{max-width:48ch;font-size:var(--t-base)}
+.hero-art,.phero-art{width:200px;right:0;bottom:-30px;opacity:.17}}
+.btns{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
+.langline{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:18px;font-size:var(--t-sm);
+  color:rgba(255,255,255,.78)}
+.stats{display:flex;gap:22px;flex-wrap:wrap;margin-top:22px;padding-top:18px;border-top:1px solid rgba(255,255,255,.16)}
+.stats div span{display:block;font-family:var(--serif);font-size:var(--t-2xl);font-weight:700;color:var(--sticker)}
+.stats div small{font-size:var(--t-xs);color:rgba(255,255,255,.7);text-transform:uppercase;letter-spacing:.08em}
+.benefits{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:22px}
+.benefits div{background:rgba(255,255,255,.08);border-radius:var(--r-sm);padding:13px 11px;font-size:var(--t-xs);
+  line-height:var(--lh-ui);color:rgba(255,255,255,.78)}
+.benefits svg{width:20px;height:20px;stroke:var(--sticker);fill:none;stroke-width:1.8;margin-bottom:7px;display:block}
+.benefits b{display:block;font-size:var(--t-sm);color:#fff;margin-bottom:2px;font-weight:700}
+
+/* ============================================================
+   BOTTONI
+   ============================================================ */
+.btn{display:inline-block;background:var(--wine);color:#fff;padding:13px 22px;border-radius:999px;
+  font-weight:800;font-size:var(--t-md);box-shadow:var(--sh-1);transition:background .25s,transform .2s,box-shadow .25s;text-align:center}
+.btn.dark{background:var(--ink)}
+.btn.line{background:var(--card);color:var(--ink);box-shadow:inset 0 0 0 1.5px var(--line2)}
+.btn.ghost{background:rgba(255,255,255,.14);color:#fff;box-shadow:inset 0 0 0 1px rgba(255,255,255,.34)}
+.btn.sm{padding:9px 16px;font-size:var(--t-sm)}
+.btn.off{opacity:.42;pointer-events:none}
+@media (hover:hover) and (pointer:fine){
+  .btn:hover{background:var(--wine-deep);transform:translateY(-1px);box-shadow:var(--sh-2)}
+  .btn.dark:hover{background:#000}.btn.line:hover{background:var(--bg2)}.btn.ghost:hover{background:rgba(255,255,255,.22)}}
+.btn:active{transform:translateY(1px)}
+
+/* ============================================================
+   CARD, GRIGLIE
+   ============================================================ */
+.cards{display:grid;gap:22px}
+@media(min-width:820px){.cards.three{grid-template-columns:repeat(3,1fr)}.cards.two{grid-template-columns:1fr 1fr}}
+.cards>*,.two-col>*,.steps>*,.quotes>*,.contact>*,.bio>*,.legal>*,.markband>*,.foot .cols>*{min-width:0}
+.card{background:var(--card);border-radius:var(--r);padding:var(--s5);box-shadow:var(--sh-1);display:flex;flex-direction:column;
+  transition:box-shadow .3s,transform .3s;max-width:100%}
+.card.white{background:var(--card)}
+.card.malva{background:var(--wine-soft)}
+.card.salvia{background:var(--green-soft)}
+a.card{text-decoration:none}
+@media (hover:hover) and (pointer:fine){a.card:hover,.card.teaser:hover{box-shadow:var(--sh-3);transform:translateY(-3px)}}
+.card h3{margin-bottom:var(--s2);line-height:var(--lh-tight)}
+.card p{font-size:var(--t-md);color:var(--muted);line-height:var(--lh-ui);max-width:40ch}
+.card ul{list-style:none;margin-top:12px;font-size:var(--t-sm)}
+.card li{padding:9px 0;border-top:1px solid var(--line);color:var(--muted)}
+.card .go{margin-top:auto;padding-top:16px;display:flex;flex-wrap:wrap;gap:8px}
+.tagline{display:inline-block;align-self:flex-start;background:var(--gold-soft);color:var(--gold-ink);
+  padding:5px 11px;border-radius:999px;font-size:var(--t-micro);font-weight:800;text-transform:uppercase;
+  letter-spacing:.1em;margin-bottom:12px}
+.card.salvia .tagline{background:#fff;color:var(--green-ink)}
+.card.malva .tagline{background:#fff;color:var(--wine)}
+.price{display:block;margin-top:16px;font-family:var(--serif);font-size:var(--t-3xl);font-weight:700;line-height:var(--lh-tight);color:var(--ink)}
+.price small{font-family:var(--sans);font-size:var(--t-sm);font-weight:600;color:var(--muted)}
+.price .from{display:block;font-family:var(--sans);font-size:var(--t-micro);font-weight:800;color:var(--gold-ink);
+  text-transform:uppercase;letter-spacing:.1em;margin-bottom:2px}
+.ust{font-size:var(--t-xs);color:var(--faint);margin-top:var(--s5);line-height:var(--lh-ui)}
+.teaser{position:relative;overflow:hidden;min-height:210px;justify-content:flex-end;color:#fff;background:var(--wine-deep)}
+.teaser.pic::before{content:"";position:absolute;inset:0;background-image:var(--pic);background-size:cover;
+  background-position:center;transition:transform .7s cubic-bezier(.22,1,.36,1)}
+.teaser.pic::after{content:"";position:absolute;inset:0;
+  background:linear-gradient(180deg,rgba(28,26,23,.1) 0%,rgba(74,18,38,.72) 60%,rgba(74,18,38,.93) 100%)}
+.teaser>*{position:relative;z-index:1}
+.teaser:hover.pic::before{transform:scale(1.05)}
+.teaser .tagline{background:rgba(255,255,255,.2);color:#fff}
+.teaser p{color:rgba(255,255,255,.84)}
+.teaser .arrow{margin-top:auto;padding-top:16px;font-weight:800;color:var(--sticker);font-size:var(--t-sm)}
+
+/* ---------- fascia marchio ---------- */
+.markband{display:grid;gap:18px;align-items:center;background:linear-gradient(160deg,var(--wine),var(--wine-deep));
+  color:#fff;border-radius:var(--r);padding:26px 28px;box-shadow:var(--sh-2)}
+@media(min-width:700px){.markband{grid-template-columns:140px 1fr}}
+.mk-art{width:120px;justify-self:center;opacity:.95}
+.markband h3{font-size:var(--t-2xl);margin-bottom:6px}
+.markband p{color:rgba(255,255,255,.8);font-size:var(--t-md);max-width:48ch}
+
+/* ---------- banda d'invito ---------- */
+.ctaband{display:grid;gap:14px;align-items:center;background:var(--gold-soft);border-radius:var(--r);
+  padding:26px;box-shadow:var(--sh-1)}
+@media(min-width:820px){.ctaband{grid-template-columns:1fr auto}}
+.ctaband h3{font-size:var(--t-xl);margin-bottom:4px;color:var(--gold-ink)}
+.ctaband p{color:#7d6630;font-size:var(--t-md)}
+
+/* ============================================================
+   PERCORSO NUMERATO (come nella scheda vini)
+   ============================================================ */
+.steps{display:grid;gap:0;counter-reset:s;background:var(--card);border-radius:var(--r);
+  padding:26px 24px;box-shadow:var(--sh-1)}
+.step{position:relative;padding:0 0 26px 58px}
+.step:last-child{padding-bottom:0}
+.step:before{counter-increment:s;content:counter(s,decimal-leading-zero);position:absolute;left:0;top:0;
+  width:38px;height:38px;border-radius:50%;background:var(--gold-soft);color:var(--gold-ink);
+  display:grid;place-items:center;font-family:var(--serif);font-weight:700;font-size:var(--t-md);
+  box-shadow:inset 0 0 0 1.5px var(--gold)}
+.step:after{content:"";position:absolute;left:19px;top:44px;bottom:6px;width:1.5px;background:var(--line2)}
+.step:last-child:after{display:none}
+.step h3{font-size:var(--t-lg);margin-bottom:4px}
+.step p{font-size:var(--t-sm);color:var(--muted)}
+
+/* ============================================================
+   BIO
+   ============================================================ */
+.bio{display:grid;gap:16px}
+@media(min-width:820px){.bio{grid-template-columns:290px 1fr}}
+.photo{aspect-ratio:4/5;border-radius:var(--r);overflow:hidden;background:var(--bg2);box-shadow:var(--sh-1);
+  display:grid;place-items:center;text-align:center;padding:16px;font-size:var(--t-sm);color:var(--faint)}
+.photo img{width:100%;height:100%;object-fit:cover;transition:transform .6s}
+.photo:hover img{transform:scale(1.05)}
+
+/* ============================================================
+   CAROSELLO LEZIONI
+   ============================================================ */
+#lezioni{position:relative;overflow:visible}
+.rail{overflow-x:auto;overflow-y:hidden;padding:10px 0 18px;cursor:grab;
+  scrollbar-width:none;-ms-overflow-style:none;
+  touch-action:pan-x pan-y;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch;
+  -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 15%,#000 85%,transparent 100%);
+  mask-image:linear-gradient(90deg,transparent 0,#000 15%,#000 85%,transparent 100%)}
+.rail::-webkit-scrollbar{display:none}
+.rail.drag{cursor:grabbing}
+.track-x{display:flex;gap:14px;width:max-content;padding:0 8px}
+.lesson{flex:0 0 252px;background:var(--card);border-radius:var(--r);padding:22px;display:flex;flex-direction:column;
+  gap:9px;box-shadow:var(--sh-1);transition:box-shadow .3s,transform .3s;color:var(--ink)}
+.lesson .top-row{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.lesson .ic{width:44px;height:44px;border-radius:14px;background:var(--wine-soft);display:grid;place-items:center;color:var(--wine)}
+.lesson .ic svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.lesson h3{font-size:var(--t-lg)}
+.lesson p{font-size:var(--t-sm);color:var(--muted);flex:1}
+.lesson .meta{align-self:flex-start;background:var(--bg2);color:var(--muted);border-radius:999px;padding:5px 11px;
+  font-size:var(--t-micro);font-weight:800;text-transform:uppercase;letter-spacing:.07em}
+.lesson:nth-child(4n+2) .ic{background:var(--gold-soft);color:var(--gold-ink)}
+.lesson:nth-child(4n+3) .ic{background:var(--green-soft);color:var(--green-ink)}
+.lesson:nth-child(4n) .ic{background:var(--rose-soft);color:var(--rose)}
+.golink{font-weight:800;font-size:var(--t-sm);color:var(--wine);margin-top:2px}
+.lesson.locked{background:var(--cream);color:var(--faint);cursor:default;box-shadow:none;
+  outline:1.5px dashed var(--line2);outline-offset:-1.5px}
+.lesson.locked h3{color:var(--muted)}
+.lesson.locked .ic{background:var(--bg2);color:var(--faint)}
+.lesson.locked .meta{background:transparent;box-shadow:inset 0 0 0 1px var(--line2);color:var(--faint)}
+.lk{width:24px;height:24px;fill:none;stroke:var(--faint);stroke-width:1.7;stroke-linejoin:round;flex:none}
+.soon{display:inline-flex;align-self:flex-start;background:var(--bg2);border-radius:999px;padding:5px 11px;
+  font-size:var(--t-micro);font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.09em}
+@media (hover:hover) and (pointer:fine){
+  a.lesson:hover{box-shadow:var(--sh-3);transform:translateY(-3px)}
+  a.lesson:hover .golink{text-decoration:underline;text-underline-offset:3px}
+  .lesson.locked:hover{transform:none}}
+@media(max-width:400px){.lesson{flex-basis:228px;padding:19px}}
+
+/* ---------- livello: barre segmentate (scheda vini) ---------- */
+.lvl{display:inline-flex;align-items:center;gap:7px;font-size:var(--t-micro);font-weight:800;color:var(--muted);
+  text-transform:uppercase;letter-spacing:.07em}
+.lvl b{width:16px;height:7px;border-radius:3px;background:var(--line2);display:block}
+.lvl b.on{background:var(--gold)}
+.lvl em{font-style:normal}
+.card.salvia .lvl b.on,.card.malva .lvl b.on{background:var(--wine)}
+
+/* ---------- bandiere impilate ---------- */
+.flags{display:inline-flex;align-items:center}
+.stack{position:relative;display:inline-block;height:18px;vertical-align:middle}
+.stack .flag{position:absolute;top:0;left:0;width:26px;height:18px;padding:0;border-radius:3.5px;overflow:visible;
+  box-shadow:0 1px 3px rgba(45,28,18,.3);display:block;transform-origin:0 50%;
+  transition:transform .55s cubic-bezier(.22,1,.36,1),opacity .55s,box-shadow .3s}
+.stack .flag svg{width:100%;height:100%;display:block;pointer-events:none;border-radius:3.5px;
+  box-shadow:0 1px 3px rgba(45,28,18,.3)}
+/* l'area da toccare arriva a 44px sopra e sotto senza spostare niente */
+.stack .flag:after{content:"";position:absolute;left:-4px;right:-4px;top:-13px;bottom:-13px}
+.stack .flag.picked{outline:2px solid var(--gold);outline-offset:1.5px;opacity:1!important}
+.stack.nolang{opacity:.45}
+@media (hover:hover) and (pointer:fine){.stack .flag:hover{transform:translateY(-4px) scale(1.12)!important;opacity:1!important;z-index:9!important}}
+.picked-label{font-size:var(--t-xs);font-weight:800;color:var(--sticker);opacity:0;max-width:0;overflow:hidden;
+  white-space:nowrap;transition:opacity .4s,max-width .5s}
+.picked-label.on{opacity:1;max-width:260px}
+.card .picked-label,.lesson .picked-label{color:var(--wine)}
+.meta-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:2px 0 10px}
+.dim{opacity:.45}
+.dim,.stack.nolang{transition:opacity .4s}
+
+/* ---------- temi ---------- */
+.themes{display:flex;flex-wrap:wrap;gap:8px}
+.themes span{background:var(--card);border-radius:999px;padding:9px 15px;font-size:var(--t-sm);font-weight:600;
+  color:var(--muted);box-shadow:var(--sh-1)}
+
+/* ============================================================
+   RECENSIONI: mazzo di bigliettini
+   ============================================================ */
+.deck{position:relative;height:246px;max-width:520px;margin:0 auto;cursor:pointer}
+.qnote{position:absolute;inset:0 0 auto 0;min-height:212px;background:var(--card);border-radius:var(--r);padding:24px;
+  box-shadow:var(--sh-2);transform-origin:50% 100%;transition:transform .55s cubic-bezier(.22,1,.36,1),opacity .45s}
+.qnote:nth-child(3n+2){background:var(--cream)}
+.qnote .stars{color:var(--gold-text);letter-spacing:3px;margin-bottom:9px;font-size:var(--t-sm)}
+.qnote p{font-size:var(--t-md);color:var(--ink);font-weight:500}
+.qnote footer{margin-top:12px;font-size:var(--t-xs);font-weight:700;color:var(--wine)}
+.qnote.out{transform:translateY(-130%) rotate(-5deg) scale(.94)!important;opacity:0!important;
+  transition:transform .42s cubic-bezier(.55,0,.9,.4),opacity .42s}
+.deck-dots{display:flex;justify-content:center;gap:7px;margin-top:20px}
+.deck-dots button{width:7px;height:7px;padding:0;border-radius:999px;background:var(--line2);transition:all .3s}
+.deck-dots button.on{background:var(--wine);width:20px}
+@media(max-width:400px){.deck{height:272px}.qnote{min-height:238px;padding:20px}}
+
+/* ============================================================
+   GALLERIA
+   ============================================================ */
+.gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.gallery div{aspect-ratio:1;border-radius:var(--r-sm);overflow:hidden;background:var(--bg2);box-shadow:var(--sh-1);
+  display:grid;place-items:center;font-size:var(--t-xs);color:var(--faint);text-align:center;padding:8px}
+.gallery div:nth-child(2){grid-row:span 2;aspect-ratio:auto}
+.gallery img{width:100%;height:100%;object-fit:cover;transition:transform .6s}
+.gallery div:hover img{transform:scale(1.06)}
+
+/* ============================================================
+   EVENTI
+   ============================================================ */
+.events{display:grid;gap:10px}
+/* la riga che compare quando non c'e' nessuna serata in programma */
+.event.vuoto{grid-template-columns:1fr auto}
+.event.vuoto h3{font-size:var(--t-base)}
+.event.vuoto p{margin-top:2px;max-width:34ch}
+.event{display:grid;grid-template-columns:62px 1fr auto;gap:14px;align-items:center;background:var(--card);
+  border-radius:var(--r-sm);padding:14px;box-shadow:var(--sh-1)}
+.event .d{text-align:center;background:var(--wine-soft);border-radius:var(--r-xs);padding:7px 4px;line-height:var(--lh-tight);color:var(--wine)}
+.event .d b{display:block;font-family:var(--serif);font-size:var(--t-xl)}
+.event .d small{font-size:var(--t-micro);text-transform:uppercase;letter-spacing:.08em;font-weight:800}
+.event h3{font-size:var(--t-base)}
+.event p{font-size:var(--t-xs);color:var(--muted)}
+.event .seats{font-size:var(--t-micro);font-weight:800;background:var(--green-soft);color:var(--green-ink);
+  border-radius:999px;padding:6px 11px;white-space:nowrap;text-transform:uppercase;letter-spacing:.06em}
+.event .seats.low{background:var(--gold-soft);color:var(--gold-ink)}
+
+/* ============================================================
+   ACCORDION
+   ============================================================ */
+#moduli,#faqs{background:var(--card);border-radius:var(--r);padding:4px 22px;box-shadow:var(--sh-1)}
+.acc{border-bottom:1px solid var(--line)}
+.acc:last-child{border-bottom:none}
+.acc button{width:100%;text-align:left;font-family:var(--serif);font-weight:700;font-size:var(--t-base);color:var(--ink);
+  padding:18px 0;display:flex;justify-content:space-between;align-items:center;gap:14px}
+.acc.faq button{font-family:var(--sans);font-weight:700;font-size:var(--t-md)}
+.acc .sign{flex:none;width:28px;height:28px;border-radius:50%;background:var(--bg2);display:grid;place-items:center;
+  font-family:var(--sans);font-size:var(--t-base);color:var(--muted);transition:transform .3s,background .3s,color .3s}
+.acc button[aria-expanded="true"] .sign{transform:rotate(45deg);background:var(--wine);color:#fff}
+.acc .body{max-height:0;overflow:hidden;transition:max-height .35s ease}
+.acc .body p{padding:0 0 18px;font-size:var(--t-md);max-width:64ch;color:var(--muted)}
+
+/* ============================================================
+   TEMPERATURE
+   ============================================================ */
+.chips{display:flex;gap:8px;overflow-x:auto;padding-bottom:8px;margin-bottom:16px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chips button{flex:none;background:var(--card);color:var(--muted);font-size:var(--t-sm);font-weight:700;
+  padding:9px 15px;border-radius:999px;box-shadow:var(--sh-1);transition:background .25s,color .25s}
+.chips button[aria-pressed="true"]{background:var(--wine);color:#fff}
+.track{height:42px;background:var(--card);border-radius:999px;position:relative;overflow:hidden;box-shadow:var(--sh-1)}
+.track .fill{position:absolute;top:0;bottom:0;background:linear-gradient(90deg,var(--gold),var(--wine));
+  border-radius:999px;transition:left .45s cubic-bezier(.22,1,.36,1),width .45s cubic-bezier(.22,1,.36,1)}
+.ticks{display:flex;justify-content:space-between;font-size:var(--t-xs);margin-top:7px;color:var(--faint);font-weight:600}
+.read{font-family:var(--serif);font-weight:700;font-size:var(--t-xl);margin-top:12px;color:var(--wine)}
+
+/* ============================================================
+   ELENCHI SPUNTATI / DUE COLONNE
+   ============================================================ */
+.two-col{display:grid;gap:16px}
+@media(min-width:820px){.two-col{grid-template-columns:1fr 1fr}}
+.check{list-style:none;margin-top:10px}
+.check li{padding:8px 0 8px 26px;position:relative;font-size:var(--t-sm);border:none;color:var(--muted)}
+.check li:before{content:"";position:absolute;left:0;top:14px;width:9px;height:9px;border-radius:50%;background:var(--green)}
+.check.x li:before{background:var(--gold)}
+
+/* ============================================================
+   FORM, SELECT, STEPPER
+   ============================================================ */
+.conf{background:var(--card);border-radius:var(--r);padding:var(--s5);box-shadow:var(--sh-1);position:relative;max-width:100%}
+.field{margin-bottom:15px}
+.field label{display:block;font-size:var(--t-micro);font-weight:800;margin-bottom:6px;color:var(--muted);
+  text-transform:uppercase;letter-spacing:.1em}
+input,textarea,select{width:100%;font-family:var(--sans);font-size:16px;font-weight:600;padding:12px 14px;
+  background:var(--bg);color:var(--ink);border:none;border-radius:var(--r-xs);box-shadow:inset 0 0 0 1.5px var(--line2);
+  appearance:none;transition:box-shadow .25s}
+input:focus,textarea:focus{outline:none;box-shadow:inset 0 0 0 2px var(--wine)}
+input::placeholder{color:var(--faint)}
+textarea{min-height:104px;resize:vertical;line-height:var(--lh-read)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:start}
+.row2>*,.pm-fields .two>*,.tk-grid>*,.stats>*,.benefits>*{min-width:0}
+.stepper{display:flex;align-items:center;gap:9px}
+.stepper button{width:42px;height:42px;flex:none;border-radius:50%;background:var(--bg2);font-size:var(--t-lg);
+  color:var(--ink);line-height:1;transition:background .25s}
+.stepper button:hover{background:var(--line2)}
+.stepper input{text-align:center}
+.seg{display:flex;background:var(--bg2);border-radius:999px;padding:4px;margin-bottom:20px}
+.seg button{flex:1;font-weight:800;font-size:var(--t-sm);color:var(--muted);padding:10px;border-radius:999px;transition:background .25s,color .25s}
+.seg button[aria-pressed="true"]{background:var(--card);color:var(--wine);box-shadow:var(--sh-1)}
+
+.sel{position:relative}
+.sel select{position:absolute;opacity:0;pointer-events:none;width:1px;height:1px;clip:rect(0 0 0 0)}
+.sel-btn{width:100%;min-height:46px;display:flex;align-items:center;justify-content:space-between;gap:10px;text-align:left;
+  font-size:var(--t-md);font-weight:600;padding:12px 14px;background:var(--bg);border-radius:var(--r-xs);
+  box-shadow:inset 0 0 0 1.5px var(--line2);transition:box-shadow .25s}
+.sel.open .sel-btn{box-shadow:inset 0 0 0 2px var(--wine)}
+.sel-arrow{width:18px;height:18px;flex:none;fill:none;stroke:var(--muted);stroke-width:2.2;stroke-linecap:round;
+  stroke-linejoin:round;transition:transform .3s}
+.sel.open .sel-arrow{transform:rotate(180deg)}
+.sel-list{position:absolute;left:0;right:0;top:calc(100% + 6px);z-index:30;overflow:hidden auto;max-height:0;
+  background:var(--card);border-radius:var(--r-sm);box-shadow:var(--sh-3);opacity:0;
+  transition:max-height .34s cubic-bezier(.22,1,.36,1),opacity .2s}
+.sel.open .sel-list{opacity:1}
+.sel-opt{width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:var(--t-md);
+  font-weight:600;text-align:left;padding:13px 16px;border-bottom:1px solid var(--line);transition:background .2s}
+.sel-opt:last-child{border-bottom:none}
+.sel-opt .tick{width:18px;height:18px;flex:none;border-radius:50%;box-shadow:inset 0 0 0 1.5px var(--line2);position:relative}
+.sel-opt.on{background:var(--wine-soft);color:var(--wine);font-weight:800}
+.sel-opt.on .tick{background:var(--wine);box-shadow:none}
+.sel-opt.on .tick:after{content:"";position:absolute;inset:5px;border-radius:50%;background:#fff}
+.sel-opt:hover{background:var(--bg2)}
+.sel-opt:disabled{opacity:.5;cursor:not-allowed;background:transparent}
+.sel-opt:disabled .tick{display:none}
+
+/* ---------- riepilogo prezzi ---------- */
+.breakdown,.recap{font-size:var(--t-sm);margin-bottom:12px}
+.breakdown div,.recap div{display:flex;justify-content:space-between;gap:12px;padding:9px 0;
+  border-bottom:1px solid var(--line);flex-wrap:wrap;color:var(--muted)}
+.breakdown .neg span,.recap .neg span{color:var(--green);font-weight:800}
+.tot{background:var(--cream);border-radius:var(--r-sm);padding:18px;margin-top:4px}
+.tot .big{font-family:var(--serif);font-weight:700;font-size:clamp(32px,9vw,46px);color:var(--wine);line-height:1;
+  transition:opacity .2s}
+.tot .sub2{font-size:var(--t-xs);margin-top:6px;color:var(--muted)}
+.quotebox{background:var(--gold-soft);color:var(--gold-ink);border-radius:var(--r-xs);padding:12px 14px;
+  font-size:var(--t-sm);margin-bottom:14px;white-space:pre-line;display:none}
+.ok{background:var(--green-soft);color:var(--green-ink);border-radius:var(--r-xs);padding:12px 14px;
+  font-size:var(--t-sm);margin-top:12px;display:none}
+
+/* ============================================================
+   CONTATTI
+   ============================================================ */
+.contact{display:grid;gap:16px}
+@media(min-width:820px){.contact{grid-template-columns:1.15fr .85fr}}
+.channels a{display:flex;align-items:center;gap:12px;background:var(--card);border-radius:var(--r-sm);
+  padding:14px 16px;margin-bottom:10px;font-size:var(--t-md);font-weight:700;box-shadow:var(--sh-1);
+  transition:transform .25s,box-shadow .25s}
+.channels a:hover{transform:translateY(-2px);box-shadow:var(--sh-2)}
+.channels svg{width:21px;height:21px;stroke:var(--wine);fill:none;stroke-width:1.8;flex:none}
+.channels b{display:block;font-size:var(--t-micro);color:var(--faint);font-weight:800;text-transform:uppercase;letter-spacing:.09em}
+
+/* ---------- buono regalo ---------- */
+.voucher{position:relative;overflow:hidden;display:grid;gap:16px;align-items:center;background:var(--wine-soft);
+  border-radius:var(--r);padding:26px;box-shadow:var(--sh-1)}
+@media(min-width:820px){.voucher{grid-template-columns:1fr auto}}
+.voucher h3{font-size:var(--t-2xl);margin-bottom:6px;color:var(--wine)}
+.voucher p{font-size:var(--t-md);color:var(--wine-ink)}
+.vou-art{position:absolute;right:-16px;bottom:-22px;width:120px;opacity:.14;pointer-events:none}
+
+/* ============================================================
+   CARRELLO
+   ============================================================ */
+.citem{display:grid;grid-template-columns:50px 1fr auto auto 26px;gap:12px;align-items:center;background:var(--card);
+  border-radius:var(--r-sm);padding:14px;margin-bottom:10px;box-shadow:var(--sh-1);max-width:100%}
+.ci-art{width:50px;height:50px;object-fit:contain;background:var(--wine-soft);border-radius:var(--r-xs)}
+.ci-txt b{font-family:var(--serif);font-size:var(--t-base);display:block;line-height:var(--lh-snug)}
+.ci-txt span{font-size:var(--t-xs);color:var(--faint)}
+.ci-q{display:flex;align-items:center;gap:7px}
+.ci-q button{width:30px;height:30px;border-radius:50%;background:var(--bg2);font-size:var(--t-base);line-height:1;color:var(--ink)}
+.ci-q b{min-width:16px;text-align:center;font-weight:800}
+.ci-p{font-family:var(--serif);font-weight:700;font-size:var(--t-base);white-space:nowrap}
+.ci-x{width:26px;height:26px;border-radius:50%;font-size:var(--t-lg);line-height:1;color:var(--faint)}
+.ci-x:hover{color:var(--wine)}
+@media(max-width:520px){.citem{grid-template-columns:42px 1fr 26px;grid-template-areas:"a t x" "a q p";row-gap:8px}
+ .ci-art{grid-area:a;width:42px;height:42px}.ci-txt{grid-area:t}.ci-q{grid-area:q}.ci-p{grid-area:p;text-align:right}.ci-x{grid-area:x}}
+.cart-empty{background:var(--card);border-radius:var(--r);padding:34px;text-align:center;display:grid;gap:8px;
+  justify-items:center;box-shadow:var(--sh-1)}
+.cart-empty img{width:90px;opacity:.5}
+.cart-empty b{font-family:var(--serif);font-size:var(--t-lg)}
+.cart-empty span{font-size:var(--t-sm);color:var(--muted)}
+.promo-in{display:flex;gap:8px;margin:14px 0 4px}
+.promo-in input{text-transform:uppercase;letter-spacing:.07em;font-weight:800}
+.promo-in input.bad{box-shadow:inset 0 0 0 2px var(--wine)}
+#promoadd{flex:none;background:var(--wine);color:#fff;border-radius:var(--r-xs);padding:0 18px;font-weight:800;font-size:var(--t-sm)}
+
+/* ============================================================
+   PAGAMENTO: mazzo di carte
+   ============================================================ */
+.demo-flag{background:var(--gold-soft);color:var(--gold-ink);border-radius:var(--r-sm);padding:12px 16px;
+  font-size:var(--t-xs);font-weight:700;margin-bottom:18px}
+.opts{display:grid;gap:9px}
+.opt{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:var(--bg);
+  border-radius:var(--r-sm);padding:14px;box-shadow:inset 0 0 0 1.5px var(--line2);transition:background .25s,box-shadow .25s}
+.opt .tick{width:19px;height:19px;flex:none;border-radius:50%;box-shadow:inset 0 0 0 1.5px var(--line2);position:relative}
+.opt.on{background:var(--wine-soft);box-shadow:inset 0 0 0 2px var(--wine)}
+.opt.on .tick{background:var(--wine);box-shadow:none}
+.opt.on .tick:after{content:"";position:absolute;inset:5px;border-radius:50%;background:#fff}
+.opt b{display:block;font-size:var(--t-md);font-weight:800}
+.opt small{font-size:var(--t-xs);color:var(--muted)}
+.opt.off{opacity:.45;cursor:not-allowed}
+
+/* Prima era un mazzo sovrapposto che si cambiava trascinando: bello da
+   vedere, scomodo col mouse, perche' le schede dietro erano coperte e
+   il minimo spostamento del puntatore annullava il clic. Adesso sono
+   tre schede affiancate, ognuna cliccabile per intero. */
+.pay-rail{display:grid;gap:10px;margin:12px 0 0;grid-template-columns:1fr}
+@media(min-width:560px){.pay-rail{grid-template-columns:repeat(3,1fr)}}
+.pm-txt{display:grid;gap:2px;min-width:0}
+.pm.locked{opacity:.5;cursor:not-allowed;box-shadow:inset 0 0 0 1.5px var(--line2);background:transparent}
+.pm.locked:hover{transform:none}
+.pm-lock{width:20px;height:20px;color:var(--muted)}
+.pm-lock svg{width:100%;height:100%;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round}
+/* La scheda del metodo di pagamento. Era posizionata in assoluto perche'
+   stava in un mazzo sovrapposto; adesso sta in una fila normale e le
+   regole del mazzo (left:50%, height fissa, transform-origin) non solo
+   non servono, ma spingevano le schede fuori dallo schermo. */
+.pm{position:relative;display:grid;align-items:center;gap:14px;
+  grid-template-columns:auto 1fr auto;text-align:left;width:100%;
+  padding:15px 17px;border-radius:var(--r-sm);background:var(--card);
+  box-shadow:var(--sh-1);cursor:pointer;-webkit-font-smoothing:antialiased;
+  transition:box-shadow .25s,transform .18s}
+@media(min-width:560px){
+  .pm{grid-template-columns:1fr;justify-items:center;text-align:center;gap:9px;padding:20px 14px}
+}
+.pm:hover{transform:translateY(-2px)}
+.pm:active{transform:translateY(0)}
+.pm .pm-ic{width:46px;height:46px;border-radius:15px;display:grid;place-items:center;background:var(--bg2);color:var(--muted)}
+.pm .pm-ic svg{width:23px;height:23px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.pm b{font-family:var(--serif);font-size:var(--t-lg);line-height:var(--lh-tight)}
+.pm small{font-size:var(--t-xs);color:var(--muted);line-height:var(--lh-snug)}
+.pm .pm-tick{position:absolute;top:11px;right:11px;width:18px;height:18px;border-radius:50%;
+  box-shadow:inset 0 0 0 1.5px var(--line2);opacity:0;transition:opacity .3s}
+.pm.on{box-shadow:var(--sh-3)}
+.pm.on b{color:var(--wine)}
+.pm.on .pm-tick{opacity:1;background:var(--wine);box-shadow:none}
+.pm.on .pm-tick:after{content:"";position:absolute;inset:5px;border-radius:50%;background:#fff}
+.pm.card.on .pm-ic{background:var(--wine);color:#fff}
+.pm.paypal.on .pm-ic{background:#DCE6F5;color:#163A72}
+.pm.bank.on .pm-ic{background:var(--gold-soft);color:var(--gold-ink)}
+.pm.cash.on .pm-ic{background:var(--green-soft);color:var(--green-ink)}
+.pay-dots{display:flex;justify-content:center;gap:7px;margin-top:10px}
+.pay-dots button{width:7px;height:7px;padding:0;border-radius:999px;background:var(--line2);transition:all .3s}
+.pay-dots button.on{background:var(--wine);width:20px}
+
+.pm-detail{background:var(--card);border-radius:var(--r);padding:22px;margin-top:8px;box-shadow:var(--sh-1);
+  display:grid;gap:14px;opacity:0;transform:translateY(10px);
+  transition:opacity .35s,transform .4s cubic-bezier(.22,1,.36,1)}
+.pm-detail.in{opacity:1;transform:none}
+.pm-detail.card{background:linear-gradient(160deg,var(--wine),var(--wine-deep));color:#fff}
+.pm-detail.card .pm-note{color:rgba(255,255,255,.75)}
+.pm-detail.paypal{background:#EEF3FA}
+.pm-detail.bank{background:var(--gold-soft)}
+.pm-detail.cash{background:var(--green-soft)}
+.pm-note{font-size:var(--t-xs);line-height:var(--lh-read);color:var(--muted);margin-top:auto}
+.pm-steps,.pm-list{margin:0;padding-left:20px;display:grid;gap:7px;font-size:var(--t-sm)}
+.pm-list{list-style:none;padding-left:0}
+.pm-list li{padding-left:22px;position:relative}
+.pm-list li:before{content:"";position:absolute;left:0;top:7px;width:10px;height:10px;border-radius:50%;background:var(--green)}
+.pm-iban{display:grid;gap:8px;font-size:var(--t-sm)}
+.pm-iban div{display:grid;grid-template-columns:1fr auto;align-items:center;gap:3px 10px;padding:7px 0;
+  border-bottom:1px solid rgba(185,135,58,.3)}
+.pm-iban div:last-child{border:none}
+.pm-iban span{grid-column:1/-1;font-size:var(--t-micro);text-transform:uppercase;letter-spacing:.1em;color:var(--gold-ink);font-weight:800}
+.pm-iban em{font-style:normal;font-family:var(--serif);font-weight:700;font-size:var(--t-md);background:rgba(255,255,255,.65);
+  border-radius:8px;padding:5px 9px;word-break:break-word}
+.cp{background:var(--card);border-radius:999px;padding:6px 12px;font-size:var(--t-micro);font-weight:800;color:var(--gold-ink);
+  text-transform:uppercase;letter-spacing:.07em;box-shadow:var(--sh-1)}
+/* carta di credito */
+.credit{position:relative;perspective:800px}
+.cr-face{background:linear-gradient(135deg,#8E2545,#4A1226 60%,#2A0A16);border-radius:16px;padding:16px;
+  display:grid;gap:11px;box-shadow:0 12px 24px -10px rgba(0,0,0,.6);animation:crtilt 9s ease-in-out infinite;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.14),0 12px 24px -10px rgba(0,0,0,.6)}
+@keyframes crtilt{0%,100%{transform:rotateY(-5deg) rotateX(2deg)}50%{transform:rotateY(6deg) rotateX(-2deg)}}
+.cr-chip{width:30px;height:22px;border-radius:5px;background:linear-gradient(135deg,#F0C544,#B9873A);display:block}
+.cr-num{font-family:var(--serif);font-size:clamp(14px,4.4vw,18px);letter-spacing:.07em;color:#fff;white-space:nowrap}
+.cr-row{display:flex;justify-content:space-between;font-size:var(--t-micro);letter-spacing:.1em;color:rgba(255,255,255,.7);
+  text-transform:uppercase}
+.cr-row em{font-style:normal}
+.pm-fields{display:grid;gap:10px}
+.pm-fields label{font-size:var(--t-micro);letter-spacing:.11em;text-transform:uppercase;color:rgba(255,255,255,.6);
+  display:grid;gap:5px;font-weight:800}
+.pm-fields .two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.pm-fields input{background:rgba(255,255,255,.1);box-shadow:inset 0 0 0 1px rgba(255,255,255,.25);color:#fff;
+  font-family:var(--serif);font-size:var(--t-md);padding:9px 11px;letter-spacing:.03em;white-space:nowrap;
+  overflow:hidden;text-overflow:ellipsis;text-transform:none}
+.pm-fields input:disabled{opacity:.9}
+.iban{margin-top:16px;background:var(--gold-soft);border-radius:var(--r-sm);padding:16px;font-size:var(--t-sm)}
+
+/* ============================================================
+   BIGLIETTI (impaginati come la scheda vini)
+   ============================================================ */
+#tickets{display:grid;gap:18px}
+.ticket{display:grid;grid-template-columns:1fr;background:var(--card);border-radius:var(--r);overflow:hidden;
+  box-shadow:var(--sh-2);width:100%}
+@media(min-width:640px){.ticket{grid-template-columns:1fr 208px}}
+.tk-main{position:relative;overflow:hidden;padding:24px}
+.tk-head{display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap}
+.tk-brand{font-family:var(--serif);font-weight:700;font-size:var(--t-sm);color:var(--wine)}
+.tk-kind{background:var(--gold-soft);color:var(--gold-ink);border-radius:999px;padding:4px 11px;
+  font-size:var(--t-micro);font-weight:800;text-transform:uppercase;letter-spacing:.1em}
+.tk-of{background:var(--wine-soft);color:var(--wine);border-radius:999px;padding:4px 10px;font-size:var(--t-micro);
+  font-weight:800;text-transform:uppercase;letter-spacing:.09em;margin-left:auto;white-space:nowrap}
+.tk-main h2{font-size:var(--t-2xl);margin:14px 0 18px;color:var(--ink)}
+.tk-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.tk-grid span,.tk-incl span{display:block;font-size:var(--t-micro);text-transform:uppercase;letter-spacing:.12em;
+  color:var(--faint);font-weight:800;margin-bottom:2px}
+.tk-grid b,.tk-incl b{font-family:var(--serif);font-size:var(--t-md);font-weight:700;overflow-wrap:anywhere}
+.tk-incl{margin-top:16px;padding-top:14px;border-top:1.5px solid var(--line2)}
+.tk-foot{margin-top:16px;display:flex;justify-content:space-between;align-items:baseline;gap:10px;
+  font-size:var(--t-xs);color:var(--muted)}
+.tk-foot span:first-child{font-family:var(--serif);font-weight:700;font-size:var(--t-2xl);color:var(--wine)}
+.tk-art{position:absolute;right:8px;top:8px;width:70px;opacity:.07;pointer-events:none}
+.tk-stub{background:var(--cream);padding:22px;display:grid;place-items:center;gap:9px;text-align:center;
+  position:relative;border-top:2px dashed var(--line2)}
+@media(min-width:640px){.tk-stub{border-top:none;border-left:2px dashed var(--line2)}}
+.tk-stub:before,.tk-stub:after{content:"";position:absolute;width:18px;height:18px;background:var(--bg);border-radius:50%}
+.tk-stub:before{top:-10px;left:-10px}
+.tk-stub:after{top:-10px;right:-10px}
+@media(min-width:640px){.tk-stub:after{top:auto;bottom:-10px;left:-10px;right:auto}}
+.qr{width:142px;height:142px;background:#fff;border-radius:var(--r-xs);padding:6px;box-shadow:var(--sh-1)}
+.qr svg{width:100%;height:100%;display:block}
+.tk-code{font-family:var(--serif);font-weight:700;font-size:var(--t-base);letter-spacing:.06em;color:var(--wine)}
+.tk-scan{font-size:var(--t-micro);color:var(--faint);max-width:18ch;line-height:var(--lh-ui);font-weight:600}
+.tk-acts{display:flex;gap:7px;flex-wrap:wrap;justify-content:center;margin-top:2px}
+.tkb{background:var(--card);border-radius:999px;padding:10px 15px;min-height:36px;display:inline-flex;align-items:center;font-size:var(--t-micro);font-weight:800;color:var(--ink);
+  box-shadow:var(--sh-1);text-transform:uppercase;letter-spacing:.06em;transition:transform .2s}
+.tkb:hover{transform:translateY(-2px)}
+
+/* ---------- wallet ---------- */
+.wallet{max-width:620px;margin:0 auto;background:var(--card);border-radius:var(--r);padding:22px;text-align:center;
+  box-shadow:var(--sh-1)}
+.wallet b{font-family:var(--serif);font-size:var(--t-lg);display:block;margin-bottom:5px}
+.wallet p{font-size:var(--t-sm);color:var(--muted);max-width:46ch;margin:0 auto}
+.wl-btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:16px 0 10px}
+.wl{display:flex;align-items:center;gap:9px;background:var(--ink);color:#fff;border-radius:var(--r-xs);
+  padding:11px 17px;font-weight:800;font-size:var(--t-sm);box-shadow:var(--sh-1)}
+.wl svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linejoin:round}
+.wl[data-pass="apple"] svg{fill:currentColor;stroke:none}
+.wl.off{opacity:.4;cursor:not-allowed}
+.wl-note{font-size:var(--t-xs);color:var(--faint);display:block;max-width:48ch;margin:0 auto}
+
+/* ============================================================
+   CALENDARIO
+   ============================================================ */
+.cal{background:var(--card);border-radius:var(--r);padding:18px;box-shadow:var(--sh-1);max-width:540px}
+.cal-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.cal-top b{font-family:var(--serif);font-size:var(--t-lg);text-transform:capitalize}
+.cal-top button{width:38px;height:38px;border-radius:50%;background:var(--bg2);font-size:var(--t-xl);line-height:1;color:var(--ink)}
+.cal-dow{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:6px}
+.cal-dow span{text-align:center;font-size:var(--t-micro);font-weight:800;color:var(--faint);text-transform:uppercase;letter-spacing:.06em}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.cell{aspect-ratio:1;border-radius:var(--r-xs);display:grid;place-items:center;gap:2px;font-family:var(--serif);
+  font-weight:700;font-size:var(--t-sm);color:var(--ink);padding:0;position:relative;background:transparent;
+  transition:transform .2s,background .2s;cursor:default}
+.cell i{width:5px;height:5px;border-radius:50%;background:transparent}
+.cell.free{background:var(--green-soft);color:var(--green-ink);cursor:pointer}
+.cell.free i{background:var(--green)}
+.cell.low{background:var(--gold-soft);color:var(--gold-ink);cursor:pointer}
+.cell.low i{background:var(--gold)}
+.cell.out{background:var(--bg2);color:var(--faint)}
+.cell.out b{text-decoration:line-through}
+.cell.past,.cell.none{color:var(--faint);opacity:.6}
+.cell.pick{background:var(--wine);color:#fff;box-shadow:var(--sh-2)}
+.cell.pick i{background:#fff}
+.cell.empty{background:none}
+@media (hover:hover) and (pointer:fine){.cell.free:hover,.cell.low:hover{transform:scale(1.08)}}
+.cal-legend{display:flex;flex-wrap:wrap;gap:12px;margin-top:14px;padding-top:12px;border-top:1px solid var(--line);
+  font-size:var(--t-xs);color:var(--muted);font-weight:600}
+.cal-legend span{display:flex;align-items:center;gap:6px}
+.cal-legend i{width:10px;height:10px;border-radius:3px}
+.cal-legend i.free{background:var(--green)}
+.cal-legend i.low{background:var(--gold)}
+.cal-legend i.out{background:var(--line2)}
+.cal-legend .live{margin-left:auto}
+.cal-legend .dot{border-radius:50%;background:var(--green);animation:pulse 2.4s ease-in-out infinite}
+.cal-detail{max-height:0;overflow:hidden;transition:max-height .4s cubic-bezier(.22,1,.36,1),margin .3s}
+.cal-detail.on{max-height:150px;margin-top:14px}
+.cal-detail>div{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;
+  background:var(--card);border-radius:var(--r-sm);padding:16px 18px;box-shadow:var(--sh-1);max-width:540px}
+.cal-detail b{font-family:var(--serif);font-size:var(--t-base);display:block}
+.cal-detail b::first-letter{text-transform:uppercase}
+.cal-detail span{font-size:var(--t-sm);color:var(--muted)}
+
+/* ============================================================
+   CHAT
+   ============================================================ */
+#chat{position:fixed;right:16px;bottom:92px;z-index:52;width:min(370px,calc(100vw - 24px));max-height:min(560px,70vh);
+  display:flex;flex-direction:column;background:var(--card);border-radius:var(--r);overflow:hidden;box-shadow:var(--sh-3);
+  opacity:0;transform:translateY(14px) scale(.96);transform-origin:100% 100%;
+  transition:opacity .28s,transform .32s cubic-bezier(.22,1,.36,1);pointer-events:none}
+#chat.open{opacity:1;transform:none;pointer-events:auto}
+@media(max-width:420px){#chat{bottom:86px;right:10px}}
+#chat header{display:flex;align-items:center;gap:11px;padding:14px 16px;
+  background:linear-gradient(160deg,var(--wine),var(--wine-deep));color:#fff}
+#chat .ava{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.16);display:grid;place-items:center;
+  flex:none;overflow:hidden}
+.ava-art{width:30px;height:30px;object-fit:contain}
+#chat .who{flex:1;line-height:var(--lh-snug)}
+#chat .who b{font-family:var(--serif);font-size:var(--t-md);display:block}
+#chat .who small{font-size:var(--t-micro);color:rgba(255,255,255,.72)}
+#chat .x{color:#fff;font-size:var(--t-xl);line-height:1;opacity:.8;padding:0 2px}
+.msgs{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:9px;font-size:var(--t-sm)}
+.m span{display:inline-block;padding:11px 14px;border-radius:16px;max-width:86%}
+.m.bot{align-self:flex-start}
+.m.bot span{background:var(--bg2);border-bottom-left-radius:5px}
+.m.me{align-self:flex-end}
+.m.me span{background:var(--wine);color:#fff;border-bottom-right-radius:5px}
+.typing{display:inline-flex;gap:5px;padding:14px!important}
+.typing i{width:6px;height:6px;border-radius:50%;background:var(--muted);animation:dots 1.4s ease-in-out infinite}
+.typing i:nth-child(2){animation-delay:.2s}
+.typing i:nth-child(3){animation-delay:.4s}
+.chips.cchips,#chatchips{display:flex;gap:7px;overflow-x:auto;padding:0 12px 10px;scrollbar-width:none}
+#chatchips::-webkit-scrollbar{display:none}
+.cchip{flex:none;background:var(--bg2);border-radius:999px;padding:8px 13px;font-size:var(--t-xs);font-weight:700;color:var(--muted)}
+.cchip:hover{background:var(--wine-soft);color:var(--wine)}
+.ask{display:flex;gap:8px;padding:10px 12px;border-top:1px solid var(--line)}
+.ask input{border-radius:999px}
+#chatsend{flex:none;width:44px;height:44px;border-radius:50%;background:var(--wine);display:grid;place-items:center}
+#chatsend svg{width:19px;height:19px;fill:none;stroke:#fff;stroke-width:1.8;stroke-linejoin:round}
+.wa{display:flex;align-items:center;justify-content:center;gap:9px;padding:12px;background:var(--green-soft);
+  color:var(--green-ink);font-weight:800;font-size:var(--t-sm);border-top:1px solid var(--line)}
+.wa svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8}
+
+/* ============================================================
+   AVVISI: barra promo, toast, loader, sfondo
+   ============================================================ */
+#promobar{position:fixed;top:0;left:0;right:0;z-index:58;display:flex;align-items:center;justify-content:center;
+  gap:10px;background:var(--wine);color:#fff;padding:9px 46px 9px 16px;font-size:var(--t-sm);font-weight:700;
+  box-shadow:var(--sh-2);animation:promoin .5s cubic-bezier(.22,1,.36,1)}
+@keyframes promoin{from{transform:translateY(-100%)}to{transform:none}}
+#promobar b{font-family:var(--serif);font-size:var(--t-base)}
+#promobar span{font-weight:500;font-size:var(--t-xs);color:rgba(255,255,255,.85)}
+#promobar em{font-style:normal;background:var(--sticker);color:var(--wine-deep);border-radius:999px;padding:4px 11px;
+  letter-spacing:.07em;font-size:var(--t-xs);font-weight:800}
+#promox{position:absolute;right:10px;font-size:var(--t-xl);line-height:1;color:#fff;opacity:.75}
+body:has(#promobar:not([hidden])) .top{top:56px}
+body:has(#promobar:not([hidden])) .hero,body:has(#promobar:not([hidden])) .phero{padding-top:118px}
+
+#toast{position:fixed;left:50%;bottom:98px;transform:translate(-50%,16px);z-index:75;display:flex;align-items:center;
+  gap:10px;background:var(--ink);color:#fff;border-radius:999px;padding:9px 10px 9px 12px;box-shadow:var(--sh-3);
+  font-size:var(--t-sm);font-weight:600;max-width:calc(100vw - 24px);opacity:0;pointer-events:none;
+  transition:opacity .3s,transform .38s cubic-bezier(.22,1,.36,1)}
+#toast.on{opacity:1;transform:translate(-50%,0);pointer-events:auto}
+#toast img{width:26px;height:26px;object-fit:contain;background:#fff;border-radius:50%;padding:2px;flex:none}
+#toast span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#toast a{flex:none;background:var(--sticker);color:var(--wine-deep);border-radius:999px;padding:6px 13px;
+  font-weight:800;font-size:var(--t-xs)}
+
+#loader{position:fixed;inset:0;z-index:90;display:grid;place-content:center;justify-items:center;gap:14px;
+  background:var(--bg);color:var(--wine);font-weight:700;font-size:var(--t-sm);letter-spacing:.02em;
+  transition:opacity .45s,visibility .45s;opacity:0;visibility:hidden;pointer-events:none}
+#loader.show{opacity:1;visibility:visible}
+.ld-art{position:relative;width:110px;height:168px}
+.ld-art img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
+.ld-back{opacity:.16;filter:grayscale(1)}
+.ld-fill{clip-path:inset(100% 0 0 0)}
+#loader.show .ld-fill{animation:pour2 1.5s cubic-bezier(.3,.8,.3,1) infinite}
+@keyframes pour2{0%{clip-path:inset(100% 0 0 0)}65%{clip-path:inset(0 0 0 0)}100%{clip-path:inset(0 0 0 0);opacity:.85}}
+
+.bg{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none;
+  background:
+    radial-gradient(62vw 62vw at 94% -10%, #E8D6C0 0%, rgba(232,214,192,0) 62%),
+    radial-gradient(54vw 54vw at -10% 106%, #EADFD2 0%, rgba(234,223,210,0) 64%),
+    radial-gradient(46vw 46vw at 106% 54%, #F0E2D2 0%, rgba(240,226,210,0) 62%);
+  opacity:.6}
+.bg i,.bg b{display:none}
+.view,.foot{position:relative;z-index:1}
+.bubbles{position:absolute;inset:0;pointer-events:none;overflow:hidden;border-radius:inherit}
+.bubbles i{position:absolute;bottom:-20px;border-radius:50%;opacity:0;will-change:transform,opacity;
+  background:radial-gradient(circle at 35% 35%,rgba(255,255,255,.5),transparent 68%);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.22);animation:rise linear infinite}
+.bubbles i:nth-child(1){left:8%;width:9px;height:9px;animation-duration:11s}
+.bubbles i:nth-child(2){left:19%;width:6px;height:6px;animation-duration:14s;animation-delay:2s}
+.bubbles i:nth-child(3){left:32%;width:12px;height:12px;animation-duration:12s;animation-delay:5s}
+.bubbles i:nth-child(4){left:45%;width:7px;height:7px;animation-duration:16s;animation-delay:1s}
+.bubbles i:nth-child(5){left:58%;width:9px;height:9px;animation-duration:13s;animation-delay:7s}
+.bubbles i:nth-child(6){left:69%;width:5px;height:5px;animation-duration:15s;animation-delay:3s}
+.bubbles i:nth-child(7){left:80%;width:11px;height:11px;animation-duration:11.5s;animation-delay:6s}
+.bubbles i:nth-child(8){left:89%;width:7px;height:7px;animation-duration:14.5s;animation-delay:4s}
+.bubbles i:nth-child(9){left:95%;width:6px;height:6px;animation-duration:12.5s;animation-delay:8s}
+@keyframes rise{0%{transform:translateY(0);opacity:0}10%{opacity:.75}100%{transform:translateY(-120%);opacity:0}}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(1.35)}}
+@keyframes dots{0%,60%,100%{opacity:.35;transform:translateY(0)}30%{opacity:1;transform:translateY(-2px)}}
+
+/* ============================================================
+   INGRESSO DELLE VISTE
+   ============================================================ */
+.view.enter>*{animation:enter .6s cubic-bezier(.22,1,.36,1) both}
+.view.enter>*:nth-child(2){animation-delay:.06s}
+.view.enter>*:nth-child(3){animation-delay:.12s}
+.view.enter>*:nth-child(4){animation-delay:.18s}
+.view.enter>*:nth-child(5){animation-delay:.24s}
+.view.enter>*:nth-child(n+6){animation-delay:.3s}
+@keyframes enter{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+
+/* ============================================================
+   PAGINE LEGALI E FOOTER
+   ============================================================ */
+.legalpage{background:var(--card);border-radius:var(--r);padding:26px;box-shadow:var(--sh-1);max-width:760px;font-size:var(--t-md)}
+.legalpage h2{font-size:var(--t-lg);margin:22px 0 6px;color:var(--wine)}
+.legalpage p{margin-bottom:9px;color:var(--muted)}
+.foot{background:linear-gradient(160deg,var(--wine) 0%,var(--wine-deep) 78%);color:#fff;border-radius:30px 30px 0 0;
+  padding:40px 0 52px;margin-top:22px}
+.foot .cols{display:grid;gap:22px}
+@media(min-width:820px){.foot .cols{grid-template-columns:1.2fr 1fr 1fr}}
+.foot h4{font-family:var(--serif);font-size:var(--t-base);margin-bottom:9px;color:#fff}
+.foot a{color:rgba(255,255,255,.82);display:block;padding:4px 0;font-size:var(--t-sm);font-weight:600}
+.foot a:hover{color:var(--sticker)}
+.foot p{font-size:var(--t-sm);color:rgba(255,255,255,.72);max-width:44ch}
+.foot-art{width:72px;display:block;margin-bottom:10px;opacity:.95}
+.copy{margin-top:24px;font-size:var(--t-xs);color:rgba(255,255,255,.55)}
+.legal{display:grid;gap:14px;margin-top:20px}
+@media(min-width:820px){.legal{grid-template-columns:1fr 1fr}}
+.legal div{background:rgba(255,255,255,.08);border-radius:var(--r-sm);padding:17px;font-size:var(--t-sm);color:rgba(255,255,255,.8)}
+.legal b{display:block;color:#fff;margin-bottom:5px;font-size:var(--t-sm);font-family:var(--serif)}
+.langs{margin-top:22px;font-size:var(--t-sm);color:rgba(255,255,255,.75)}
+.mail{display:inline-block;margin-top:14px;font-family:var(--serif);font-weight:700;
+  font-size:clamp(19px,5vw,30px);color:var(--sticker);word-break:break-all}
+.disc{margin-top:24px;background:rgba(255,255,255,.08);border-radius:var(--r-sm);padding:17px;font-size:var(--t-sm);
+  color:rgba(255,255,255,.78);max-width:64ch}
+
+/* ============================================================
+   ICONE VIVE (movimento sobrio)
+   ============================================================ */
+.lesson .ic svg *,#dock svg *{transform-box:fill-box;transform-origin:50% 50%}
+.lesson.fermo .ic svg *{animation:none!important}
+.liq{transform-origin:50% 100%;animation:liqfill 5.4s ease-in-out infinite}
+@keyframes liqfill{0%,100%{transform:scaleY(.5)}50%{transform:scaleY(1)}}
+.i-calice-b .liq{animation-duration:6.2s}
+.i-rose .liq{animation-duration:6.8s}
+.b1,.b2,.b3{animation:bub 3.4s ease-in infinite;opacity:0}
+.b2{animation-duration:4.2s;animation-delay:.7s}
+.b3{animation-duration:4.8s;animation-delay:1.5s}
+@keyframes bub{0%{transform:translateY(0) scale(.6);opacity:0}15%{opacity:.9}100%{transform:translateY(-5px) scale(1.1);opacity:0}}
+.i-birra .foam{animation:foam 3.8s ease-in-out infinite;transform-origin:50% 100%}
+@keyframes foam{0%,100%{transform:scaleY(1)}50%{transform:scaleY(1.1)}}
+.i-dolce .cork{animation:cork 5s ease-in-out infinite;transform-origin:50% 100%}
+@keyframes cork{0%,74%,100%{transform:translateY(0)}82%{transform:translateY(-2.4px) rotate(-8deg)}}
+.slash{animation:draw 4s ease-in-out infinite}
+@keyframes draw{0%{stroke-dashoffset:17}35%,65%{stroke-dashoffset:0}100%{stroke-dashoffset:-17}}
+.fork,.knife{transform-origin:50% 100%}
+.lesson:hover .fork,#dock a:hover .fork{animation:fork 2.6s ease-in-out infinite}
+.lesson:hover .knife,#dock a:hover .knife{animation:knife 2.6s ease-in-out infinite}
+@keyframes fork{0%,100%{transform:rotate(0)}50%{transform:rotate(-6deg)}}
+@keyframes knife{0%,100%{transform:rotate(0)}50%{transform:rotate(6deg)}}
+#dock .i-glass .wine{fill:currentColor;stroke:none;transform:scaleY(.55);transform-origin:50% 100%}
+#dock a.on .i-glass .wine{transform:scaleY(1);transition:transform .7s cubic-bezier(.22,1,.36,1)}
+@keyframes fly{0%,100%{transform:translate(0,0)}45%{transform:translate(2px,-2px) rotate(5deg)}}
+@keyframes breathe{0%,100%{transform:translateY(0)}50%{transform:translateY(-1.2px)}}
+/* si muovono solo al passaggio del dito o del puntatore, mai a riposo */
+@media (hover:hover) and (pointer:fine){
+  #dock a:hover .i-glass .wine{animation:liqfill 2.4s ease-in-out infinite}
+  #dock a:hover .i-info .dot{animation:pulse 1.8s ease-in-out infinite}
+  #dock a:hover .i-send .plane{animation:fly 2.2s ease-in-out infinite}
+  #dock a:hover .i-home{animation:breathe 2.4s ease-in-out infinite}
+}
+#dock a:active svg{transform:scale(.9);transition:transform .15s}
+
+/* ============================================================
+   STAMPA
+   ============================================================ */
+@media print{
+  @page{size:A4;margin:12mm}
+  *{content-visibility:visible!important;contain-intrinsic-size:auto!important}
+  html,body{background:#fff!important}
+  body{padding:0!important}
+  #dockbar,#dock,#aux,#cartbtn,#chatbtn,#chat,#toast,#promobar,#progress,#loader,.top,.bg,
+  .demo-flag,.phero,.hero,.btns,.wallet,.foot,.view:not(#v-ticket){display:none!important}
+  *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
+  .wrap{padding:0!important;max-width:none!important}
+  section{padding:0!important}
+  #tickets{display:block}
+  .ticket{break-inside:avoid;page-break-inside:avoid;width:100%;max-width:175mm;margin:0 auto 10mm;
+    box-shadow:none!important;outline:1.2px solid var(--line2);border-radius:6mm;overflow:hidden}
+  .ticket:last-child{margin-bottom:0}
+  .tk-main{padding:9mm}
+  .tk-stub{padding:7mm 5mm}
+  .tk-acts{display:none!important}
+  .tk-art{opacity:.09!important}
+  .tk-stub:before,.tk-stub:after{background:#fff!important}
+  .qr{box-shadow:none!important}
+}
+
+@media(prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important;scroll-behavior:auto}
+  #loader{display:none}
+}
+
+/* ============================================================
+   COMPLEMENTI
+   ============================================================ */
+.btn.big{width:100%;padding:15px 22px;font-size:var(--t-md);margin-top:16px}
+.sel-val{display:block;min-width:0;white-space:normal;line-height:var(--lh-snug);hyphens:auto}
+.ol{display:block;min-width:0}
+.conf{overflow:hidden}
+.pay-art{position:absolute;right:-14px;top:-18px;width:92px;opacity:.07;pointer-events:none}
+
+/* due strade */
+.card.path{background:var(--card);position:relative;overflow:hidden}
+.card.path:before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--wine)}
+.card.path.alt:before{background:var(--gold)}
+.p-ic{width:48px;height:48px;border-radius:15px;background:var(--wine-soft);color:var(--wine);
+  display:grid;place-items:center;margin-bottom:14px}
+.card.path.alt .p-ic{background:var(--gold-soft);color:var(--gold-ink)}
+.p-ic svg{width:25px;height:25px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.p-list{list-style:none;margin-top:14px;font-size:var(--t-sm)}
+.p-list li{padding:9px 0 9px 24px;border-top:1px solid var(--line);position:relative;color:var(--muted)}
+.p-list li:before{content:"";position:absolute;left:3px;top:17px;width:7px;height:7px;border-radius:50%;background:var(--gold)}
+.card.path .arrow{margin-top:16px;font-weight:800;font-size:var(--t-sm);color:var(--wine)}
+.card.path.alt .arrow{color:var(--gold-ink)}
+
+@media(max-width:560px){
+  .benefits{grid-template-columns:1fr;gap:7px}
+  /* Sui telefoni le tre righe mettevano icona, titolo e frase una di fianco
+   all'altra: il titolo finiva spezzato in due ("Tutto / incluso") mentre
+   accanto restava spazio vuoto. Adesso l'icona sta a sinistra per tutta
+   l'altezza e titolo e frase si impilano, come si legge normalmente. */
+.benefits div{display:grid;grid-template-columns:auto 1fr;align-items:start;
+  gap:3px 13px;padding:13px 15px}
+.benefits div>svg{grid-row:1/span 2;align-self:center;margin-bottom:0}
+.benefits div>b{grid-column:2;margin-bottom:0}
+.benefits div>span{grid-column:2}
+  .benefits svg{margin:1px 0 0;flex:none}
+}
+
+@media(max-width:400px){
+  #dockbar.tight #dock a,#dockbar.tight #cartbtn,#dockbar.tight #chatbtn,
+  #dockbar.compact #dock a,#dockbar.compact #cartbtn,#dockbar.compact #chatbtn{padding:9px 9px;min-width:40px}
+  #dockbar.tight #dock,#dockbar.tight #aux{padding:5px}
+}
+@media(max-width:345px){            /* iPhone SE e simili: ancora più stretta */
+  #dockbar{gap:5px}
+  #dockbar.tight #dock a,#dockbar.tight #cartbtn,#dockbar.tight #chatbtn{padding:8px 6px;min-width:35px}
+  #dockbar.tight #dock a svg,#dockbar.tight #cartbtn svg,#dockbar.tight #chatbtn svg{width:21px;height:21px}
+}
+
+/* ============================================================
+   PAGAMENTO: campi veri
+   ============================================================ */
+.pm-amount{display:flex;align-items:baseline;justify-content:space-between;gap:12px;
+  background:rgba(255,255,255,.6);border-radius:var(--r-sm);padding:12px 16px}
+.pm-amount span{font-size:var(--t-micro);font-weight:800;text-transform:uppercase;letter-spacing:.11em;color:var(--muted)}
+.pm-amount b{font-family:var(--serif);font-size:var(--t-xl);color:var(--wine)}
+.pm-detail.cash .pm-amount{background:#fff}
+.cr-top{display:flex;align-items:center;justify-content:space-between}
+.cr-brand{font-style:normal;font-family:var(--serif);font-weight:700;font-size:var(--t-xs);letter-spacing:.08em;
+  color:rgba(255,255,255,.9);text-transform:uppercase;min-height:16px}
+.pm-fields input.wrong{box-shadow:inset 0 0 0 1.5px #FF9FB0;background:rgba(255,120,140,.14)}
+.pm-fields input:focus{outline:none;box-shadow:inset 0 0 0 2px var(--sticker)}
+.pm-fields input::placeholder{color:rgba(255,255,255,.42)}
+.bad{display:block;font-style:normal;font-size:var(--t-xs);font-weight:600;line-height:var(--lh-ui);color:#FFC2CD;
+  letter-spacing:0;text-transform:none;min-height:0}
+.bad:empty{display:none}
+.pm-pp{display:grid;gap:12px}
+.pm-one{display:grid;gap:5px;font-size:var(--t-micro);font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--muted)}
+.pm-one input{background:#fff;box-shadow:inset 0 0 0 1.5px var(--line2);text-transform:none;letter-spacing:0;
+  font-size:var(--t-md);font-weight:600;color:var(--ink)}
+.pm-one input.wrong{box-shadow:inset 0 0 0 2px #C2185B}
+.pm-one .bad{color:#9B1442}
+.btn.pp{background:#FFC439;color:#0B2447;width:100%;min-height:52px;font-weight:700;gap:10px}
+.btn.pp svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
+.btn.pp.off{background:var(--bg2);color:var(--muted);cursor:not-allowed;box-shadow:inset 0 0 0 1.5px var(--line2)}
+.btn.locked{display:inline-flex;align-items:center;justify-content:center;background:transparent;color:var(--muted);box-shadow:inset 0 0 0 1.5px var(--line2);cursor:not-allowed;gap:9px}
+.btn.locked .lkb{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round}
+.btn.pp:not(.off):hover{background:#F2B21E}
+.giro{display:flex;align-items:center;gap:14px;background:#fff;border-radius:var(--r-sm);padding:14px;
+  box-shadow:var(--sh-1)}
+.giro-qr{width:104px;height:104px;flex:none;background:#fff;border-radius:10px;padding:4px}
+.giro-qr svg{width:100%;height:100%;display:block}
+.giro-txt{min-width:0}
+.giro-txt b{display:block;font-family:var(--serif);font-size:var(--t-md);margin-bottom:3px}
+.giro-txt span{font-size:var(--t-xs);color:var(--muted);line-height:var(--lh-ui)}
+.payhint{min-height:18px;margin-top:8px;font-size:var(--t-xs);font-weight:700;color:#9B1442}
+.field input.wrong,.field textarea.wrong{box-shadow:inset 0 0 0 2px #C2185B}
+.field .bad{color:#9B1442;margin-top:5px}
+.payhint:empty{display:none}
+.pm-detail.shake{animation:shk .42s cubic-bezier(.36,.07,.19,.97)}
+@keyframes shk{10%,90%{transform:translateX(-2px)}20%,80%{transform:translateX(4px)}
+  30%,50%,70%{transform:translateX(-6px)}40%,60%{transform:translateX(6px)}}
+.btn.off{opacity:.45;pointer-events:none}
+#paygo.off{pointer-events:auto;cursor:not-allowed}
+@media(max-width:420px){.giro{flex-direction:column;text-align:center}.giro-qr{width:132px;height:132px}}
+
+
+/* ============================================================
+   SCELTA DELLA SERA
+   ============================================================ */
+.slotstrip{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 10px;scrollbar-width:none}
+.slotstrip::-webkit-scrollbar{display:none}
+.slotchip{flex:none;display:grid;gap:2px;justify-items:center;background:var(--bg);border-radius:var(--r-sm);
+  padding:11px 15px;box-shadow:inset 0 0 0 1.5px var(--line2);transition:background .25s,box-shadow .25s;min-width:84px}
+.slotchip b{font-family:var(--serif);font-size:var(--t-md);white-space:nowrap;text-transform:capitalize}
+.slotchip span{font-size:var(--t-xs);color:var(--muted);font-weight:700}
+.slotchip.on{background:var(--wine-soft);box-shadow:inset 0 0 0 2px var(--wine)}
+.slotchip.on b,.slotchip.on span{color:var(--wine)}
+.slotchip:hover{background:var(--bg2)}
+.slotchip.on:hover{background:var(--wine-soft)}
+.slotchip.altre{min-width:0;color:var(--muted);font-weight:700;font-size:var(--t-sm);align-content:center}
+.slotstrip.vuota:after{content:attr(data-vuoto);font-size:var(--t-sm);color:var(--muted);padding:12px 2px}
+#prenbox .field input{background:var(--card);box-shadow:inset 0 0 0 1.5px var(--line2)}
+.tk-attesa{background:var(--gold-soft);color:var(--gold-ink);border-radius:999px;padding:4px 11px;
+  font-size:var(--t-micro);font-weight:800;text-transform:uppercase;letter-spacing:.09em}
+
+/* ============================================================
+   RISPARMIO: fermo tutto quello che non è sullo schermo
+   ============================================================ */
+.fermo,.fermo *{animation-play-state:paused!important}
+html.nascosto *{animation-play-state:paused!important}
+
+/* le sezioni lontane non vengono nemmeno disegnate finché non servono */
+.view>section{content-visibility:auto;contain-intrinsic-size:auto 600px}
+.view>section:first-of-type,.view>header{content-visibility:visible}
+
+/* la select vera resta raggiungibile da tastiera ma occupa davvero nulla */
+.sel select{padding:0;border:0;min-height:0}
+.sel:focus-within .sel-btn{box-shadow:inset 0 0 0 2px var(--wine)}
+
+/* bersagli da toccare: almeno 34 px anche quando il segno è piccolo */
+.ci-x{width:34px;height:34px;font-size:var(--t-xl);margin-right:-4px}
+.ci-q button{width:34px;height:34px}
+.deck-dots button,.pay-dots button{position:relative}
+.deck-dots button:after,.pay-dots button:after{content:"";position:absolute;inset:-13px}
+#promox{padding:6px 4px}
+/* I pulsanti COPIA erano 69x30: si sbaglia mira. Portati a 44 di
+   altezza, che e' la misura sotto la quale il pollice non prende. */
+.cp{padding:12px 16px;min-height:44px;display:inline-flex;align-items:center}
+
+@media(max-width:360px){
+  .sel-btn,.sel-opt{font-size:var(--t-md)}
+  .wrap{padding:0 16px}
+  .card,.conf{padding:20px}
+  .citem{padding:12px}
+}
+
+/* titoli dentro le schede: erano scritti a mano uno per uno */
+.h-conf{font-size:var(--t-lg);margin:var(--s6) 0 var(--s3)}
+.h-box{font-size:var(--t-xl);margin-bottom:var(--s4)}
+
+/* ---- la pila dei bigliettini: solo quelle davanti fanno ombra ---- */
+.qnote.sotto{box-shadow:0 1px 2px rgba(45,28,18,.05);background:var(--card)}
+.qnote.sotto>*{visibility:hidden}
+.deck{height:236px}
+
+/* ---- la casella della foto quando la foto non c'è ---- */
+.photo.vuota,.gallery div.vuota{background:var(--bg2);position:relative}
+.photo.vuota:before,.gallery div.vuota:before{
+  content:"";position:absolute;inset:0;background:var(--marchio) center/42% no-repeat;opacity:.13}
+.photo.vuota:after,.gallery div.vuota:after{
+  content:attr(data-alt);position:absolute;left:0;right:0;bottom:14px;padding:0 14px;
+  font-size:var(--t-xs);color:var(--muted);line-height:var(--lh-snug)}
+.photo.vuota{font-size:0}
+/* il doppione del carosello non deve creare un contenitore suo */
+.doppio{display:contents}
+/* l'avviso di sessione scaduta: deve saltare all'occhio, non sparire
+   in mezzo agli altri messaggini */
+.payhint.avviso{color:var(--wine);font-weight:700;background:var(--wine-soft);
+  border-radius:var(--r-xs);padding:10px 13px;margin-top:10px;line-height:var(--lh-ui)}
+/* Nessuna riga di testo corrente oltre ~72 battute: oltre quella
+   lunghezza l'occhio sbaglia il ritorno a capo. Vale sugli schermi
+   larghi, dove senza limite il testo userebbe tutta la finestra. */
+main p,main li{max-width:72ch}
+main .wrap>p,main .card p,main .sub{max-width:min(100%,66ch)}
+.view[hidden]{display:none}
+
+/* =====================================================================
+   ELEMENTI DI VINO
+   1 sala dei 40 calici · 2 bottiglie dei giorni · 3 calice dell'hero
+   4 ruota degli aromi · 5 colori del vino · 6 abbinamenti · 7 quiz
+   8 numeri che si versano · 9 onde di vino · 10 carta e luce calda
+   11 carte che si inclinano · 12 tralcio sotto i titoli · 13 macchia sul biglietto
+   ===================================================================== */
+:root{--t-vino:#7A1230;--t-bolle:#C9A13B;--t-fort:#9A5418;
+  --tl-vino:#D2405F;--tl-bolle:#F0C544;--tl-fort:#E08A35;
+  --td-vino:#7A1230;--td-bolle:#7A5512;--td-fort:#7E3F0E}
+.t-vino,.d-vino,.book[data-t=vino],.c-vino,.k-vino,.e-vino,.a-vino,.p-vino{--tc:var(--t-vino);--tcl:var(--tl-vino);--tcd:var(--td-vino)}
+.t-bolle,.d-bolle,.book[data-t=bolle],.c-bolle,.k-bolle,.e-bolle,.a-bolle,.p-bolle{--tc:var(--t-bolle);--tcl:var(--tl-bolle);--tcd:var(--td-bolle)}
+.t-fort,.d-fort,.book[data-t=fort],.c-fort,.k-fort,.e-fort,.a-fort,.p-fort{--tc:var(--t-fort);--tcl:var(--tl-fort);--tcd:var(--td-fort)}
+
+/* 10 · carta e luce calda: il fondo non e' piu' un colore piatto */
+.bg{background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .32 0 0 0 0 .2 0 0 0 0 .14 0 0 0 .09 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),
+    radial-gradient(62vw 62vw at 94% -10%, #E8D6C0 0%, rgba(232,214,192,0) 62%),
+    radial-gradient(54vw 54vw at -10% 106%, #EADFD2 0%, rgba(234,223,210,0) 64%),
+    radial-gradient(46vw 46vw at 106% 54%, #F0E2D2 0%, rgba(240,226,210,0) 62%),
+    radial-gradient(40vw 30vw at 20% 30%, rgba(122,18,48,.05) 0%, rgba(122,18,48,0) 70%);opacity:.85}
+.card,.lesson,.event,.conf,.book{box-shadow:0 1px 0 rgba(255,255,255,.9) inset,0 1px 2px rgba(45,28,18,.06),0 6px 18px -6px rgba(45,28,18,.12)}
+
+/* ------------------ PRENOTA: 1 la sala, 2 le bottiglie ------------------ */
+.book{display:grid;gap:18px;background:var(--card);border-radius:var(--r);padding:var(--s4);position:relative}
+@media(min-width:900px){.book{grid-template-columns:280px 1fr;padding:var(--s5);gap:30px}}
+.book-days{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;align-content:start}
+@media(min-width:900px){.book-days{grid-template-columns:1fr}}
+.day{display:flex;flex-direction:column;align-items:center;gap:8px;padding:14px 6px 12px;border-radius:var(--r-sm);
+  background:var(--bg);box-shadow:inset 0 0 0 1.5px var(--line2);text-align:center;position:relative;overflow:hidden;
+  transition:transform .25s,box-shadow .25s,background .25s;color:var(--tcd)}
+@media(min-width:900px){.day{flex-direction:row;text-align:left;padding:12px 16px;gap:16px}}
+.day:hover{background:var(--card)}
+.day.on{background:var(--card);box-shadow:inset 0 0 0 2px var(--tc),0 10px 24px -10px rgba(45,28,18,.35);transform:translateY(-2px)}
+.day .bottle{width:28px;height:68px;flex:none;display:block}
+.day .bottle svg,.abb-bott svg{width:100%;height:100%;overflow:visible;display:block}
+.bottle .vetro,.abb-bott .vetro{fill:rgba(255,255,255,.6);stroke:currentColor;stroke-width:1.6;stroke-linejoin:round}
+.bottle .liquido,.abb-bott .liquido{fill:var(--tc);transform-box:fill-box;transform-origin:50% 100%;transform:scaleY(.5);transition:transform .7s cubic-bezier(.2,.8,.2,1)}
+.day.on .liquido,.abb-bott .liquido{transform:scaleY(1)}
+.bottle .etichetta,.abb-bott .etichetta{fill:#FBF7F0;stroke:currentColor;stroke-width:.8}
+.bottle .tappo,.abb-bott .tappo{fill:currentColor}
+.bottle .stagnola,.abb-bott .stagnola{fill:#C9A13B}
+.bol circle{fill:#fff;opacity:0}
+.day.on .bol circle,.abb-bott .bol circle{animation:bolla 2.6s infinite ease-in}
+.bol circle:nth-child(2){animation-delay:.7s!important}.bol circle:nth-child(3){animation-delay:1.3s!important}.bol circle:nth-child(4){animation-delay:1.9s!important}
+@keyframes bolla{0%{opacity:0;transform:translateY(0)}15%{opacity:.95}100%{opacity:0;transform:translateY(-36px)}}
+.day-txt{display:grid;gap:2px;line-height:var(--lh-snug);min-width:0}
+.day-txt small{font-size:var(--t-micro);text-transform:uppercase;letter-spacing:.1em;font-weight:800;color:var(--tcd);opacity:.85}
+.day-txt b{font-family:var(--serif);font-size:clamp(12px,3.7vw,16.5px);color:var(--ink);overflow-wrap:normal;word-break:keep-all;letter-spacing:-.01em}
+@media(max-width:380px){.day{padding:12px 3px 10px}}
+@media(min-width:900px){.day-txt b{font-size:var(--t-lg)}}
+.day-txt em{font-style:normal;font-weight:800;font-size:var(--t-sm);color:var(--tcd)}
+.day-txt em i{font-style:normal;font-weight:600;color:var(--muted);font-size:var(--t-micro);display:block}
+@media(min-width:900px){.day-txt em i{display:inline}}
+.book-info{font-size:var(--t-sm);color:var(--muted);line-height:var(--lh-ui);padding:12px 16px;border-radius:var(--r-xs);
+  background:var(--bg);border-left:4px solid var(--tc);margin-bottom:6px}
+.book-info b{display:block;color:var(--ink);font-family:var(--serif);font-size:var(--t-lg);margin-bottom:3px}
+.book-dates{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+@media(min-width:620px){.book-dates{grid-template-columns:repeat(6,1fr)}}
+.dchip{display:grid;justify-items:center;padding:9px 4px 10px;border-radius:var(--r-xs);background:var(--bg);
+  box-shadow:inset 0 0 0 1.5px var(--line2);line-height:1.15;transition:transform .2s,background .2s,box-shadow .2s;min-height:44px}
+.dchip small{font-size:var(--t-micro);text-transform:uppercase;letter-spacing:.06em;font-weight:700;color:var(--muted)}
+.dchip b{font-family:var(--serif);font-size:var(--t-xl);color:var(--ink)}
+.dchip em{font-style:normal;font-size:12px;font-weight:800;color:var(--green-ink);margin-top:3px}
+.dchip.low em{color:var(--gold-ink)}
+.dchip:hover:not(:disabled){transform:translateY(-2px);background:var(--card)}
+.dchip.on{background:var(--tcd);box-shadow:0 8px 18px -8px var(--tcd)}
+.dchip.on small,.dchip.on b,.dchip.on em{color:#fff}
+.dchip:disabled{opacity:.45;cursor:not-allowed}.dchip:disabled b{text-decoration:line-through}
+.book-row{display:grid;gap:16px;margin-top:20px}
+@media(min-width:640px){.book-row{grid-template-columns:auto 1fr;align-items:start}}
+#bkq{width:72px;flex:none;font-family:var(--serif);font-size:var(--t-xl);font-weight:700}
+.book-q .note{max-width:28ch}
+.book-sum{background:var(--bg);border-radius:var(--r-sm);padding:14px 16px;font-size:var(--t-sm)}
+.book-sum>span{display:block;font-weight:700;margin-bottom:8px;color:var(--ink)}
+.bs-row{display:flex;justify-content:space-between;gap:10px;padding:4px 0;color:var(--muted)}
+.bs-row.iva{font-size:var(--t-xs)}
+.bs-tot{display:flex;justify-content:space-between;align-items:baseline;border-top:1px solid var(--line2);margin-top:6px;padding-top:9px;font-weight:800}
+.bs-tot b{font-family:var(--serif);font-size:var(--t-2xl);color:var(--tcd)}
+.sala-wrap{margin-top:20px;padding:16px 16px 18px;border-radius:var(--r-sm);color:#F3E6D8;
+  background:radial-gradient(120% 90% at 50% 0%,#5A1A2C 0%,#2B0F18 70%);box-shadow:inset 0 2px 14px rgba(0,0,0,.45),0 10px 24px -14px rgba(45,28,18,.5)}
+.sala-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px;font-size:var(--t-xs);margin-bottom:12px;flex-wrap:wrap}
+.sala-head b{color:#F0C544;font-weight:800;letter-spacing:.02em}
+.sala{display:grid;grid-template-columns:repeat(10,1fr);gap:3px}
+@media(max-width:480px){.sala{grid-template-columns:repeat(8,1fr)}}
+.seat{display:grid;place-items:center;aspect-ratio:1;border-radius:8px;cursor:pointer;color:rgba(243,230,216,.5);transition:transform .2s,color .2s}
+.seat svg{width:82%;height:82%}
+.seat:hover{transform:translateY(-2px);color:#fff}
+.seat.taken{color:rgba(243,230,216,.16);--wf:rgba(243,230,216,.1);cursor:not-allowed}
+.seat.taken:hover{transform:none}
+.seat.mine{color:#fff;--wf:var(--tcl)}
+.seat.mine svg{animation:versa .5s both}
+@keyframes versa{0%{transform:scale(.6) rotate(-8deg)}60%{transform:scale(1.18) rotate(4deg)}100%{transform:none}}
+#bookadd{margin-top:18px;width:100%}
+@media(min-width:640px){#bookadd{width:auto;min-width:260px}}
+#bookadd.off{opacity:.5;pointer-events:none}
+.citem.c-vino,.citem.c-bolle,.citem.c-fort{box-shadow:inset 4px 0 0 var(--tc),var(--sh-1)}
+.breakdown .subt,.recap .subt,#cartsum .subt{border-top:1px solid var(--line2);margin-top:4px;font-weight:700}
+.breakdown .iva span,.recap .iva span,#cartsum .iva span{color:var(--muted);font-size:var(--t-xs)}
+.tk-iva{display:block;font-size:11px;font-weight:700;letter-spacing:.04em;opacity:.7;margin-top:2px}
+.ticket.k-vino .tk-main,.ticket.k-bolle .tk-main,.ticket.k-fort .tk-main{box-shadow:inset 6px 0 0 var(--tc)}
+
+/* calendario: un pallino per tema */
+.cell.t-vino i{background:var(--t-vino)!important}.cell.t-bolle i{background:var(--t-bolle)!important}.cell.t-fort i{background:var(--t-fort)!important}
+.cell.t-vino,.cell.t-bolle,.cell.t-fort{box-shadow:inset 0 -3px 0 var(--tc)}
+.cell.pick{box-shadow:var(--sh-2)}
+.cal-legend .tl i{width:10px;height:10px;border-radius:50%;background:var(--tc)}
+.event{transition:transform .25s,box-shadow .25s}
+a.event{color:inherit}
+.event.e-vino .d,.event.e-bolle .d,.event.e-fort .d{background:var(--tcd);color:#fff}
+.event .seats.out{background:var(--bg2);color:var(--faint)}
+
+/* ------------------ 3 · il calice dell'hero ------------------ */
+.hero .hero-art{display:none}
+.calice{display:flex;align-items:center;gap:14px;margin-top:22px;color:#fff;text-align:left;--lvl:0}
+.calice svg{width:74px;height:124px;flex:none;filter:drop-shadow(0 10px 18px rgba(0,0,0,.35));transform-origin:50% 92%;overflow:visible}
+.calice-hint{font-size:var(--t-xs);font-weight:700;color:rgba(255,255,255,.75);max-width:16ch;line-height:var(--lh-snug)}
+@media(min-width:820px){
+  .calice{position:absolute;right:max(20px,3vw);top:34px;margin:0;flex-direction:column;gap:8px;text-align:center}
+  .calice svg{width:120px;height:200px}
+}
+.vino-liv{transform:translateY(calc(var(--lvl) * -34px))}
+.vino-onda{animation:onda 4s linear infinite;animation-play-state:paused}
+.calice.vivo .vino-onda{animation-play-state:running}
+@keyframes onda{to{transform:translateX(-60px)}}
+.vino-gira{transform-origin:60px 70px}
+.calice.gira svg{animation:dondola 1.6s ease-in-out}
+.calice.gira .vino-gira{animation:mulinello 1.6s ease-in-out}
+@keyframes dondola{0%,100%{transform:none}20%{transform:rotate(-7deg)}45%{transform:rotate(6deg)}70%{transform:rotate(-3deg)}}
+@keyframes mulinello{0%,100%{transform:none}20%{transform:rotate(12deg) translateY(-3px)}45%{transform:rotate(-12deg) translateY(-5px)}70%{transform:rotate(5deg)}}
+.calice:focus-visible{outline-color:#fff}
+
+/* ------------------ 8 · numeri ------------------ */
+.numeri-sec{padding-top:28px!important;padding-bottom:0!important}
+.numeri{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+@media(min-width:820px){.numeri{grid-template-columns:repeat(4,1fr)}}
+.nstat{display:grid;grid-template-columns:auto 1fr;grid-template-rows:auto auto;column-gap:12px;align-items:center;
+  background:var(--card);border-radius:var(--r-sm);padding:14px 16px;box-shadow:0 1px 0 rgba(255,255,255,.9) inset,0 6px 18px -8px rgba(45,28,18,.14)}
+.nstat .n-glass{width:34px;height:34px;color:var(--wine);--wf:transparent}
+.nstat .n-glass svg{width:100%;height:100%}
+.numeri.pieno .n-glass svg{animation:riempi 1.3s ease-out both}
+.numeri.pieno .nstat:nth-child(2) .n-glass svg{animation-delay:.15s}.numeri.pieno .nstat:nth-child(3) .n-glass svg{animation-delay:.3s}.numeri.pieno .nstat:nth-child(4) .n-glass svg{animation-delay:.45s}
+@keyframes riempi{0%{--wf:transparent;transform:rotate(-14deg)}60%{transform:rotate(4deg)}100%{--wf:#C23356;transform:none}}
+.numeri.pieno .n-glass{--wf:#C23356}
+.nstat b{font-family:var(--serif);font-size:var(--t-3xl);line-height:1;color:var(--wine);font-variant-numeric:tabular-nums}
+.nstat span:last-child{grid-column:1/-1;margin-top:6px;font-size:var(--t-xs);font-weight:700;color:var(--muted);line-height:var(--lh-snug)}
+
+/* ------------------ 9 · onde ------------------ */
+.onda{height:56px;margin:-8px 0 -24px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 60' preserveAspectRatio='none'%3E%3Cpath d='M0 30 C150 5 300 55 450 30 S750 5 900 30 S1100 55 1200 30 V60 H0Z' fill='%237A1230' fill-opacity='.07'/%3E%3Cpath d='M0 38 C200 18 350 58 600 36 S1000 16 1200 40 V60 H0Z' fill='%237A1230' fill-opacity='.06'/%3E%3C/svg%3E") center/100% 100% no-repeat;position:relative;z-index:1;pointer-events:none}
+
+/* ------------------ 12 · tralcio sotto i titoli ------------------ */
+.view>section>h2::after,.view>section>.wrap>h2::after{content:"";display:block;width:84px;height:18px;margin-top:10px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 84 18'%3E%3Cpath d='M2 9h26M56 9h26' stroke='%23A9762C' stroke-width='1.2' stroke-linecap='round' fill='none'/%3E%3Cpath d='M30 9c4-6 9-6 12 0 3-6 8-6 12 0' stroke='%23A9762C' stroke-width='1.2' fill='none' stroke-linecap='round'/%3E%3Cg fill='%237A1230'%3E%3Ccircle cx='42' cy='11' r='2'/%3E%3Ccircle cx='39.6' cy='13.8' r='1.8'/%3E%3Ccircle cx='44.4' cy='13.8' r='1.8'/%3E%3Ccircle cx='42' cy='16' r='1.6'/%3E%3C/g%3E%3C/svg%3E") left center/contain no-repeat;opacity:.9}
+
+/* ------------------ 4 · ruota degli aromi ------------------ */
+.aromi{display:grid;gap:22px;align-items:center}
+@media(min-width:820px){.aromi{grid-template-columns:minmax(260px,360px) 1fr;gap:40px}}
+.ruota-box{position:relative;width:min(100%,360px);margin:0 auto;aspect-ratio:1}
+#ruota{width:100%;height:100%;overflow:visible;filter:drop-shadow(0 14px 22px rgba(45,28,18,.18))}
+.spicchio{cursor:pointer;transition:transform .35s cubic-bezier(.2,.8,.2,1)}
+.spicchio path{fill:var(--c);opacity:.82;stroke:#fff;stroke-width:1.5;transition:opacity .25s}
+.spicchio circle{fill:#fff;opacity:.85}
+.spicchio:hover path{opacity:1}
+.spicchio.on{transform:scale(1.06)}
+.spicchio.on path{opacity:1;stroke-width:2.5}
+.ruota-buco{fill:var(--cream);stroke:var(--line2);stroke-width:1}
+#ruota.pulse{animation:pulse .5s ease-out}
+@keyframes pulse{0%{transform:rotate(-3deg)}100%{transform:none}}
+.ruota-c{position:absolute;inset:32%;display:grid;place-items:center;text-align:center;font-family:var(--serif);
+  font-weight:700;font-size:var(--t-sm);line-height:var(--lh-tight);color:var(--ink);pointer-events:none}
+.aroma-card,.abb-card{background:var(--card);border-radius:var(--r);padding:var(--s5);min-height:150px;border-top:5px solid var(--c,var(--line2));transition:border-color .3s}
+.aroma-card h3{font-size:var(--t-xl);margin:6px 0 10px}
+.aroma-card p{color:var(--muted);font-size:var(--t-sm);margin-bottom:14px;line-height:var(--lh-ui)}
+.aro-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+.aro-chips button{display:inline-flex;align-items:center;gap:8px;padding:9px 14px;border-radius:999px;background:var(--card);
+  box-shadow:inset 0 0 0 1.5px var(--line2);font-size:var(--t-xs);font-weight:700;min-height:40px}
+.aro-chips button i{width:10px;height:10px;border-radius:50%;background:var(--c)}
+.aro-chips button[aria-pressed="true"]{box-shadow:inset 0 0 0 2px var(--c);background:var(--cream);color:var(--ink)}
+
+/* ------------------ 5 · colori ------------------ */
+.colori{display:grid;gap:16px}
+.col-riga{display:grid;gap:8px}
+.col-nome{font-size:var(--t-micro);text-transform:uppercase;letter-spacing:.12em;font-weight:800;color:var(--faint)}
+.col-strip{display:flex;gap:6px}
+.col-sw{flex:1;display:grid;gap:6px;justify-items:center;padding:0 0 4px;font-size:12px;font-weight:700;color:var(--muted);min-width:0}
+.col-sw i{width:100%;height:46px;border-radius:12px;background:radial-gradient(120% 140% at 30% 20%,rgba(255,255,255,.55),transparent 45%),var(--c);
+  box-shadow:inset 0 0 0 1px rgba(0,0,0,.06),0 6px 14px -8px var(--c);transition:transform .25s}
+.col-sw span{overflow-wrap:anywhere;text-align:center;line-height:1.2}
+.col-sw:hover i{transform:translateY(-3px)}
+.col-sw.on i{transform:translateY(-4px) scale(1.04);box-shadow:inset 0 0 0 2px #fff,0 0 0 2px var(--ink),0 10px 20px -8px var(--c)}
+.col-sw.on span{color:var(--ink)}
+.col-read{display:flex;gap:16px;align-items:center;margin-top:18px;background:var(--card);border-radius:var(--r-sm);padding:16px 18px;min-height:76px}
+.col-goccia{width:34px;height:46px;flex:none;background:var(--c);border-radius:50% 50% 50% 50%/60% 60% 40% 40%;clip-path:path("M17 0C17 0 0 22 0 31a17 15 0 0 0 34 0C34 22 17 0 17 0Z");box-shadow:inset -4px -6px 0 rgba(0,0,0,.12)}
+.col-read b{font-family:var(--serif);font-size:var(--t-lg)}
+.col-read p{font-size:var(--t-sm);color:var(--muted);line-height:var(--lh-ui)}
+
+/* ------------------ 6 · abbinamenti ------------------ */
+.abbina{display:grid;gap:18px}
+@media(min-width:820px){.abbina{grid-template-columns:1fr 1fr;align-items:start}}
+.piatti{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.piatto{display:flex;align-items:center;gap:10px;padding:12px;border-radius:var(--r-xs);background:var(--card);
+  box-shadow:inset 0 0 0 1.5px var(--line2);font-size:var(--t-sm);font-weight:700;text-align:left;line-height:var(--lh-snug);min-height:52px;transition:transform .2s,box-shadow .2s}
+.piatto:hover{transform:translateY(-2px)}
+.piatto.on{box-shadow:inset 0 0 0 2px var(--tc),0 8px 18px -10px rgba(45,28,18,.4)}
+.pt-ic{width:30px;height:30px;flex:none;border-radius:50%;display:grid;place-items:center;background:var(--bg);color:var(--tcd)}
+.pt-ic svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.abb-card{display:flex;gap:18px;align-items:flex-start;border-top-color:var(--tc,var(--line2))}
+.abb-card p{color:var(--muted);font-size:var(--t-sm);margin:6px 0 14px;line-height:var(--lh-ui)}
+.abb-bott{width:34px;height:82px;flex:none;color:var(--tcd);display:block}
+
+/* ------------------ 7 · quiz ------------------ */
+.quiz{background:linear-gradient(160deg,var(--card),var(--cream));border-radius:var(--r);padding:var(--s5);min-height:210px}
+.qz-top{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.qz-bar{display:flex;gap:5px}
+.qz-bar i{width:26px;height:6px;border-radius:9px;background:var(--line2)}
+.qz-bar i.ok{background:var(--wine)}.qz-bar i.now{background:var(--gold)}
+.quiz h3{font-size:var(--t-xl);margin:14px 0 16px}
+.qz-risp{display:grid;gap:10px}
+@media(min-width:720px){.qz-risp{grid-template-columns:repeat(3,1fr)}}
+.qz-r{padding:15px 16px;border-radius:var(--r-sm);background:var(--card);box-shadow:inset 0 0 0 1.5px var(--line2);font-weight:700;
+  text-align:left;min-height:54px;transition:transform .2s,box-shadow .2s}
+.qz-r:hover{transform:translateY(-2px);box-shadow:inset 0 0 0 2px var(--wine)}
+.qz-esito{display:flex;gap:20px;align-items:flex-start;animation:esito .5s ease-out}
+.qz-esito h3{margin:6px 0 8px}
+.qz-esito p{color:var(--muted);font-size:var(--t-sm);line-height:var(--lh-ui);margin-bottom:14px}
+.qz-esito .abb-bott{width:40px;height:96px}
+@keyframes esito{from{opacity:0;transform:translateY(8px)}}
+
+/* ------------------ 11 · carte che si inclinano ------------------ */
+.tilt{position:relative}
+.tilting{transform:perspective(900px) rotateX(var(--rx,0)) rotateY(var(--ry,0));transition:transform .15s ease-out}
+.sheen{position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:2;opacity:0;transition:opacity .3s;
+  background:radial-gradient(circle at var(--mx,50%) var(--my,50%),rgba(255,255,255,.38),rgba(255,255,255,0) 55%)}
+.tilting>.sheen{opacity:1}
+
+/* ------------------ 13 · macchia di vino sul biglietto ------------------ */
+.ticket .tk-main::after{content:"";position:absolute;width:150px;height:150px;right:-34px;top:-38px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'%3E%3Cpath d='M60 12c27 0 47 19 48 46 1 29-20 50-47 50-28 1-49-19-49-47 0-28 20-49 48-49Z' fill='none' stroke='%237A1230' stroke-width='5' stroke-opacity='.55' stroke-dasharray='120 6 40 4 90 8'/%3E%3Cpath d='M60 18c24 0 41 17 42 40' fill='none' stroke='%237A1230' stroke-width='2' stroke-opacity='.35'/%3E%3Ccircle cx='103' cy='84' r='3' fill='%237A1230' fill-opacity='.4'/%3E%3Ccircle cx='96' cy='96' r='1.8' fill='%237A1230' fill-opacity='.35'/%3E%3C/svg%3E") center/contain no-repeat;
+  transform:rotate(18deg);opacity:.5;pointer-events:none}
+
+
+/* schermi stretti: niente parole tagliate */
+@media(max-width:380px){
+  .day-txt small{font-size:10px;letter-spacing:.03em}
+  .day-txt b{font-size:12.5px}
+  .day .bottle{width:22px;height:54px}
+  .piatti{grid-template-columns:1fr}
+}
+@media(max-width:440px){
+  .event{grid-template-columns:54px 1fr;row-gap:8px}
+  .event .seats{grid-column:2;justify-self:start}
+  .event h3{overflow-wrap:anywhere}
+}
+@media (prefers-reduced-motion:reduce){
+  .vino-onda,.calice.gira svg,.calice.gira .vino-gira,.seat.mine svg,.numeri.pieno .n-glass svg,.day.on .bol circle,.abb-bott .bol circle,#ruota.pulse,.qz-esito{animation:none!important}
+  .tilting{transform:none!important}
+}
+.nascosto .vino-onda,.nascosto .bol circle,.fermo .vino-onda,.fermo .bol circle{animation-play-state:paused!important}
+@media print{.calice,.onda,.numeri-sec,#quiz,#aromi,#abbina,#colori,.sheen{display:none!important}}
+
+/* =====================================================================
+   SFONDO CON PROFONDITA' E ANIMAZIONI
+   ===================================================================== */
+/* lo sfondo: tre luci calde che si spostano piano, e una trama leggera
+   di calici, grappoli e foglie, piu' visibile ai bordi che al centro */
+.bg i{display:block;position:absolute;width:72vmax;height:72vmax;border-radius:50%;will-change:transform;
+  animation:deriva 36s ease-in-out infinite alternate}
+.bg i:nth-child(1){left:-28vmax;top:-26vmax;background:radial-gradient(circle,rgba(122,18,48,.20) 0%,rgba(122,18,48,0) 62%)}
+.bg i:nth-child(2){right:-32vmax;top:18vh;background:radial-gradient(circle,rgba(214,168,62,.26) 0%,rgba(214,168,62,0) 60%);animation-duration:43s;animation-delay:-14s}
+.bg i:nth-child(3){left:6vw;bottom:-40vmax;background:radial-gradient(circle,rgba(194,51,86,.15) 0%,rgba(194,51,86,0) 60%);animation-duration:51s;animation-delay:-25s}
+.bg b{display:block;position:absolute;inset:-60px;background:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22280%22 height=%22280%22 viewBox=%220 0 280 280%22%3E%3Cg fill=%22none%22 stroke=%22%237A1230%22 stroke-opacity=%22.085%22 stroke-width=%221.3%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M34 40h28l-3 20a11 11 0 0 1-22 0Z%22/%3E%3Cpath d=%22M48 71v20M40 91h16%22/%3E%3Cg transform=%22translate(190 30)%22%3E%3Ccircle cx=%2220%22 cy=%2214%22 r=%225%22/%3E%3Ccircle cx=%2230%22 cy=%2214%22 r=%225%22/%3E%3Ccircle cx=%2240%22 cy=%2214%22 r=%225%22/%3E%3Ccircle cx=%2225%22 cy=%2223%22 r=%225%22/%3E%3Ccircle cx=%2235%22 cy=%2223%22 r=%225%22/%3E%3Ccircle cx=%2230%22 cy=%2232%22 r=%225%22/%3E%3Cpath d=%22M30 9V2c4-1 9 1 12 4%22/%3E%3C/g%3E%3Cg transform=%22translate(120 150) rotate(-18)%22%3E%3Cpath d=%22M0 30C-2 12 10 0 26 0c2 14-6 28-26 30Z%22/%3E%3Cpath d=%22M0 30C8 20 16 12 24 3%22/%3E%3C/g%3E%3Cg transform=%22translate(40 170)%22%3E%3Cpath d=%22M8 0h8v14c0 5 6 7 6 14v40a3 3 0 0 1-3 3H5a3 3 0 0 1-3-3V28c0-7 6-9 6-14Z%22/%3E%3Cpath d=%22M4 42h16%22/%3E%3C/g%3E%3Cg transform=%22translate(205 190) rotate(12)%22%3E%3Crect x=%220%22 y=%220%22 width=%2214%22 height=%2224%22 rx=%224%22/%3E%3Cpath d=%22M3 6h8M3 12h8M3 18h8%22/%3E%3C/g%3E%3Cpath d=%22M150 60c10-8 22-8 32 0%22 /%3E%3Cpath d=%22M235 120c-6 6-6 14 0 20%22/%3E%3C/g%3E%3C/svg%3E") 0 0/280px 280px repeat;
+  -webkit-mask-image:radial-gradient(ellipse 70% 60% at 50% 40%,transparent 25%,#000 90%);mask-image:radial-gradient(ellipse 70% 60% at 50% 40%,transparent 25%,#000 90%)}
+@keyframes deriva{0%{transform:translate3d(0,0,0) scale(1)}50%{transform:translate3d(7vmax,5vmax,0) scale(1.1)}100%{transform:translate3d(-5vmax,9vmax,0) scale(.94)}}
+@keyframes trama{to{transform:translate3d(-280px,-280px,0)}}
+body{background:linear-gradient(180deg,#F6F1EA 0%,#F3ECE3 45%,#EFE6DB 100%)}
+
+/* fasce a tutta larghezza: rompono la pagina in capitoli */
+.view>section.fascia{content-visibility:visible;position:relative;isolation:isolate}
+.fascia::before{content:"";position:absolute;top:0;bottom:0;left:50%;width:100vw;transform:translateX(-50%);z-index:-1;pointer-events:none}
+.fascia.chiara::before{background:
+  url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22280%22 height=%22280%22 viewBox=%220 0 280 280%22%3E%3Cg fill=%22none%22 stroke=%22%237A1230%22 stroke-opacity=%22.085%22 stroke-width=%221.3%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M34 40h28l-3 20a11 11 0 0 1-22 0Z%22/%3E%3Cpath d=%22M48 71v20M40 91h16%22/%3E%3Cg transform=%22translate(190 30)%22%3E%3Ccircle cx=%2220%22 cy=%2214%22 r=%225%22/%3E%3Ccircle cx=%2230%22 cy=%2214%22 r=%225%22/%3E%3Ccircle cx=%2240%22 cy=%2214%22 r=%225%22/%3E%3Ccircle cx=%2225%22 cy=%2223%22 r=%225%22/%3E%3Ccircle cx=%2235%22 cy=%2223%22 r=%225%22/%3E%3Ccircle cx=%2230%22 cy=%2232%22 r=%225%22/%3E%3Cpath d=%22M30 9V2c4-1 9 1 12 4%22/%3E%3C/g%3E%3Cg transform=%22translate(120 150) rotate(-18)%22%3E%3Cpath d=%22M0 30C-2 12 10 0 26 0c2 14-6 28-26 30Z%22/%3E%3Cpath d=%22M0 30C8 20 16 12 24 3%22/%3E%3C/g%3E%3Cg transform=%22translate(40 170)%22%3E%3Cpath d=%22M8 0h8v14c0 5 6 7 6 14v40a3 3 0 0 1-3 3H5a3 3 0 0 1-3-3V28c0-7 6-9 6-14Z%22/%3E%3Cpath d=%22M4 42h16%22/%3E%3C/g%3E%3Cg transform=%22translate(205 190) rotate(12)%22%3E%3Crect x=%220%22 y=%220%22 width=%2214%22 height=%2224%22 rx=%224%22/%3E%3Cpath d=%22M3 6h8M3 12h8M3 18h8%22/%3E%3C/g%3E%3Cpath d=%22M150 60c10-8 22-8 32 0%22 /%3E%3Cpath d=%22M235 120c-6 6-6 14 0 20%22/%3E%3C/g%3E%3C/svg%3E") 0 0/280px 280px repeat,
+  linear-gradient(180deg,rgba(251,244,233,0) 0%,#FBF2E4 16%,#F8EBDA 84%,rgba(251,244,233,0) 100%)}
+.fascia.scura{color:#F6EDE4}
+.fascia.scura::before{background:
+  radial-gradient(55% 70% at 85% 8%,rgba(214,168,62,.22),rgba(214,168,62,0) 60%),
+  radial-gradient(50% 70% at 8% 92%,rgba(194,51,86,.28),rgba(194,51,86,0) 60%),
+  linear-gradient(165deg,#43122A 0%,#2A0C18 55%,#1C0810 100%);
+  box-shadow:inset 0 30px 40px -30px rgba(0,0,0,.55),inset 0 -30px 40px -30px rgba(0,0,0,.55)}
+.fascia.scura>h2{color:#fff}
+.fascia.scura>.sub{color:rgba(246,237,228,.78)}
+.fascia.scura .ruota-buco{fill:#F8F0E6;stroke:rgba(255,255,255,.4)}
+.fascia.scura #ruota{filter:drop-shadow(0 18px 30px rgba(0,0,0,.45))}
+.fascia.scura .aroma-card{box-shadow:0 20px 40px -20px rgba(0,0,0,.6);color:var(--ink)}
+.fascia.scura .aro-chips button{background:rgba(255,255,255,.08);color:#F6EDE4;box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.18)}
+.fascia.scura .aro-chips button i{box-shadow:0 0 0 1.5px rgba(255,255,255,.55)}
+.fascia.scura .aro-chips button[aria-pressed="true"]{background:#F8F0E6;color:var(--ink);box-shadow:inset 0 0 0 2px var(--c)}
+/* riflesso che passa sulla fascia scura */
+/* il riflesso si sposta con transform: lo muove la scheda grafica, senza ridisegnare la fascia */
+.fascia.scura{overflow-x:clip}
+.fascia.scura::after{content:"";position:absolute;top:0;bottom:0;left:50%;width:60vw;z-index:-1;pointer-events:none;will-change:transform;
+  background:linear-gradient(105deg,transparent 30%,rgba(255,255,255,.06) 50%,transparent 70%);
+  transform:translateX(-160vw);animation:luce 14s ease-in-out infinite}
+@keyframes luce{0%,15%{transform:translateX(-160vw)}60%,100%{transform:translateX(110vw)}}
+
+/* onde: un secondo livello che scorre lento */
+.onda{overflow:hidden}
+.onda i{position:absolute;left:0;top:0;bottom:0;width:200%;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 60' preserveAspectRatio='none'%3E%3Cpath d='M0 34 C100 14 200 54 300 34 S500 14 600 34 V60 H0Z' fill='%237A1230' fill-opacity='.08'/%3E%3C/svg%3E") 0 0/50% 100% repeat-x;animation:ondeggia 26s linear infinite}
+@keyframes ondeggia{to{transform:translateX(-50%)}}
+
+/* mentre scorri, le decorazioni che si muovono da sole si fermano un attimo:
+   la pagina scorre liscia anche sui telefoni meno potenti */
+.scorre .bg i,.scorre .onda i,.scorre .fascia.scura::after,.scorre .bubbles i,.scorre .sala-wrap::before,.scorre .vino-onda{animation-play-state:paused!important}
+/* ---------------- comparsa allo scorrimento ---------------- */
+.anima .rivela{opacity:0;transform:translate3d(0,22px,0);transition:opacity .75s cubic-bezier(.2,.7,.2,1),transform .75s cubic-bezier(.2,.7,.2,1);transition-delay:calc(var(--d,0) * 90ms)}
+.anima .rivela.visto{opacity:1;transform:none}
+/* il tralcio sotto i titoli si disegna da sinistra */
+.anima h2.rivela::after{clip-path:inset(0 100% 0 0);transition:clip-path 1.1s .35s cubic-bezier(.6,0,.2,1)}
+.anima h2.rivela.visto::after{clip-path:inset(0 0 0 0)}
+
+/* ---------------- ruota degli aromi ---------------- */
+.aromi.visto #ruota{animation:ruotaIn 1.3s cubic-bezier(.2,.8,.2,1) both}
+@keyframes ruotaIn{from{transform:rotate(-140deg) scale(.55);opacity:0}to{transform:none;opacity:1}}
+.aromi.visto .spicchio path{animation:spicchioIn .6s both}
+.aromi.visto .spicchio:nth-child(2) path{animation-delay:.08s}.aromi.visto .spicchio:nth-child(3) path{animation-delay:.16s}.aromi.visto .spicchio:nth-child(4) path{animation-delay:.24s}
+.aromi.visto .spicchio:nth-child(5) path{animation-delay:.32s}.aromi.visto .spicchio:nth-child(6) path{animation-delay:.4s}.aromi.visto .spicchio:nth-child(7) path{animation-delay:.48s}.aromi.visto .spicchio:nth-child(8) path{animation-delay:.56s}
+@keyframes spicchioIn{from{opacity:0}}
+.spicchio{transform-origin:0 0}
+.spicchio:hover{transform:scale(1.035)}
+.spicchio.on{transform:scale(1.07);animation:spicchioPop .45s cubic-bezier(.3,1.6,.5,1)}
+@keyframes spicchioPop{from{transform:scale(1)}}
+.spicchio.on circle{animation:seme 1.6s ease-in-out infinite}
+@keyframes seme{50%{r:6.2;opacity:1}}
+.ruota-c.cambia{animation:etichetta .45s ease-out}
+@keyframes etichetta{from{opacity:0;transform:scale(.85)}}
+.aroma-card>*{animation:sale .5s both}
+.aroma-card>*:nth-child(2){animation-delay:.06s}.aroma-card>*:nth-child(3){animation-delay:.12s}.aroma-card>*:nth-child(4){animation-delay:.18s}
+@keyframes sale{from{opacity:0;transform:translateY(10px)}}
+
+/* ---------------- colori ---------------- */
+.colori.visto .col-sw i{animation:sorgeColore .7s cubic-bezier(.2,.8,.2,1) both;transform-origin:50% 100%}
+.colori.visto .col-sw:nth-child(2) i{animation-delay:.07s}.colori.visto .col-sw:nth-child(3) i{animation-delay:.14s}.colori.visto .col-sw:nth-child(4) i{animation-delay:.21s}
+@keyframes sorgeColore{from{transform:scaleY(0);opacity:.3}}
+.col-sw i{position:relative;overflow:hidden}
+.col-sw.on i::after{content:"";position:absolute;inset:-20% -60%;background:linear-gradient(100deg,transparent 40%,rgba(255,255,255,.55) 50%,transparent 60%);animation:luccica 1.1s ease-out}
+@keyframes luccica{from{transform:translateX(-60%)}to{transform:translateX(60%)}}
+.col-goccia{animation:cade .7s cubic-bezier(.3,1.4,.5,1) both}
+@keyframes cade{0%{transform:translateY(-38px) scale(.6);opacity:0}60%{opacity:1}100%{transform:none}}
+.col-read>div{animation:sale .45s .1s both}
+
+/* ---------------- abbinamenti ---------------- */
+.piatti.visto .piatto{animation:sale .5s both}
+.piatti.visto .piatto:nth-child(2){animation-delay:.05s}.piatti.visto .piatto:nth-child(3){animation-delay:.1s}.piatti.visto .piatto:nth-child(4){animation-delay:.15s}
+.piatti.visto .piatto:nth-child(5){animation-delay:.2s}.piatti.visto .piatto:nth-child(6){animation-delay:.25s}.piatti.visto .piatto:nth-child(7){animation-delay:.3s}.piatti.visto .piatto:nth-child(8){animation-delay:.35s}
+.piatto.on .pt-ic{animation:piroetta .6s cubic-bezier(.3,1.5,.5,1)}
+@keyframes piroetta{from{transform:rotate(-30deg) scale(.7)}}
+.abb-card>div{animation:sale .5s .12s both}
+.abb-card .abb-bott{animation:inclina .9s cubic-bezier(.3,1.3,.5,1) both;transform-origin:50% 100%}
+@keyframes inclina{0%{transform:rotate(-24deg) translateY(-8px);opacity:0}100%{transform:none;opacity:1}}
+.abb-card .liquido,.qz-esito .liquido{animation:riempiBottiglia 1.1s .25s cubic-bezier(.2,.8,.2,1) both}
+@keyframes riempiBottiglia{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+
+/* ---------------- quiz ---------------- */
+.quiz>*{animation:entraDx .45s cubic-bezier(.2,.8,.2,1) both}
+@keyframes entraDx{from{opacity:0;transform:translateX(26px)}}
+.qz-r{animation:sale .45s both}
+.qz-r:nth-child(2){animation-delay:.07s}.qz-r:nth-child(3){animation-delay:.14s}
+.qz-bar i{transition:background .4s}
+.qz-bar i.now{animation:battito 1.4s ease-in-out infinite}
+@keyframes battito{50%{opacity:.45}}
+.qz-r:active{transform:scale(.97)}
+.qz-esito .tagline{animation:sale .4s .2s both}.qz-esito h3{animation:sale .45s .3s both}.qz-esito p,.qz-esito .go{animation:sale .45s .4s both}
+
+/* ---------------- prenota: bottiglie, date, sala ---------------- */
+.day .bottle{transition:transform .35s cubic-bezier(.3,1.4,.5,1);transform-origin:50% 100%}
+.day:hover .bottle{transform:rotate(-6deg)}
+.day.on .bottle{animation:brindisi .8s cubic-bezier(.3,1.3,.5,1)}
+@keyframes brindisi{0%{transform:rotate(0)}30%{transform:rotate(-12deg)}60%{transform:rotate(7deg)}100%{transform:none}}
+.dchip{animation:sale .4s both;animation-delay:calc(var(--n,0) * 45ms)}
+.book-info.cambia{animation:sale .45s both}
+.sala.entra .seat{animation:sedia .45s both;animation-delay:calc(var(--n,0) * 14ms)}
+@keyframes sedia{from{opacity:0;transform:translateY(8px) scale(.7)}}
+.seat.mine svg{animation:none}
+.seat.mine.nuovo svg{animation:versa .55s both}
+.bs-tot b{display:inline-block;animation:conto .35s cubic-bezier(.3,1.6,.5,1)}
+@keyframes conto{from{transform:scale(.86)}}
+.sala-wrap{position:relative;overflow:hidden}
+.sala-wrap::before{content:"";position:absolute;left:50%;top:-40%;width:60%;height:80%;transform:translateX(-50%);pointer-events:none;
+  background:radial-gradient(closest-side,rgba(240,197,68,.18),rgba(240,197,68,0));animation:lampadario 6s ease-in-out infinite alternate}
+@keyframes lampadario{from{opacity:.55}to{opacity:1}}
+
+/* ---------------- biglietto, prossime serate ---------------- */
+.ticket .tk-main::after{animation:macchia 1.1s .5s cubic-bezier(.2,.8,.2,1) both}
+@keyframes macchia{from{opacity:0;transform:rotate(-30deg) scale(.6)}to{opacity:.5;transform:rotate(18deg)}}
+.events.visto .event{animation:sale .5s both}
+.events.visto .event:nth-child(2){animation-delay:.06s}.events.visto .event:nth-child(3){animation-delay:.12s}.events.visto .event:nth-child(4){animation-delay:.18s}.events.visto .event:nth-child(5){animation-delay:.24s}.events.visto .event:nth-child(6){animation-delay:.3s}
+.event:hover{transform:translateY(-2px)}
+
+/* risparmio: animazioni ferme fuori schermo, con la scheda nascosta o con "riduci movimento" */
+.nascosto .bg i,.nascosto .bg b,.nascosto .onda i,.nascosto .fascia.scura::after,.fermo .onda i,.fermo.onda i,.onda.fermo i,
+.nascosto .sala-wrap::before,.nascosto .qz-bar i.now,.nascosto .spicchio.on circle{animation-play-state:paused!important}
+@media (prefers-reduced-motion:reduce){
+  .bg i,.bg b,.onda i,.fascia.scura::after,.sala-wrap::before,.qz-bar i.now,.spicchio.on circle,
+  .aromi.visto #ruota,.aromi.visto .spicchio path,.colori.visto .col-sw i,.piatti.visto .piatto,.events.visto .event,
+  .aroma-card>*,.col-read>div,.col-goccia,.abb-card>div,.abb-card .abb-bott,.abb-card .liquido,.qz-esito .liquido,.quiz>*,.qz-r,
+  .dchip,.sala.entra .seat,.seat.mine.nuovo svg,.bs-tot b,.ticket .tk-main::after,.day.on .bottle,.book-info.cambia,.ruota-c.cambia{animation:none!important}
+}
+@media print{.anima .rivela{opacity:1!important;transform:none!important}.bg,.onda{display:none!important}.fascia::before,.fascia::after{display:none!important}.fascia.scura{color:inherit}}
+
+/* =====================================================================
+   RACCONTI A SCORRIMENTO
+   ===================================================================== */
+.view>section.racconto{content-visibility:visible}
+.ra{display:grid;gap:18px;margin-top:6px;position:relative}
+@media(min-width:860px){.ra{grid-template-columns:minmax(260px,380px) 1fr;gap:56px;align-items:start}}
+.ra-palco{position:sticky;top:10px;z-index:3;display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:14px;
+  padding:12px 16px;border-radius:var(--r);background:
+  radial-gradient(120% 140% at 15% 50%,var(--pc,rgba(201,161,59,.2)) 0%,rgba(255,255,255,0) 60%),#FDF9F3;
+  box-shadow:0 1px 0 rgba(255,255,255,.9) inset,0 12px 30px -16px rgba(45,28,18,.35);transition:background .8s}
+@media(min-width:860px){
+  .ra-palco{top:13vh;height:72vh;grid-template-columns:1fr;grid-template-rows:1fr auto auto;justify-items:center;align-content:center;
+    background:radial-gradient(closest-side,var(--pc,rgba(201,161,59,.2)) 0%,rgba(255,255,255,0) 100%);box-shadow:none;padding:0}
+}
+.ra-scena{position:relative;display:flex;align-items:center;gap:10px}
+.ra-calice{width:96px;height:156px;overflow:visible;transform-origin:50% 90%}
+@media(min-width:860px){.ra-calice{width:auto;height:min(46vh,380px)}}
+.ra-vetro{fill:rgba(255,255,255,.55)}
+.ra-bordo{fill:none;stroke:#5A2236;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.ra-riflesso{fill:none;stroke:rgba(255,255,255,.75);stroke-width:3;stroke-linecap:round}
+.ra-vino{fill:var(--vc,#9B1B3A);transition:fill .9s ease}
+.ra-liv{transform:translateY(calc(30px + (1 - var(--lv,0)) * 100px));transition:transform 1.1s cubic-bezier(.3,1.2,.5,1)}
+.ra-mosso{transform-origin:80px 0}
+.ra-palco.scossa .ra-mosso{animation:onda-ra 1.3s ease-in-out}
+@keyframes onda-ra{0%,100%{transform:none}25%{transform:rotate(-7deg)}55%{transform:rotate(5deg)}80%{transform:rotate(-2deg)}}
+.ra-palco.scossa .ra-calice{animation:oscilla 1.1s ease-in-out}
+@keyframes oscilla{0%,100%{transform:none}30%{transform:rotate(-4deg)}65%{transform:rotate(3deg)}}
+.ra-palco.brinda .ra-calice{transform:rotate(-12deg);transition:transform .8s cubic-bezier(.3,1.4,.5,1)}
+.ra-bolle circle{fill:#fff;opacity:0}
+.ra-palco.bolle .ra-bolle circle{animation:bolla-ra 2.4s infinite ease-in}
+.ra-bolle circle:nth-child(2){animation-delay:.5s!important}.ra-bolle circle:nth-child(3){animation-delay:1s!important}
+.ra-bolle circle:nth-child(4){animation-delay:1.5s!important}.ra-bolle circle:nth-child(5){animation-delay:1.9s!important}
+@keyframes bolla-ra{0%{opacity:0;transform:translateY(0)}15%{opacity:.9}100%{opacity:0;transform:translateY(-70px)}}
+.ra-orologio{width:46px;height:46px;flex:none}
+@media(min-width:860px){.ra-orologio{position:absolute;right:-96px;top:14%;width:80px;height:80px;filter:drop-shadow(0 8px 14px rgba(45,28,18,.18))}}
+.ra-orologio circle:first-child{fill:#fff;stroke:#5A2236;stroke-width:2}
+.ra-orologio path{stroke:#5A2236;stroke-width:2;stroke-linecap:round;fill:none}
+.ra-ore,.ra-min{transform-origin:30px 30px;transition:transform 1s cubic-bezier(.3,1.2,.5,1)}
+.ra-ore{transform:rotate(var(--hr,0deg));stroke-width:3!important}
+.ra-min{transform:rotate(var(--mr,0deg));stroke:var(--wine)!important}
+.ra-perno{fill:#5A2236}
+.ra-testa{display:grid;gap:2px;min-width:0}
+@media(min-width:860px){.ra-testa{text-align:center;margin-top:10px}}
+.ra-lab{font-family:var(--serif);font-weight:700;font-size:clamp(30px,8vw,64px);line-height:1;color:var(--ink)}
+.ra-lab.cambia{animation:sale .5s ease-out}
+.ra-sotto{font-size:var(--t-micro);text-transform:uppercase;letter-spacing:.12em;font-weight:800;color:var(--faint)}
+.ra-punti{display:grid;gap:7px;justify-items:center}
+@media(min-width:860px){.ra-punti{grid-auto-flow:column;margin-top:14px}}
+.ra-punti i{width:8px;height:8px;border-radius:9px;background:var(--line2);transition:all .35s}
+.ra-punti i.fatto{background:var(--gold)}
+.ra-punti i.on{background:var(--wine);height:22px}
+@media(min-width:860px){.ra-punti i.on{height:8px;width:24px}}
+.ra-capitoli{display:grid}
+.cap{min-height:58vh;display:grid;align-content:center;padding:10px 0}
+.cap:last-child{min-height:44vh}
+@media(min-width:860px){.cap{min-height:74vh}.cap:last-child{min-height:60vh}}
+.cap-in{background:var(--card);border-radius:var(--r);padding:var(--s5);box-shadow:0 1px 0 rgba(255,255,255,.9) inset,0 8px 22px -10px rgba(45,28,18,.18);
+  opacity:.55;transform:scale(.97);transition:opacity .5s,transform .5s,box-shadow .5s}
+.cap.ora .cap-in{opacity:1;transform:none;box-shadow:0 1px 0 rgba(255,255,255,.9) inset,0 18px 40px -16px rgba(45,28,18,.3)}
+.cap-in h3{font-size:var(--t-2xl);margin:8px 0 8px}
+.cap-sum{color:var(--muted);font-size:var(--t-md);line-height:var(--lh-ui)}
+.cap-apri{margin-top:12px;font-size:var(--t-xs);font-weight:800;color:var(--wine);padding:6px 0;min-height:36px}
+.cap.aperto .cap-apri{display:none}
+.cap-piu{display:grid;grid-template-rows:0fr;opacity:0;transition:grid-template-rows .7s cubic-bezier(.2,.8,.2,1),opacity .6s .1s}
+.cap-piu>*{overflow:hidden;min-height:0}
+.cap.aperto .cap-piu{grid-template-rows:1fr;opacity:1}
+.cap-piu ul{margin-top:14px}
+.cap-piu li{opacity:0;transform:translateX(-8px);transition:opacity .45s,transform .45s}
+.cap.aperto .cap-piu li{opacity:1;transform:none}
+.cap.aperto .cap-piu li:nth-child(2){transition-delay:.08s}.cap.aperto .cap-piu li:nth-child(3){transition-delay:.16s}.cap.aperto .cap-piu li:nth-child(4){transition-delay:.24s}
+.cap-piu .btn{margin-top:14px}
+.cap-piu>div{padding-bottom:4px}
+.scorre .ra-bolle circle,.fermo .ra-bolle circle,.nascosto .ra-bolle circle{animation-play-state:paused!important}
+@media (prefers-reduced-motion:reduce){
+  .ra-liv,.ra-vino,.cap-in,.cap-piu,.cap-piu li,.ra-ore,.ra-min{transition:none!important}
+  .ra-palco.scossa .ra-mosso,.ra-palco.scossa .ra-calice,.ra-palco.bolle .ra-bolle circle,.ra-lab.cambia{animation:none!important}
+  .cap{min-height:0}.cap-in{opacity:1;transform:none}
+}
+@media print{.ra-palco{display:none}.cap{min-height:0}.cap-piu{grid-template-rows:1fr;opacity:1}.cap-piu li{opacity:1;transform:none}}
+
+/* =====================================================================
+   BONIFICO: intestazione, passi, dati da copiare, GiroCode
+   ===================================================================== */
+.pm-detail.bank{background:linear-gradient(180deg,#FBF4E8 0%,#F6EAD6 100%);padding:14px}
+.bn{display:grid;gap:14px}
+.bn-head{position:relative;overflow:hidden;display:grid;gap:4px;padding:18px 20px 20px;border-radius:18px;color:#fff;
+  background:radial-gradient(120% 120% at 100% 0%,rgba(240,197,68,.28),rgba(240,197,68,0) 55%),linear-gradient(140deg,#8E1838 0%,#5B1430 60%,#3E0F22 100%);
+  box-shadow:0 14px 30px -14px rgba(74,18,38,.7)}
+.bn-badge{justify-self:start;display:inline-flex;align-items:center;gap:6px;background:rgba(240,197,68,.18);color:#F7D46A;
+  border-radius:999px;padding:5px 11px 5px 8px;font-size:12px;font-weight:800;letter-spacing:.02em}
+.bn-badge svg{width:14px;height:14px;fill:#F7D46A}
+.bn-da{margin-top:8px;font-size:var(--t-micro);text-transform:uppercase;letter-spacing:.12em;font-weight:800;color:rgba(255,255,255,.7)}
+.bn-imp{font-family:var(--serif);font-size:clamp(36px,9vw,48px);line-height:1.05;color:#fff;letter-spacing:-.01em;animation:conto .5s cubic-bezier(.3,1.6,.5,1)}
+.bn-cosa{font-size:var(--t-xs);color:rgba(255,255,255,.78);line-height:var(--lh-ui)}
+.bn-head i{position:absolute;border-radius:50%;background:rgba(255,255,255,.14);pointer-events:none;animation:bolla-bn 5s ease-in infinite}
+.bn-b1{width:10px;height:10px;right:18%;bottom:-12px}.bn-b2{width:6px;height:6px;right:30%;bottom:-12px;animation-delay:1.6s!important}
+.bn-b3{width:14px;height:14px;right:9%;bottom:-16px;animation-delay:3.1s!important}
+@keyframes bolla-bn{0%{transform:translateY(0);opacity:0}15%{opacity:1}100%{transform:translateY(-140px);opacity:0}}
+.bn-passi{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,1fr);gap:8px;counter-reset:bn}
+.bn-passi li{counter-increment:bn;position:relative;background:#fff;border-radius:14px;padding:30px 10px 10px;font-size:12.5px;font-weight:700;line-height:1.3;color:var(--ink);text-align:center}
+.bn-passi li::before{content:counter(bn);position:absolute;top:8px;left:50%;transform:translateX(-50%);width:20px;height:20px;border-radius:50%;
+  background:var(--gold);color:#fff;font-size:11px;display:grid;place-items:center;font-weight:800}
+.bn-corpo{display:grid;gap:14px}
+.bn-dati{display:grid;gap:8px}
+.bn-tap{font-size:var(--t-micro);text-transform:uppercase;letter-spacing:.1em;font-weight:800;color:var(--gold-ink);padding-left:4px}
+.bn-tile{display:grid;grid-template-columns:38px 1fr auto;align-items:center;gap:12px;width:100%;text-align:left;padding:11px 14px;
+  background:#fff;border-radius:14px;box-shadow:0 1px 0 rgba(255,255,255,.9) inset,0 4px 12px -6px rgba(45,28,18,.18);
+  transition:transform .2s,box-shadow .2s,background .3s;min-height:58px}
+.bn-tile:not(:disabled):hover{transform:translateY(-2px);box-shadow:0 10px 20px -10px rgba(45,28,18,.3)}
+.bn-tile:not(:disabled):active{transform:scale(.98)}
+.bn-tile:disabled{cursor:default}
+.bn-ic{width:38px;height:38px;border-radius:11px;background:var(--wine-soft);color:var(--wine);display:grid;place-items:center;transition:background .3s,color .3s}
+.bn-ic svg,.bn-cp svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.bn-txt{display:grid;gap:1px;min-width:0}
+.bn-lab{font-size:11px;text-transform:uppercase;letter-spacing:.1em;font-weight:800;color:var(--muted)}
+.bn-val{font-family:var(--serif);font-weight:700;font-size:17px;color:var(--ink);overflow-wrap:anywhere;line-height:1.25}
+.bn-val.ph{color:var(--faint)}
+.bn-cp{color:var(--faint);transition:color .3s,transform .3s}
+.bn-tile.ok{background:var(--green-soft)}
+.bn-tile.ok .bn-ic{background:var(--green);color:#fff}
+.bn-tile.ok .bn-lab{color:var(--green-ink)}
+.bn-tile.ok .bn-cp{color:var(--green);transform:scale(1.2)}
+.bn-tile.ok{animation:copiato .45s cubic-bezier(.3,1.6,.5,1)}
+@keyframes copiato{40%{transform:scale(1.02)}}
+.bn-qr{display:grid;justify-items:center;gap:10px;text-align:center;background:#fff;border-radius:18px;padding:18px 16px;
+  box-shadow:0 1px 0 rgba(255,255,255,.9) inset,0 8px 20px -10px rgba(45,28,18,.25)}
+.bn-qr-t{font-family:var(--serif);font-size:var(--t-lg)}
+.bn-cornice{position:relative;padding:10px;overflow:hidden;border-radius:6px;
+  background:
+   linear-gradient(var(--wine),var(--wine)) top left/24px 3px no-repeat,linear-gradient(var(--wine),var(--wine)) top left/3px 24px no-repeat,
+   linear-gradient(var(--wine),var(--wine)) top right/24px 3px no-repeat,linear-gradient(var(--wine),var(--wine)) top right/3px 24px no-repeat,
+   linear-gradient(var(--wine),var(--wine)) bottom left/24px 3px no-repeat,linear-gradient(var(--wine),var(--wine)) bottom left/3px 24px no-repeat,
+   linear-gradient(var(--wine),var(--wine)) bottom right/24px 3px no-repeat,linear-gradient(var(--wine),var(--wine)) bottom right/3px 24px no-repeat}
+.bn-cornice .giro-qr{width:min(220px,calc(100vw - 160px));height:auto;aspect-ratio:1;padding:0;border-radius:0}
+@media(hover:hover) and (pointer:fine){.bn-cornice .giro-qr{width:270px;height:270px}}
+.bn-scan{position:absolute;inset:10px;pointer-events:none;
+  background:linear-gradient(180deg,rgba(194,51,86,0) 0,rgba(194,51,86,0) calc(100% - 26px),rgba(194,51,86,.16) calc(100% - 3px),rgba(122,18,48,.8) calc(100% - 2px),rgba(122,18,48,.8) 100%);
+  animation:scansione 2.8s ease-in-out infinite alternate}
+@keyframes scansione{from{transform:translateY(-100%)}to{transform:none}}
+
+.bn-cornice.vuota{width:200px;height:200px;display:grid;place-items:center;background-color:var(--bg)}
+.bn-cornice.vuota span{font-family:var(--serif);font-size:44px;color:var(--line2)}
+.bn-qr-s{font-size:var(--t-xs);color:var(--muted);line-height:var(--lh-ui);max-width:34ch}
+.bn-banche{font-size:11.5px;color:var(--faint);line-height:var(--lh-ui);max-width:36ch}
+.bn-save{min-height:44px}
+/* computer: il QR davanti; telefono: prima i dati da copiare, il QR sotto */
+@media(min-width:700px) and (hover:hover) and (pointer:fine){.bn-qr{order:-1}.bn-save{display:none}}
+.pm-detail.bank>.pm-note,.bn>.pm-note{margin-top:2px;padding:0 4px}
+@media(max-width:380px){.bn-passi{grid-template-columns:1fr}.bn-passi li{padding:10px 10px 10px 40px;text-align:left}.bn-passi li::before{left:12px;top:50%;transform:translateY(-50%)}}
+.scorre .bn-head i,.scorre .bn-scan,.nascosto .bn-head i,.nascosto .bn-scan{animation-play-state:paused!important}
+@media (prefers-reduced-motion:reduce){.bn-head i,.bn-scan,.bn-imp,.bn-tile.ok{animation:none!important}.bn-scan{display:none}}
+@media print{.bn-scan,.bn-save,.bn-head i{display:none}}
+
+/* QR caldo: cornice in tinta */
+.bn-cornice{background-color:#FFF8EE}
+.bn-cornice .giro-qr{background:transparent}
+.bn-cornice .giro-qr svg{filter:drop-shadow(0 6px 14px rgba(122,18,48,.16))}
+.bn-scad{display:flex;align-items:center;gap:10px;margin:0;padding:11px 14px;border-radius:14px;background:#FFF1D6;color:var(--gold-ink);
+  font-size:var(--t-sm);font-weight:700;line-height:var(--lh-snug);box-shadow:inset 0 0 0 1.5px rgba(169,118,44,.28)}
+.bn-scad svg{width:20px;height:20px;flex:none;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.ticket .qr svg rect:first-child{fill:#FFF8EE}
+</style>
+
+<!-- Come Google capisce chi sei. Cambia indirizzo, telefono e quartieri
+     quando li hai: i prezzi li legge da qui, quindi se tocchi il listino
+     ricordati di allinearli. -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "LocalBusiness",
+  "@id": "https://lartedelvino.de/#attivita",
+  "name": "L'Arte del Vino",
+  "description": "Degustazioni guidate di vino da Partenope 081 a Berlino, corsi serali, ripetizioni WSET e formazione per il personale di sala.",
+  "url": "https://lartedelvino.de/",
+  "email": "christian@lartedelvino.de",
+  "image": "https://lartedelvino.de/logo-icona.png",
+  "founder": { "@type": "Person", "name": "Christian Scognamiglio", "jobTitle": "Sommelier",
+    "knowsLanguage": ["it", "de", "es", "en"],
+    "hasCredential": { "@type": "EducationalOccupationalCredential",
+      "name": "WSET Level 2 Award in Wines", "credentialCategory": "certificate" } },
+  "areaServed": { "@type": "City", "name": "Berlin", "address":
+    { "@type": "PostalAddress", "addressLocality": "Berlin", "addressCountry": "DE" } },
+  "knowsLanguage": ["it", "de", "es", "en"],
+  "priceRange": "49-354 EUR",
+  "currenciesAccepted": "EUR",
+  "paymentAccepted": "Bonifico",
+  "hasOfferCatalog": {
+    "@type": "OfferCatalog", "name": "Servizi",
+    "itemListElement": [
+      { "@type": "Offer", "priceCurrency": "EUR", "price": "49",
+        "eligibleQuantity": { "@type": "QuantitativeValue", "unitText": "a persona" },
+        "itemOffered": { "@type": "Service", "name": "Degustazione guidata di vino",
+          "description": "Sei vini, due ore, da Partenope 081. Bottiglie, bicchieri e schede inclusi." } },
+      { "@type": "Offer", "priceCurrency": "EUR", "price": "49",
+        "itemOffered": { "@type": "Service", "name": "Corso serale di vino",
+          "description": "Quattro incontri serali per piccoli gruppi." } },
+      { "@type": "Offer", "priceCurrency": "EUR", "price": "49",
+        "itemOffered": { "@type": "Service", "name": "Ripetizioni WSET Level 1 e 2",
+          "description": "Preparazione all'esame in italiano, tedesco, spagnolo o inglese." } },
+      { "@type": "Offer", "priceCurrency": "EUR", "price": "150",
+        "eligibleQuantity": { "@type": "QuantitativeValue", "unitText": "a sessione" },
+        "itemOffered": { "@type": "Service", "name": "Formazione per il personale di sala",
+          "description": "Carta dei vini, abbinamenti e servizio per ristoranti e aziende." } }
+    ]
+  }
+}
+</script>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs>
+  <symbol id="gl" viewBox="0 0 24 24"><path style="fill:var(--wf,transparent);stroke:none" d="M7.6 6.4h8.8l-.9 4.4a3.6 3.6 0 0 1-7 0Z"/><path style="fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round" d="M7 3h10l-1.2 7.2a3.8 3.8 0 0 1-7.6 0ZM12 14v6M8.5 20h7"/></symbol>
+</defs></svg>
+<div id="progress"></div>
+<div id="promobar" hidden></div>
+
+
+<aside id="chat" hidden>
+  <header>
+    <span class="ava"><img class="ava-art" src="" alt="" aria-hidden="true"></span>
+    <span class="who"><b data-i="chT">Chiedi pure</b><small data-i="chS">Risposte rapide dalle FAQ · Christian risponde su WhatsApp</small></span>
+    <button class="x" id="chatx" aria-label="Chiudi">×</button>
+  </header>
+  <div class="msgs" id="msgs" aria-live="polite"></div>
+  <div class="chips" id="chatchips"></div>
+  <div class="ask">
+    <input id="chatin" type="text" autocomplete="off">
+    <button id="chatsend" aria-label="Invia"><svg viewBox="0 0 24 24"><path d="M21 3 10.5 13.5M21 3 14 21l-3.5-7.5L3 10Z"/></svg></button>
+  </div>
+  <a class="wa" id="chatwa" href="https://wa.me/4915207030279"><svg viewBox="0 0 24 24"><path d="M4 20l1.3-3.8A8 8 0 1 1 8 19z"/></svg><span data-i="chWA">Scrivi a Christian su WhatsApp</span></a>
+</aside>
+
+<div class="bg" aria-hidden="true"><i></i><i></i><i></i><b></b></div>
+<div id="loader" aria-hidden="true">
+  <div class="ld-art"><img class="ld-back" src="" alt=""><img class="ld-fill" src="" alt=""></div>
+  <span data-i="loading">Un attimo, verso…</span>
+</div>
+<noscript>
+  <div style="background:#4A1226;color:#fff;padding:18px 20px;font:600 16px/1.5 system-ui,sans-serif;text-align:center">
+    Questo sito ha bisogno di JavaScript per funzionare. Attivalo, oppure scrivimi
+    direttamente a <a href="mailto:christian@lartedelvino.de" style="color:#E8C87A">christian@lartedelvino.de</a>.
+    <br><span lang="de">Diese Seite braucht JavaScript. Bitte aktivieren \u2014 oder schreib mir einfach.</span>
+  </div>
+</noscript>
+<header class="top">
+  <a class="brand" href="#home"><img class="brand-art" src="" alt="" aria-hidden="true"><span class="brand-txt"><b>L'Arte del Vino</b><small>Christian Scognamiglio</small></span></a>
+  <div class="lang"><button data-lang="it" aria-pressed="true">IT</button><button data-lang="de" aria-pressed="false">DE</button></div>
+</header>
+<div id="dockbar">
+<nav id="dock" aria-label="menu">
+  <a href="#home" data-view="home" aria-label="Home"><svg viewBox="0 0 24 24" class="i-home" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10.5V20h13v-9.5"/><path d="M10 20v-5h4v5"/></svg><span data-i="nav1">Home</span></a>
+  <a href="#privati" data-view="privati" aria-label="Privati"><svg viewBox="0 0 24 24" class="i-glass" aria-hidden="true"><path class="wine" d="M7.9 7.5h8.2l-.5 2.7a3.8 3.8 0 0 1-7.2 0Z"/><path d="M7 3h10l-1.2 7.2a3.8 3.8 0 0 1-7.6 0Z"/><path d="M12 14v6"/><path d="M8.5 20h7"/></svg><span data-i="nav2">Privati</span></a>
+  <a href="#ristoranti" data-view="ristoranti" aria-label="Ristoranti"><svg viewBox="0 0 24 24" class="i-cibo" aria-hidden="true"><g class="fork"><path d="M6 3v7a2 2 0 0 0 2 2v9"/><path d="M6 3v5M10 3v5"/><path d="M10 3v7a2 2 0 0 1-2 2"/></g><g class="knife"><path d="M17 3c-1.7 1-2.5 3-2.5 6 0 1.8 1 2.6 2.5 3v9"/></g></svg><span data-i="nav3">Ristoranti</span></a>
+  <a href="#info" data-view="info" aria-label="Info"><svg viewBox="0 0 24 24" class="i-info" aria-hidden="true"><circle class="ring" cx="12" cy="12" r="9"/><path d="M12 11v5"/><path class="dot" d="M12 8h.01"/></svg><span data-i="nav4">Info</span></a>
+  <a href="#contatto" data-view="contatto" class="cta" aria-label="Richiedi"><svg viewBox="0 0 24 24" class="i-send" aria-hidden="true"><g class="plane"><path d="M21 3 10.5 13.5"/><path d="M21 3 14 21l-3.5-7.5L3 10Z"/></g></svg><span data-i="nav5">Richiedi</span></a>
+</nav>
+<div id="aux"><button id="cartbtn" aria-label="Carrello">
+  <svg viewBox="0 0 24 24" aria-hidden="true"><path class="basket" d="M4.5 8.5h15l-1.4 9.2a2 2 0 0 1-2 1.7H7.9a2 2 0 0 1-2-1.7Z"/><path class="handle" d="M8.8 8.5a3.2 3.2 0 0 1 6.4 0"/><circle class="bot" cx="10" cy="13" r=".9"/><circle class="bot2" cx="14" cy="13" r=".9"/></svg>
+  <span class="lab" data-i="caShort">Carrello</span><span class="badge" id="cartbadge">0</span>
+</button>
+<button id="chatbtn" aria-label="Chat" aria-expanded="false">
+  <svg viewBox="0 0 24 24" aria-hidden="true"><path class="bubble" d="M4 5.5h16v11H9l-5 3.5V5.5Z"/><circle class="d1" cx="9" cy="11" r="1.2"/><circle class="d2" cx="12.5" cy="11" r="1.2"/><circle class="d3" cx="16" cy="11" r="1.2"/></svg>
+  <span class="lab" data-i="chatL">Chat</span><span class="badge" id="chatbadge">1</span>
+</button></div>
+</div>
+
+<!-- ============ VISTE: una sola visibile alla volta (router in fondo) ============ -->
+<main id="v-home" class="view">
+
+<header class="hero" style="--pic:url(foto/sfondo-testata.jpg)"><div class="bubbles" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="wrap">
+  <div class="pill" data-i="pill">Berlino · WSET Level 2 · 4 lingue</div>
+  <h1><span data-i="h1a">Il vino spiegato</span> <i data-i="h1b">a tavola.</i></h1>
+  <p data-i="lede">Tre serate fisse a settimana da Partenope 081: il lunedì il vino, il martedì lo Champagne, il mercoledì i vini fortificati. Quaranta posti, alle 18:00, con un sommelier che spiega senza salire in cattedra. E per ristoranti e aziende, formazione su misura.</p>
+  <div class="btns"><a class="btn" href="#privati/p-prenota" data-i="ctaBook">Prenota un posto</a><a class="btn ghost" href="#privati" data-i="cta2">Tutte le formule</a></div>
+  <div class="benefits">
+    <div><svg viewBox="0 0 24 24"><path d="M8 3h8l-1 7a3 3 0 0 1-6 0zM12 13v7M8 20h8"/></svg><b data-i="b1">Tutto incluso</b><span data-i="b1s">Vini, calici da degustazione, schede e acqua. Tu porti solo la curiosità.</span></div>
+    <div><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><b data-i="b2">Due ore che volano</b><span data-i="b2s">Un filo conduttore, nessuna lezione frontale: si assaggia, si confronta, si chiacchiera.</span></div>
+    <div><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h10M4 18h7"/></svg><b data-i="b3">Nella tua lingua</b><span data-i="b3s">Italiano, tedesco, spagnolo o inglese: chiedi pure in quella che preferisci.</span></div>
+  </div>
+  <img class="hero-art" src="" alt="" aria-hidden="true">
+  <button type="button" class="calice" id="calice" aria-label="Fai roteare il calice">
+    <svg viewBox="0 0 120 200" aria-hidden="true">
+      <defs><clipPath id="coppa"><path d="M22 18h76c0 44-12 74-38 78-26-4-38-34-38-78Z"/></clipPath>
+        <linearGradient id="vinog" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#C23356"/><stop offset=".55" stop-color="#8E1838"/><stop offset="1" stop-color="#4E0C20"/></linearGradient></defs>
+      <path d="M22 18h76c0 44-12 74-38 78-26-4-38-34-38-78Z" fill="rgba(255,255,255,.07)"/>
+      <g clip-path="url(#coppa)"><g class="vino-liv"><g class="vino-gira"><g class="vino-onda">
+        <path d="M-40 62 Q-25 56 -10 62 T20 62 T50 62 T80 62 T110 62 T140 62 T170 62 V150 H-40Z" fill="url(#vinog)"/>
+        <path d="M-40 62 Q-25 56 -10 62 T20 62 T50 62 T80 62 T110 62 T140 62 T170 62" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="1.5"/>
+      </g></g></g></g>
+      <path d="M22 18h76c0 44-12 74-38 78-26-4-38-34-38-78Z" fill="none" stroke="rgba(255,255,255,.8)" stroke-width="2.4" stroke-linejoin="round"/>
+      <path d="M60 96v64M38 172c0-7 44-7 44 0Z" fill="none" stroke="rgba(255,255,255,.8)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+      <path class="riflesso" d="M31 28c-.5 21 3.5 37 11 49" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="3" stroke-linecap="round"/>
+    </svg>
+    <span class="calice-hint" data-i="caliceH">Tocca il calice e fallo girare</span>
+  </button>
+  <div class="langline"><span data-i="langL">Parlo quattro lingue: tocca una bandiera e la segno nella prenotazione.</span><span class="flags" data-flags-hero=""></span><span class="picked-label" data-pick></span></div>
+</div></header>
+
+<section class="wrap numeri-sec" aria-label="in numeri">
+  <div class="numeri" id="numeri">
+    <div class="nstat"><span class="n-glass" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#gl"/></svg></span><b data-to="40">40</b><span data-i="n1">posti a serata</span></div>
+    <div class="nstat"><span class="n-glass" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#gl"/></svg></span><b data-to="3">3</b><span data-i="n2">serate a settimana</span></div>
+    <div class="nstat"><span class="n-glass" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#gl"/></svg></span><b data-to="4">4</b><span data-i="n3">lingue al tavolo</span></div>
+    <div class="nstat"><span class="n-glass" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#gl"/></svg></span><b data-to="29">29</b><span data-i="n4">vitigni nel mio materiale di studio</span></div>
+  </div>
+</section>
+
+<section class="wrap" id="pick">
+  <h2 data-i="pickT">Per chi è</h2><p class="sub" data-i="pickS">Due strade, due pagine: scegli la tua.</p>
+  <div class="cards two">
+    <a class="card path" href="#privati">
+      <span class="p-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3h10l-1 7a4 4 0 0 1-8 0Z"/><path d="M12 14v6"/><path d="M8.5 20h7"/></svg></span>
+      <span class="tagline" data-i="tz1f">da 49 € a persona</span>
+      <h3 data-i="tz1">Per te e i tuoi amici</h3>
+      <p data-i="tz1p">Le serate in sala del lunedì, martedì e mercoledì. Presto anche il corso in quattro incontri e le ripetizioni WSET.</p>
+      <ul class="p-list"><li data-i="tz1a">Serate di degustazione da Partenope 081</li><li data-i="tz1b">Corso serale in quattro incontri (presto)</li><li data-i="tz1c">Ripetizioni WSET 1 e 2 (presto)</li></ul>
+      <span class="arrow" data-i="open">Apri</span>
+    </a>
+    <a class="card path alt" href="#ristoranti">
+      <span class="p-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3v7a2 2 0 0 0 2 2h0a2 2 0 0 0 2-2V3"/><path d="M8 12v9"/><path d="M17 3c-1.5 2-2 4-2 6s.7 3 2 3h1V3Z"/><path d="M17 12v9"/></svg></span>
+      <span class="tagline" data-i="tz2f">da 150 € a sessione</span>
+      <h3 data-i="tz2">Per ristoranti e aziende</h3>
+      <p data-i="tz2p">Formazione del personale di sala, serate a tema per i vostri clienti, team building.</p>
+      <ul class="p-list"><li data-i="tz2a">Formazione del personale, a sessione</li><li data-i="tz2b">Serate a tema per i vostri clienti</li><li data-i="tz2c">La carta dei vini rivista insieme</li></ul>
+      <span class="arrow" data-i="open">Apri</span>
+    </a>
+  </div>
+</section>
+
+
+<section class="wrap fascia chiara racconto" id="settimana">
+  <h2 data-i="raT">La settimana in tre calici</h2><p class="sub" data-i="raS">Scorri: ogni sera ha il suo bicchiere, e più scendi più ne sai.</p>
+  <div class="ra" data-racconto="settimana"></div>
+</section>
+
+<section id="lezioni">
+  <div class="wrap"><h2 data-i="lesT">Le serate, per tema</h2><p class="sub" data-i="lesS">Tre temi sono già in calendario: toccali per prenotare. Gli altri arriveranno presto.</p></div>
+  <div class="rail" id="rail"><div class="track-x" id="railtrack"></div></div>
+  <div class="wrap"><p class="credits" data-i="lesN">Scorri con il dito oppure fermalo con il puntatore.</p></div>
+</section>
+<div class="onda" aria-hidden="true"><i></i></div>
+<section class="wrap fascia chiara" id="come">
+  <h2 data-i="howT">Come funziona</h2><p class="sub" data-i="howS">Tre passaggi e sei seduto al tavolo: niente moduli lunghi, niente sorprese sul prezzo.</p>
+  <div class="steps">
+    <div class="step"><h3 data-i="st1">Scegli la serata</h3><p data-i="st1p">Lunedì vino, martedì Champagne, mercoledì vini fortificati. Scegli la data e quanti posti ti servono, da 1 a 10.</p></div>
+    <div class="step"><h3 data-i="st2">Paghi e ricevi il biglietto</h3><p data-i="st2p">Paghi con bonifico entro 48 ore: inquadri il QR o copi i dati. Il biglietto con il codice arriva subito.</p></div>
+    <div class="step"><h3 data-i="st3">Ti siedi e assaggi</h3><p data-i="st3p">Alle 18:00 da Partenope 081 trovi calici, schede e vini già alla temperatura giusta. Tu porti solo la voglia di assaggiare.</p></div>
+  </div>
+</section>
+
+<section class="wrap" id="quiz">
+  <h2 data-i="quizT">Quale serata fa per te?</h2><p class="sub" data-i="quizS">Tre domande, dieci secondi. Alla fine ti consiglio il giorno giusto.</p>
+  <div class="quiz" id="quizbox" aria-live="polite"></div>
+</section>
+
+<section class="wrap fascia scura" id="aromi">
+  <h2 data-i="aroT">Allena il naso</h2><p class="sub" data-i="aroS">Otto famiglie di profumi che ritrovi nel bicchiere. Tocca uno spicchio della ruota.</p>
+  <div class="aromi">
+    <div class="ruota-box"><svg id="ruota" viewBox="-112 -112 224 224" aria-hidden="true"></svg><div class="ruota-c" id="ruotac"></div></div>
+    <div class="aroma-card" id="aromacard" aria-live="polite"></div>
+  </div>
+  <div class="chips aro-chips" id="arochips" role="group"></div>
+</section>
+
+<section class="wrap" id="chi">
+  <h2 data-i="chiT">Chi porta le bottiglie</h2>
+  <div class="bio">
+    <div class="photo"><img loading="lazy" decoding="async" src="foto/christian.jpg" alt="Christian Scognamiglio, sommelier"></div>
+    <div class="card malva">
+      <span class="tagline" data-i="chiTag">WSET Level 2 Award in Wines</span>
+      <p data-i="chi1">Sono Christian, sommelier a Berlino. Lavoro in sala e dietro il banco di un'enoteca, dove conduco degustazioni guidate di vino, Champagne, birra, amari da aperitivo e vini analcolici, oltre agli abbinamenti con il Wagyu. Ho più di due anni di esperienza nella ristorazione: il servizio è il mio mestiere di ogni giorno.</p><p style="margin-top:12px" data-i="chi2">Insegno come ho imparato: si parte dal bicchiere, non dal manuale. Ogni concetto arriva insieme al vino che lo dimostra, e ogni domanda è benvenuta, anche quella che sembra banale.</p>
+      <ul><li data-i="chi4">Degustazione sistematica, il metodo usato dai professionisti</li><li data-i="chi5">Italiano madrelingua; tedesco, spagnolo e inglese fluenti</li><li data-i="chi6">Materiale di studio digitale scritto da me: 29 vitigni, un glossario e oltre 200 domande di quiz</li></ul>
+    </div>
+  </div>
+</section>
+
+<div class="onda" aria-hidden="true"><i></i></div>
+<section class="wrap" id="voci">
+  <h2 data-i="quoT">Chi c'è già stato</h2>
+  <p class="sub" data-i="quoS">Bigliettini lasciati dopo le serate. Scorrono da soli, oppure tocca per passare al prossimo.</p>
+  <div class="deck" id="quotes" aria-label="recensioni"></div>
+  <div class="deck-dots" id="dots"></div>
+</section>
+
+<section class="wrap" id="marchio">
+  <div class="markband"><img class="mk-art" src="" alt="" aria-hidden="true">
+    <div><h3 data-i="mkT">Cantina, tavola, parole semplici</h3><p data-i="mkP">Ogni serata parte dal bicchiere: si assaggia, si ragiona e alla fine si sa dire perché un vino piace.</p></div>
+  </div>
+</section>
+<section class="wrap" id="galleria">
+  <h2 data-i="galT">Dalle serate</h2><p class="sub" data-i="galS">Qualche foto dei tavoli, dei bicchieri e delle facce dopo il quarto vino.</p>
+  <div class="gallery"><div><img loading="lazy" decoding="async" src="foto/serata-1.jpg" alt="" loading="lazy"></div><div><img loading="lazy" decoding="async" src="foto/serata-2.jpg" alt="" loading="lazy"></div><div><img loading="lazy" decoding="async" src="foto/serata-3.jpg" alt="" loading="lazy"></div><div><img loading="lazy" decoding="async" src="foto/serata-4.jpg" alt="" loading="lazy"></div><div><img loading="lazy" decoding="async" src="foto/serata-5.jpg" alt="" loading="lazy"></div></div>
+  <p class="credits" data-i="galC">Foto dalle serate da Partenope 081.</p>
+</section>
+
+<section class="wrap">
+  <div class="ctaband">
+    <div><h3 data-i="bandT">Pronto per un calice?</h3><p data-i="bandP">Scegli la serata e prenota il tuo posto in un minuto. Per gruppi oltre 10 persone ed eventi privati scrivimi: rispondo entro 24 ore.</p></div>
+    <a class="btn dark" href="#privati/p-prenota" data-i="bandB">Prenota un posto</a>
+  </div>
+</section>
+
+</main>
+<main id="v-privati" class="view" hidden>
+
+<header class="phero"><img class="phero-art" src="" alt="" aria-hidden="true"><div class="bubbles" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="wrap">
+  <div class="pill" data-i="tz1f">da 49 € a persona</div>
+  <h1 data-i="perT">Per te e i tuoi amici</h1>
+  <p data-i="perS">Tre serate fisse a settimana e nessun obbligo di sapere già qualcosa. Vieni da solo, in coppia o in compagnia: compleanni, cene tra colleghi, addii al nubilato.</p>
+</div></header>
+
+<section class="wrap" id="p-prenota">
+  <h2 data-i="bkT">Prenota il tuo posto</h2><p class="sub" data-i="bkS">Scegli il giorno, la data e quanti siete. Quaranta posti a serata, alle 18:00 da Partenope 081.</p>
+  <div class="book" id="book">
+    <div class="book-days" id="bookdays" role="tablist"></div>
+    <div class="book-body">
+      <p class="book-info" id="bookinfo"></p>
+      <h3 class="h-conf" data-i="bkDate">Scegli la data</h3>
+      <div class="book-dates" id="bookdates"></div>
+      <div class="book-row">
+        <div class="book-q">
+          <h3 class="h-conf" data-i="bkSeats">Quanti posti</h3>
+          <div class="stepper"><button type="button" id="bkminus" aria-label="meno">−</button><input type="number" id="bkq" min="1" max="10" value="2" inputmode="numeric"><button type="button" id="bkplus" aria-label="più">+</button></div>
+          <p class="note" id="bkmax"></p>
+        </div>
+        <div class="book-sum" id="booksum" aria-live="polite"></div>
+      </div>
+      <div class="sala-wrap"><div class="sala-head"><b data-i="bkSala">La sala: ogni calice è un posto</b><span id="salacount"></span></div>
+        <div class="sala" id="sala" aria-hidden="true"></div></div>
+      <button type="button" class="btn big" id="bookadd" data-i="bkAdd">Aggiungi al carrello</button>
+    </div>
+  </div>
+</section>
+
+<div class="onda" aria-hidden="true"><i></i></div>
+<section class="wrap" id="p-formule">
+  <div class="cards three">
+    <div class="card"><span class="tagline" data-i="p1tag">Da Partenope 081 · 40 posti a serata</span><h3 data-i="p1h">Le serate in sala</h3><span class="meta-row" data-flags="it de en es" data-lvl="1"></span><p data-i="p1p">Lunedì vino, martedì Champagne, mercoledì vini fortificati, sempre alle 18:00. Vini, calici e schede inclusi; prenoti da 1 a 10 posti.</p>
+      <span class="price"><span class="from" data-i="from">a partire da</span>49 € <small data-i="p1price">a persona, vini inclusi</small></span>
+      <div class="go"><a class="btn big" href="#privati/p-prenota" data-i="bkGo">Scegli la serata</a> <a class="btn line" href="#contatto?tipo=5" data-i="ctaGroup">Gruppo o evento privato</a></div></div>
+    <div class="card"><span class="tagline" data-i="p2tag">Corso serale · 3–8 persone</span><h3 data-i="p2h">Quattro incontri</h3><span class="meta-row" data-flags="it de en es" data-lvl="2"></span><p data-i="p2p">Otto ore in tutto: degustare con metodo, riconoscere i vitigni, capire i territori, abbinare. Ventiquattro vini nel percorso. In arrivo: scrivimi per sapere quando parte.</p>
+      <span class="price"><span class="from" data-i="from2">ciclo completo</span>179 € <small data-i="p2price">a persona, vini inclusi</small></span>
+      <div class="go"><button type="button" class="btn big locked" disabled aria-disabled="true"><svg class="lkb" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10.5" width="14" height="10" rx="2.6"/><path d="M8.3 10.5V8a3.7 3.7 0 0 1 7.4 0v2.5"/></svg><span data-i="lockSoon">Presto disponibile</span></button> <a class="btn line" href="#corso" data-i="p2go">Vedi il programma</a></div></div>
+    <div class="card"><span class="tagline" data-i="p3tag">Uno a uno · online o dal vivo</span><h3 data-i="p3h">Ripetizioni WSET 1 e 2</h3><span class="meta-row" data-flags="it de en es" data-lvl="3"></span><p data-i="p3p">Preparazione indipendente all'esame, nella lingua che preferisci, con accesso alla mia app di studio e ai quiz. In arrivo a breve.</p>
+      <span class="price">45 € <small data-i="p3price">all'ora · pacchetto da 5 ore 200 €</small></span>
+      <div class="go"><button type="button" class="btn big locked" disabled aria-disabled="true"><svg class="lkb" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10.5" width="14" height="10" rx="2.6"/><path d="M8.3 10.5V8a3.7 3.7 0 0 1 7.4 0v2.5"/></svg><span data-i="lockSoon">Presto disponibile</span></button> <a class="btn line" href="#corso/ripetizioni" data-i="p3go">Come funzionano</a></div></div>
+  </div>
+  <p class="ust" data-i="ust">Prezzi finali. In base al §19 UStG non viene addebitata l'IVA (regime dei piccoli imprenditori, Kleinunternehmerregelung).</p>
+</section>
+
+<section class="wrap fascia chiara" id="abbina">
+  <h2 data-i="abbT">Cosa mangi stasera?</h2><p class="sub" data-i="abbS">Scegli un piatto: ti dico che vino ci sta bene e in quale serata lo assaggi.</p>
+  <div class="abbina">
+    <div class="piatti" id="piatti" role="group"></div>
+    <div class="abb-card" id="abbcard" aria-live="polite"></div>
+  </div>
+</section>
+
+<section class="wrap" id="temi"><h2 data-i="themT">Temi per gruppi ed eventi privati</h2><p class="sub" data-i="themS">Per gruppi, aziende ed eventi su richiesta costruisco la serata su uno di questi temi, oppure sulla tua idea.</p><div class="themes" id="themes"></div></section>
+
+<section class="wrap" id="p-preventivo">
+  <h2 data-i="confT">Fai il conto adesso</h2><p class="sub" data-i="confS">Muovi i numeri e vedi subito quanto costa. Il totale finisce già compilato nella richiesta.</p>
+  <div class="cards two">
+    <div class="conf" data-conf="priv">
+      <div class="field f-format"><label  data-i="lFormato">Formula</label>
+        <select class="formato"><option value="home" data-i="oHome">Serata in sala</option><option value="corso" data-i="oCorso" disabled>🔒 Corso in quattro incontri (presto)</option><option value="team" data-i="oTeam">Team building / gruppo</option><option value="uno" data-i="oUno" disabled>🔒 Ripetizioni WSET (presto)</option></select></div>
+      <div class="field f-tipo"><label data-i="lTipo">Tema</label>
+        <select class="tipo"><option value="vino" data-i="oTVino">Lunedì · Vino (49 €)</option><option value="bolle" data-i="oTBolle">Martedì · Champagne (69 €)</option><option value="fort" data-i="oTFort">Mercoledì · Vini fortificati (64 €)</option></select></div>
+      <div class="field f-people"><label  data-i="lPersone">Quante persone</label>
+        <div class="stepper"><button type="button" data-step="-1" data-t=".persone" aria-label="meno">−</button><input type="number" class="persone" min="1" max="40" value="6"><button type="button" data-step="1" data-t=".persone" aria-label="più">+</button></div></div>
+      <div class="field f-hours"><label  data-i="lOre">Quante ore</label>
+        <div class="stepper"><button type="button" data-step="-1" data-t=".ore" aria-label="meno">−</button><input type="number" class="ore" min="1" max="8" value="2"><button type="button" data-step="1" data-t=".ore" aria-label="più">+</button></div></div>
+      <div class="field f-wines"><label  data-i="lVini">Quanti vini</label>
+        <div class="stepper"><button type="button" data-step="-1" data-t=".vini" aria-label="meno">−</button><input type="number" class="vini" min="0" max="10" value="6"><button type="button" data-step="1" data-t=".vini" aria-label="più">+</button></div></div>
+    </div>
+    <div class="conf">
+      <h3 class="h-box" data-i="prevT">Preventivo indicativo</h3>
+      <div class="breakdown num breakdown"></div>
+      <div class="tot"><div class="big num totale">—</div><div class="sub2 totale-sub"></div></div>
+      <p class="note" data-i="noteConf">Stima automatica e senza impegno. Per le serate in sala il prezzo è fisso; per team e gruppi dipende dai vini scelti.</p>
+      <div class="go" style="margin-top:16px"><button type="button" class="btn big" id="addconf" data-i="caAddConf">Metti nel carrello</button><a class="btn line" href="#contatto" data-i="ctaMail">Usa questo totale nella richiesta</a></div>
+    </div>
+  </div>
+</section>
+
+<section class="wrap" id="pratico">
+  <div class="two-col">
+    <div class="card white"><h3 data-i="incT">Cosa è incluso</h3>
+      <ul class="check"><li data-i="inc1">Tutti i vini della serata, già alla temperatura giusta</li><li data-i="inc2">Calici da degustazione, uno per ogni vino</li><li data-i="inc3">Schede stampate su cui prendere appunti</li><li data-i="inc4">Acqua, pane neutro e sputacchiera per chi guida</li><li data-i="inc5">Fattura regolare, anche per i regali aziendali</li></ul></div>
+    <div class="card"><h3 data-i="prepT">Come si svolge la serata</h3>
+      <ul class="check"><li data-i="prep1">Arrivi qualche minuto prima delle 18:00: ti accolgo e ti accompagno al tuo posto</li><li data-i="prep2">Si assaggia un vino alla volta, ognuno con la sua storia e una domanda da risolvere insieme</li><li data-i="prep3">Alla fine c'è il giro alla cieca: chi indovina di più si porta a casa la gloria</li><li data-i="prep4">Domande sempre benvenute: nessuno ti interroga</li></ul></div>
+  </div>
+</section>
+
+<section class="wrap racconto" id="minuti">
+  <h2 data-i="miT">La serata, minuto per minuto</h2><p class="sub" data-i="miS">Gli orari della serata del lunedì; il mercoledì si chiude un po' prima.</p>
+  <div class="ra" data-racconto="minuti"></div>
+</section>
+
+<section class="wrap" id="regalo">
+  <div class="voucher"><img class="vou-art" src="" alt="" aria-hidden="true"><div><h3 data-i="vouT">Regala una serata</h3><p data-i="vouP">Un buono per un posto a una serata in sala: vale per tutte e tre, con la differenza per Champagne e fortificati. Arriva come PDF con il nome di chi lo riceve, vale tre anni e la data si sceglie dopo.</p></div><button type="button" class="btn dark addc" data-add="voucher" data-i="vouB">Chiedi un buono</button></div>
+</section>
+
+<section class="wrap">
+  <div class="ctaband">
+    <div><h3 data-i="bandT">Pronto per un calice?</h3><p data-i="bandP">Scegli la serata e prenota il tuo posto in un minuto. Per gruppi oltre 10 persone ed eventi privati scrivimi: rispondo entro 24 ore.</p></div>
+    <a class="btn dark" href="#privati/p-prenota" data-i="bandB">Prenota un posto</a>
+  </div>
+</section>
+
+</main>
+<main id="v-ristoranti" class="view" hidden>
+
+<header class="phero"><img class="phero-art" src="" alt="" aria-hidden="true"><div class="bubbles" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="wrap">
+  <div class="pill" data-i="tz2f">da 150 € a sessione</div>
+  <h1 data-i="risT">Per ristoranti, bar e aziende</h1>
+  <p data-i="risS">Vengo da voi, lavoro sulla vostra carta e lascio al team strumenti che restano anche dopo la sessione.</p>
+</div></header>
+
+<section class="wrap" id="r-formule">
+  <div class="cards three">
+    <div class="card salvia"><span class="tagline" data-i="r1tag">Formazione · a sessione</span><h3 data-i="r1h">Il team di sala</h3><span class="meta-row" data-flags="it de en es" data-lvl="2"></span><p data-i="r1p">Come si presenta una bottiglia, come si consiglia, temperature e bicchieri, e come si risponde a «cosa mi consiglia?» senza improvvisare.</p>
+      <ul><li data-i="r1a">Sessione da 2 ore (150 €) o da 4 ore (280 €)</li><li data-i="r1b">Fino a 8 persone, nella lingua della brigata</li><li data-i="r1c">Una scheda dei vostri vini che resta al locale</li></ul>
+      <span class="price"><span class="from" data-i="from3">a partire da</span>150 € <small data-i="r1price">a sessione, con fattura</small></span>
+      <div class="go"><button type="button" class="btn addc big" data-add="staff" data-i="caAdd">Aggiungi al carrello</button> <a class="btn line" href="#contatto?tipo=3" data-i="cta1">Richiedi una data</a></div></div>
+    <div class="card salvia"><span class="tagline" data-i="r2tag">Evento · a serata</span><h3 data-i="r2h">Una serata per i vostri clienti</h3><span class="meta-row" data-flags="it de en es" data-lvl="1"></span><p data-i="r2p">Una degustazione a tema nel vostro locale: conduco io, voi riempite i coperti in una sera di solito tranquilla.</p>
+      <ul><li data-i="r2a">Base: conduzione di 3–4 ore e schede stampate</li><li data-i="r2b">Plus: selezione dei vini dal mio fornitore e testi pronti per i vostri canali</li><li data-i="r2c">Tema a scelta: territorio, vitigno, bollicine o il vostro menù</li></ul>
+      <span class="price"><span class="from" data-i="from4">base / plus</span>290 · 390 € <small data-i="r2price">a serata, vini esclusi</small></span>
+      <div class="go"><button type="button" class="btn addc big" data-add="evening" data-i="caAdd">Aggiungi al carrello</button> <a class="btn line" href="#contatto?tipo=4" data-i="cta1">Richiedi una data</a></div></div>
+    <div class="card white"><span class="tagline" data-i="r3tag">Aziende · team building</span><h3 data-i="r3h">Uffici e gruppi</h3><span class="meta-row" data-flags="it de en" data-lvl="1"></span><p data-i="r3p">Degustazione a squadre in ufficio o in un locale partner: due ore, sei vini e una classifica finale. Funziona anche con inglese e tedesco mescolati.</p>
+      <ul><li data-i="r3a">Da 8 a 30 persone</li><li data-i="r3b">Addii al nubilato e al celibato: versione con giochi</li></ul>
+      <span class="price"><span class="from" data-i="from5">a partire da</span>55 € <small data-i="r3price">a persona, vini inclusi</small></span>
+      <div class="go"><button type="button" class="btn addc big" data-add="team" data-i="caAdd">Aggiungi al carrello</button> <a class="btn line" href="#contatto?tipo=5" data-i="cta1">Richiedi una data</a></div></div>
+  </div>
+  <p class="ust" data-i="ust">Prezzi finali. In base al §19 UStG non viene addebitata l'IVA (regime dei piccoli imprenditori, Kleinunternehmerregelung).</p>
+</section>
+
+<section class="wrap" id="perche">
+  <div class="two-col">
+    <div class="card"><h3 data-i="forT">A chi serve davvero</h3><ul class="check x"><li data-i="for1">Locali con una buona carta dei vini che vende poco</li><li data-i="for2">Brigate con molto ricambio e nuovi arrivi da formare</li><li data-i="for3">Sere infrasettimanali da riempire con un evento</li><li data-i="for4">Uffici che cercano un team building diverso dal solito bowling</li></ul></div>
+    <div class="card white"><h3 data-i="leaveT">Cosa resta al locale</h3><ul class="check"><li data-i="leave1">Una scheda plastificata dei vostri vini, con tre frasi per consigliare ciascuno</li><li data-i="leave2">Le temperature di servizio per ogni categoria della carta</li><li data-i="leave3">Un test di 10 domande per chi entra in squadra dopo</li><li data-i="leave4">Il mio numero: se un cameriere ha un dubbio prima del servizio, mi scrive</li></ul></div>
+  </div>
+</section>
+
+<section class="wrap" id="r-preventivo">
+  <h2 data-i="confT">Fai il conto adesso</h2><p class="sub" data-i="confS">Muovi i numeri e vedi subito quanto costa. Il totale finisce già compilato nella richiesta.</p>
+  <div class="cards two">
+    <div class="conf" data-conf="rist">
+      <div class="field"><label  data-i="lRFormato">Servizio</label>
+        <select class="rformato"><option value="staff" data-i="oStaff">Formazione del team</option><option value="evening" data-i="oEvening">Serata per i clienti</option></select></div>
+      <div class="field f-people"><label  data-i="lPersone">Quante persone</label>
+        <div class="stepper"><button type="button" data-step="-1" data-t=".persone" aria-label="meno">−</button><input type="number" class="persone" min="1" max="40" value="6"><button type="button" data-step="1" data-t=".persone" aria-label="più">+</button></div></div>
+      <div class="field f-hours"><label  data-i="lOre">Quante ore</label>
+        <div class="stepper"><button type="button" data-step="-1" data-t=".ore" aria-label="meno">−</button><input type="number" class="ore" min="1" max="8" value="2"><button type="button" data-step="1" data-t=".ore" aria-label="più">+</button></div></div>
+      <div class="field f-wines"><label  data-i="lVini">Quanti vini</label>
+        <div class="stepper"><button type="button" data-step="-1" data-t=".vini" aria-label="meno">−</button><input type="number" class="vini" min="0" max="10" value="0"><button type="button" data-step="1" data-t=".vini" aria-label="più">+</button></div></div>
+    </div>
+    <div class="conf">
+      <h3 class="h-box" data-i="prevT">Preventivo indicativo</h3>
+      <div class="breakdown num breakdown"></div>
+      <div class="tot"><div class="big num totale">—</div><div class="sub2 totale-sub"></div></div>
+      <p class="note" data-i="noteConf">Stima automatica e senza impegno. Per le serate in sala il prezzo è fisso; per team e gruppi dipende dai vini scelti.</p>
+      <div class="go" style="margin-top:16px"><button type="button" class="btn big" id="addconf2" data-i="caAddConf">Metti nel carrello</button><a class="btn line" href="#contatto?tipo=3" data-i="ctaMail">Usa questo totale nella richiesta</a></div>
+    </div>
+  </div>
+</section>
+
+<section class="wrap">
+  <div class="ctaband">
+    <div><h3 data-i="bandRT">Parliamo del vostro locale?</h3><p data-i="bandRP">Scrivetemi il giorno, quante persone e cosa vi serve: rispondo entro 24 ore con una proposta e un prezzo fisso.</p></div>
+    <a class="btn dark" href="#contatto?tipo=3" data-i="bandRB">Scrivimi</a>
+  </div>
+</section>
+
+</main>
+<main id="v-corso" class="view" hidden>
+
+<header class="phero"><img class="phero-art" src="" alt="" aria-hidden="true"><div class="bubbles" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="wrap">
+  <div class="pill" data-i="chiTag">WSET Level 2 Award in Wines</div>
+  <h1 data-i="corT">Il corso e le ripetizioni</h1>
+  <p data-i="corS">Otto moduli in quattro serate, oppure lezioni uno a uno per chi prepara l'esame. Entrambi in arrivo a breve.</p>
+</div></header>
+
+<section class="wrap" id="programma"><h2 data-i="progT">Cosa si studia</h2><p class="sub" data-i="progS">Otto moduli: tutti in fila nel corso serale, oppure solo quelli che ti servono nelle ripetizioni.</p><div id="moduli"></div></section>
+
+<section class="wrap" id="ripetizioni">
+  <div class="cards two">
+    <div class="card malva"><span class="tagline" data-i="p3tag">Uno a uno · online o dal vivo</span><h3 data-i="tutT">Come funzionano le ripetizioni</h3>
+      <ul class="check"><li data-i="tut1">Sessioni da 60 minuti, online o dal vivo, nella lingua in cui sosterrai l'esame</li><li data-i="tut2">Accesso alla mia app di studio: schede dei vitigni, glossario e quiz con oltre 200 domande</li><li data-i="tut3">Simulazioni d'esame a tempo, con correzione</li><li data-i="tut4">Pacchetto da 5 ore 200 €, ora singola 45 €</li></ul>
+      <div class="go"><a class="btn dark" href="#contatto?tipo=2" data-i="cta1">Richiedi una data</a></div></div>
+    <div class="card white"><h3 data-i="wsT">Sul WSET</h3><p data-i="wsP">Ho conseguito il WSET Level 2 Award in Wines. Non sono un WSET Approved Programme Provider: non tengo corsi né esami ufficiali WSET, e le mie ripetizioni sono una preparazione indipendente, non affiliata né approvata da WSET. Per la certificazione ufficiale, a Berlino ci si iscrive presso un provider accreditato.</p></div>
+  </div>
+</section>
+
+<section class="wrap fascia chiara" id="colori">
+  <h2 data-i="colT">Il colore racconta</h2><p class="sub" data-i="colS">Prima ancora del naso, l'occhio dice quanti anni ha un vino e come è stato fatto. Tocca un colore.</p>
+  <div class="colori" id="colori-box"></div>
+  <div class="col-read" id="colread" aria-live="polite"></div>
+</section>
+
+<section class="wrap" id="temperature">
+  <h2 data-i="tempT">Alla temperatura giusta</h2><p class="sub" data-i="tempP">Il primo errore a tavola non è la bottiglia, è il termometro. Tocca una categoria.</p>
+  <div class="chips" id="chips"></div>
+  <div class="track"><div class="fill" id="fill" style="left:0;width:0"></div></div>
+  <div class="ticks"><span>0 °C</span><span>10 °C</span><span>18 °C</span><span>25 °C</span></div>
+  <div class="read" id="read">—</div>
+</section>
+
+<section class="wrap">
+  <div class="ctaband">
+    <div><h3 data-i="bandCT">Vuoi sapere quando parte?</h3><p data-i="bandCP">Il corso in quattro incontri e le ripetizioni WSET arrivano a breve. Lasciami un messaggio e ti avviso per primo.</p></div>
+    <a class="btn dark" href="#contatto?tipo=1" data-i="bandCB">Avvisami</a>
+  </div>
+</section>
+
+</main>
+<main id="v-info" class="view" hidden>
+
+<header class="phero"><img class="phero-art" src="" alt="" aria-hidden="true"><div class="bubbles" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="wrap">
+  <h1 data-i="infT">Le cose pratiche</h1>
+  <p data-i="infS">Prezzi, pagamento, cancellazione, dove ci si trova e tutto quello che mi chiedono più spesso.</p>
+</div></header>
+
+<section class="wrap" id="faq"><h2 data-i="faqT">Domande frequenti</h2><div id="faqs"></div></section>
+
+<section class="wrap" id="pagamento">
+  <div class="two-col">
+    <div class="card white"><h3 data-i="payT">Prezzi e pagamento</h3><ul class="check"><li data-i="pay1">Tutti i prezzi sono finali: niente IVA (§19 UStG, Kleinunternehmerregelung)</li><li data-i="pay2">Si paga con bonifico entro 48 ore dalla prenotazione, e comunque prima della serata; la fattura arriva per email</li><li data-i="pay3">Aziende e ristoranti: bonifico a 14 giorni dalla fattura</li><li data-i="pay4">Nessun acconto: paghi una volta sola</li></ul></div>
+    <div class="card" id="cancellazione"><h3 data-i="canT">Se cambi idea</h3><ul class="check x"><li data-i="can1">Fino a 14 giorni prima: cancellazione gratuita</li><li data-i="can2">Da 13 a 7 giorni prima: 50 %, oppure spostiamo la data senza costi</li><li data-i="can3">Meno di 7 giorni prima: 100 %, perché i vini sono già acquistati</li><li data-i="can4">Se sono io a dover annullare: rimborso completo o nuova data, scegli tu</li></ul></div>
+  </div>
+</section>
+
+<section class="wrap" id="zona">
+  <div class="two-col">
+    <div class="card salvia"><h3 data-i="zonT">Dove ci si trova</h3><p data-i="zonP">Le serate si tengono da Partenope 081, a Berlino, sempre alle 18:00. L'indirizzo preciso arriva insieme alla conferma. Per ristoranti e aziende vengo io da voi.</p></div>
+    <div class="card"><h3 data-i="alcT">Sull'alcol</h3><p data-i="alcP">Le degustazioni sono riservate ai maggiorenni. Le serate si tengono in un locale con licenza; nei vostri locali vale la vostra. Acqua e sputacchiera sono sempre sul tavolo.</p></div>
+  </div>
+</section>
+
+<section class="wrap" id="wset"><div class="card malva"><h3 data-i="wsT">Sul WSET</h3><p data-i="wsP">Ho conseguito il WSET Level 2 Award in Wines. Non sono un WSET Approved Programme Provider: non tengo corsi né esami ufficiali WSET, e le mie ripetizioni sono una preparazione indipendente, non affiliata né approvata da WSET. Per la certificazione ufficiale, a Berlino ci si iscrive presso un provider accreditato.</p></div></section>
+
+<section class="wrap">
+  <div class="ctaband">
+    <div><h3 data-i="bandT">Pronto per un calice?</h3><p data-i="bandP">Scegli la serata e prenota il tuo posto in un minuto. Per gruppi oltre 10 persone ed eventi privati scrivimi: rispondo entro 24 ore.</p></div>
+    <a class="btn dark" href="#privati/p-prenota" data-i="bandB">Prenota un posto</a>
+  </div>
+</section>
+
+</main>
+<main id="v-contatto" class="view" hidden>
+
+<header class="phero"><img class="phero-art" src="" alt="" aria-hidden="true"><div class="bubbles" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="wrap">
+  <h1 data-i="cntT">Scrivimi</h1>
+  <p data-i="cntP">Per gruppi oltre 10 persone, eventi privati, ristoranti e aziende: rispondo entro 24 ore con una proposta e un prezzo fisso. Per le serate in sala puoi prenotare direttamente.</p>
+</div></header>
+
+<section class="wrap" id="modulo">
+  <div class="contact">
+    <div class="conf">
+      <div class="quotebox" id="quotebox"></div>
+      <div class="row2">
+        <div class="field"><label for="nome" data-i="fName">Nome</label><input id="nome" type="text" autocomplete="name"></div>
+        <div class="field"><label for="tel" data-i="fTel">Telefono / WhatsApp</label><input id="tel" type="tel" autocomplete="tel"></div>
+      </div>
+      <div class="field"><label for="email" data-i="fMail">Email</label><input id="email" type="email" autocomplete="email"></div>
+      <div class="row2">
+        <div class="field"><label for="fdate" data-i="fDate">Data desiderata</label><input id="fdate" type="date"></div>
+        <div class="field"><label for="fplz" data-i="fPlz">Quartiere o locale (se vengo da voi)</label><input id="fplz" type="text" inputmode="numeric"></div>
+      </div>
+      <div class="row2">
+        <div class="field"><label for="ftype" data-i="fType">Tipo di richiesta</label>
+          <select id="ftype"><option data-i="ft1">Serata in sala</option><option data-i="ft2">Corso serale</option><option data-i="ft3">Ripetizioni WSET</option><option data-i="ft4">Formazione del team</option><option data-i="ft5">Serata nel mio locale</option><option data-i="ft6">Team building / gruppo</option><option data-i="ft7">Buono regalo</option></select></div>
+        <div class="field"><label for="flang" data-i="fLang">Lingua</label>
+          <select id="flang"><option>Italiano</option><option>Deutsch</option><option>English</option><option>Español</option></select></div>
+      </div>
+      <div class="field"><label for="fmsg" data-i="fMsg">Qualcosa in più (quante persone, tema, occasione)</label><textarea id="fmsg"></textarea></div>
+      <button class="btn" id="send" type="button" data-i="fSend">Invia la richiesta</button>
+      <p class="payhint" id="formhint" role="status" aria-live="polite"></p>
+      <p class="note" data-i="fNote">Il modulo apre la tua app di posta con il testo già scritto: i dati non passano da nessun server.</p>
+      <div class="ok" id="ok" data-i="fOk">Se l'app di posta non si è aperta, scrivimi direttamente all'indirizzo qui accanto.</div>
+    </div>
+    <div class="channels">
+      <a href="https://wa.me/4915207030279"><svg viewBox="0 0 24 24"><path d="M4 20l1.3-3.8A8 8 0 1 1 8 19z"/></svg><span><b>WhatsApp</b>+49 152 0703 0279</span></a>
+      <a href="mailto:christian@lartedelvino.de"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg><span><b>Email</b>christian@lartedelvino.de</span></a>
+      <a href="https://instagram.com/tuo.profilo"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><path d="M17 7h.01"/></svg><span><b>Instagram</b>@tuo.profilo</span></a>
+      <a href="tel:+4915207030279"><svg viewBox="0 0 24 24"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg><span><b data-i="chTel">Telefono</b>+49 152 0703 0279</span></a>
+    </div>
+  </div>
+</section>
+
+
+<section class="wrap" id="calendario">
+  <h2 data-i="calT">Il calendario delle serate</h2>
+  <p class="sub" data-i="calS">Lunedì vino, martedì Champagne, mercoledì vini fortificati, sempre alle 18:00. Tocca una data per prenotare il tuo posto.</p>
+  <div class="cal">
+    <div class="cal-top"><button type="button" id="calprev" aria-label="mese precedente">‹</button><b id="calmonth">—</b><button type="button" id="calnext" aria-label="mese successivo">›</button></div>
+    <div class="cal-dow" id="caldow"></div>
+    <div class="cal-grid" id="calgrid"></div>
+    <div class="cal-legend">
+      <span><i class="free"></i><em data-i="lgF">posti liberi</em></span>
+      <span><i class="low"></i><em data-i="lgL">ultimi posti</em></span>
+      <span><i class="out"></i><em data-i="lgO">esaurito</em></span>
+      <span class="tl t-vino"><i></i><em data-i="lgVino">lun · vino</em></span>
+      <span class="tl t-bolle"><i></i><em data-i="lgBolle">mar · Champagne</em></span>
+      <span class="tl t-fort"><i></i><em data-i="lgFort">mer · fortificati</em></span>
+      <span class="live"><i class="dot"></i><em id="calup">—</em></span>
+    </div>
+  </div>
+  <div class="cal-detail" id="caldetail"></div>
+</section>
+<section class="wrap" id="date"><h2 data-i="evT">Le prossime serate</h2><p class="sub" data-i="evS">Le prossime date in calendario, con il tema della sera. Tocca per prenotare.</p><div class="events" id="events"></div></section>
+
+</main>
+
+
+<main id="v-carrello" class="view" hidden>
+<header class="phero"><img class="phero-art" src="" alt="" aria-hidden="true"><div class="wrap">
+  <div class="pill" data-i="caPill">Passo 1 di 3 · Carrello</div>
+  <h1 data-i="caT">Cosa hai scelto</h1>
+  <p data-i="caS">Aggiungi tutte le serate che vuoi: si paga una volta sola e ogni serata ha il suo biglietto.</p>
+</div></header>
+<section class="wrap">
+  <div class="cards two">
+    <div>
+      <div id="cartlist"></div>
+      <a class="btn line" href="#privati/p-prenota" style="margin-top:16px" data-i="caMore">Aggiungi un'altra serata</a>
+    </div>
+    <div class="conf" id="cartside">
+      <img class="pay-art" src="" alt="" aria-hidden="true">
+      <h3 class="h-box" data-i="caSum">Riepilogo</h3>
+      <div class="breakdown num" id="cartsum"></div>
+      <div class="promo-in">
+        <input id="promoin" type="text" autocomplete="off">
+        <button type="button" id="promoadd" data-i="caApply">Applica</button>
+      </div>
+      <div class="tot"><div class="big num" id="carttot">—</div><div class="sub2" data-i="iva2">prezzo finale · nessuna IVA (§19 UStG)</div></div>
+      <a class="btn" id="cartgo" href="#pagamento" style="margin-top:18px" data-i="caGo">Vai al pagamento</a>
+      <p class="note" data-i="caN">Non paghi ancora nulla: al passo successivo scegli come pagare.</p>
+    </div>
+  </div>
+</section>
+</main>
+<main id="v-pagamento" class="view" hidden>
+<header class="phero"><img class="phero-art" src="" alt="" aria-hidden="true"><div class="wrap">
+  <div class="pill" data-i="payPill">Passo 2 di 3 · Conferma</div>
+  <h1 data-i="payH">Come vuoi pagare</h1>
+  <p data-i="payS">Si paga con bonifico, entro 48 ore dalla prenotazione e comunque prima della serata.</p>
+</div></header>
+
+<section class="wrap">
+  <div class="demo-flag" data-i="demoF">Paghi con bonifico: inquadri il QR con l'app della banca oppure copi i dati qui sotto. Nessun dato bancario viene salvato da questo sito.</div>
+  <div class="cards two">
+    <div class="conf">
+      <img class="pay-art" src="" alt="" aria-hidden="true"><h3 class="h-box" data-i="payRec">Il tuo riepilogo</h3>
+      <div class="recap" id="recap"></div>
+      <div class="tot"><div class="big num" id="paytot">—</div><div class="sub2" data-i="iva2">prezzo finale · nessuna IVA (§19 UStG)</div></div>
+
+      <div id="prenbox" hidden>
+        <h3 class="h-conf" data-i="payDay">La sera</h3>
+        <div class="slotstrip" id="slotstrip"></div>
+        <p class="payhint" id="datehint"></p>
+
+        <h3 class="h-conf" data-i="payWho">Chi siete</h3>
+        <div class="row2">
+          <div class="field"><label for="pname" data-i="fName">Nome</label><input id="pname" type="text" autocomplete="name"></div>
+          <div class="field"><label for="ptel" data-i="fTel">Telefono / WhatsApp</label><input id="ptel" type="tel" autocomplete="tel"></div>
+        </div>
+        <div class="field"><label for="pmail" data-i="fMail">Email</label><input id="pmail" type="email" autocomplete="email"></div>
+      </div>
+
+      <h3 class="h-conf" data-i="payHow">Con cosa</h3>
+      <div class="pay-rail" id="payrail"></div>
+      <div class="pm-detail" id="paydetail"></div>
+
+      <button class="btn" id="paygo" style="margin-top:20px" data-i="payGo">Conferma la prenotazione</button>
+      <p class="payhint" id="payhint" role="status" aria-live="polite"></p>
+      <p class="note" data-i="payN">Il biglietto arriva subito. La serata è confermata quando arriva il bonifico: se non arriva entro 48 ore, il posto torna libero. La fattura arriva per email.</p>
+    </div>
+
+    <div class="card white">
+      <h3 data-i="paySafeT">Come funziona il pagamento</h3>
+      <ul class="check">
+        <li data-i="pay2b">Bonifico entro 48 ore dalla prenotazione</li>
+        <li data-i="pay3b">Fattura sempre inclusa, con la dicitura del §19 UStG</li>
+        <li data-i="pay4b">Cancellazione gratuita fino a 14 giorni prima</li>
+      </ul>
+      <p class="note" data-i="paySafeN">I dati della carta non vengono né inviati né salvati da questo sito. Quando attiverò SumUp o Stripe, il pagamento con carta avverrà sulla loro pagina protetta.</p>
+    </div>
+  </div>
+</section>
+</main>
+
+<main id="v-ticket" class="view" hidden>
+<header class="phero"><img class="phero-art" src="" alt="" aria-hidden="true"><div class="wrap">
+  <div class="pill" data-i="tkPill">Passo 3 di 3 · Fatto</div>
+  <h1 data-i="tkT">Prenotazione confermata</h1>
+  <p data-i="tkS">Mostra il codice all'arrivo, dallo schermo o stampato. Una serata, un biglietto.</p>
+</div></header>
+
+<section class="wrap">
+  <div class="demo-flag" data-i="demoT">Biglietto di esempio: il codice QR è reale e leggibile, i dati sono di prova.</div>
+
+  <div id="tickets"></div>
+
+  <div class="btns" style="justify-content:center">
+    <button class="btn line" id="tkprint" data-i="tkPrint">Stampa o salva in PDF</button>
+  </div>
+
+  <div class="wallet" id="walletbox">
+    <b data-i="wlT">Nel portafoglio del telefono</b>
+    <p data-i="wlP">Come una carta d'imbarco. Richiede un pass firmato: si attiva quando il servizio è configurato.</p>
+    <div class="wl-btns">
+      <button type="button" class="wl" data-pass="apple"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16.2 12.6c0-2.1 1.7-3.1 1.8-3.2-1-1.4-2.5-1.6-3-1.7-1.3-.1-2.5.8-3.2.8-.6 0-1.7-.7-2.8-.7-1.4 0-2.7.8-3.4 2.1-1.5 2.6-.4 6.4 1 8.5.7 1 1.6 2.2 2.7 2.1 1.1 0 1.5-.7 2.8-.7s1.7.7 2.8.7c1.2 0 1.9-1 2.6-2.1.8-1.2 1.2-2.4 1.2-2.4s-2.2-.9-2.5-3.4Z"/><path d="M14.4 6.2c.6-.7 1-1.7.9-2.7-.9 0-2 .6-2.6 1.3-.6.6-1.1 1.6-.9 2.6 1 .1 2-.5 2.6-1.2Z"/></svg><span>Apple Wallet</span></button>
+      <button type="button" class="wl" data-pass="google"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="6" width="19" height="13" rx="3"/><path d="M2.5 10.5h19"/><path d="M17 15.5h2"/></svg><span>Google Wallet</span></button>
+    </div>
+    <span class="wl-note" data-i="wlN">Nel frattempo «Salva nel telefono» mette il biglietto tra le foto, con il QR leggibile.</span>
+  </div>
+
+  <div class="btns" style="justify-content:center;margin-top:10px"><a class="btn line" href="#home" data-i="tkHome">Torna alla home</a></div>
+</section>
+</main>
+<main id="v-impressum" class="view" hidden>
+
+<header class="phero"><img class="phero-art" src="" alt="" aria-hidden="true"><div class="bubbles" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="wrap"><h1>Impressum</h1><p>Angaben gemäß § 5 DDG</p></div></header>
+<section class="wrap"><div class="legalpage">
+  <p><b>Christian Scognamiglio</b><br>Geschäftsbezeichnung: L'Arte del Vino<br>Thulestraße 38<br>13189 Berlin</p>
+  <h2>Kontakt</h2><p>Telefon: <a href="tel:+4915207030279">+49 152 0703 0279</a><br>E-Mail: christian@lartedelvino.de</p>
+  <h2>Umsatzsteuer</h2><p>Kleinunternehmer im Sinne von § 19 UStG; es wird keine Umsatzsteuer ausgewiesen.</p>
+  <h2>Streitschlichtung</h2><p>Ich bin nicht bereit und nicht verpflichtet, an Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle teilzunehmen.</p>
+  <h2>Markenhinweis</h2><p>WSET® ist eine eingetragene Marke der Wine &amp; Spirit Education Trust. Diese Website und die angebotenen Leistungen stehen in keiner Verbindung zu WSET und sind nicht von WSET genehmigt.</p>
+</div></section>
+
+</main>
+<main id="v-datenschutz" class="view" hidden>
+
+<header class="phero"><img class="phero-art" src="" alt="" aria-hidden="true"><div class="bubbles" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="wrap"><h1>Datenschutz</h1><p>Datenschutzerklärung nach Art. 13 DSGVO</p></div></header>
+<section class="wrap"><div class="legalpage">
+  <h2>1. Verantwortlicher</h2><p>Christian Scognamiglio, Thulestraße 38, 13189 Berlin, christian@lartedelvino.de.</p>
+  <h2>2. Hosting und Server-Logfiles</h2><p>Diese Website wird bei der Netlify, Inc., 101 2nd Street, San Francisco, CA 94105, USA gehostet. Beim Aufruf verarbeitet Netlify automatisch IP-Adresse, Datum und Uhrzeit, aufgerufene Seite, Browser und Betriebssystem in Logfiles. Rechtsgrundlage: Art. 6 Abs. 1 lit. f DSGVO (sicherer und stabiler Betrieb der Website). Netlify ist nach dem EU-U.S. Data Privacy Framework zertifiziert; die Übermittlung in die USA stützt sich auf den Angemessenheitsbeschluss der EU-Kommission (Art. 45 DSGVO). Die Logfiles speichert Netlify nur so lange, wie es für diesen Zweck nötig ist; Einzelheiten: <a href="https://www.netlify.com/privacy/" rel="noopener">netlify.com/privacy</a>.</p>
+  <h2>3. Schriftarten</h2><p>Die verwendeten Schriftarten werden lokal auf dem eigenen Server gehostet. Es findet keine Verbindung zu Servern von Google oder anderen Anbietern statt.</p>
+  <h2>4. Lokale Speicherung</h2><p>Die gewählte Sprache (IT/DE) wird im Browser gespeichert (localStorage), damit sie beim Seitenwechsel erhalten bleibt. Dies ist technisch notwendig (§ 25 Abs. 2 TDDDG) und enthält keine personenbezogenen Daten. Eine Preisschätzung aus dem Rechner wird nur für die Dauer der Sitzung im Browser gehalten (sessionStorage).</p>
+  <h2>5. Kontaktaufnahme</h2><p>Das Anfrageformular erzeugt lediglich eine E-Mail in Ihrem eigenen Mailprogramm; es werden keine Daten an diese Website übermittelt. Bei Kontakt per E-Mail, Telefon oder WhatsApp werden Ihre Angaben zur Bearbeitung der Anfrage gespeichert (Art. 6 Abs. 1 lit. b DSGVO) und nach Abschluss gelöscht, sofern keine gesetzlichen Aufbewahrungspflichten bestehen. WhatsApp wird von der WhatsApp Ireland Ltd. betrieben; bei Nutzung gelten deren Datenschutzbestimmungen.</p>
+  <h2>6. Cookies und Tracking</h2><p>Diese Website setzt keine Cookies und verwendet keine Analyse- oder Tracking-Dienste.</p>
+  <h2>7. Ihre Rechte</h2><p>Sie haben das Recht auf Auskunft, Berichtigung, Löschung, Einschränkung der Verarbeitung, Datenübertragbarkeit und Widerspruch (Art. 15–21 DSGVO) sowie auf Beschwerde bei einer Aufsichtsbehörde, z. B. der Berliner Beauftragten für Datenschutz und Informationsfreiheit.</p>
+  <p style="margin-top:18px;font-size:12.5px;opacity:.7">Stand: Oktober 2026. Vorlage — vor Veröffentlichung prüfen lassen.</p>
+</div></section>
+
+</main>
+
+<footer class="foot"><div class="wrap">
+  <div class="cols">
+    <div><img class="foot-art" src="" alt="" aria-hidden="true"><h4>L'Arte del Vino</h4><p data-i="fo1">Sommelier a Berlino. Serate di degustazione, corsi e formazione per la sala, in quattro lingue.</p></div>
+    <div><h4 data-i="fo2T">Pagine</h4><a href="#privati" data-i="nav2">Privati</a><a href="#ristoranti" data-i="nav3">Ristoranti</a><a href="#corso" data-i="corT">Il corso e le ripetizioni</a><a href="#info" data-i="nav4">Info</a><a href="#contatto" data-i="nav5">Richiedi</a></div>
+    <div><h4 data-i="fo3T">Legale</h4><a href="#impressum">Impressum</a><a href="#datenschutz">Datenschutz</a><a href="#info/cancellazione" data-i="foAgb">Condizioni e cancellazione</a></div>
+  </div>
+  <div class="copy">© 2026 L'Arte del Vino · Christian Scognamiglio · Berlin</div>
+</div></footer>
+
+<script src="js/qr.js" defer></script>
+<script src="js/app.js" defer></script>
+</body>
+</html>

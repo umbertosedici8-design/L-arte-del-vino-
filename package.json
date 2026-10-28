@@ -1,0 +1,9 @@
+{
+  "name": "prenotazioni-christian",
+  "private": true,
+  "type": "module",
+  "description": "Agenda e prenotazioni automatiche per il sito di Christian Scognamiglio",
+  "dependencies": {
+    "@netlify/blobs": "^8.1.0"
+  }
+}

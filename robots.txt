@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /agenda.html
+
+Sitemap: https://lartedelvino.de/sitemap.xml
