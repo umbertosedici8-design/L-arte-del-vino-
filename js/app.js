@@ -689,6 +689,7 @@ function route(dest){
     onScroll();
   },delay);
   document.title=TITLES[v]+(v==="home"?"":" — L'Arte del Vino");
+  try{VISITE.vista(v);}catch(_){}
   $$("#dock a").forEach(a=>a.classList.toggle("on",a.dataset.view===v));
   current=v;
 }
@@ -700,6 +701,32 @@ document.addEventListener("click",e=>{
 function go(dest){try{if(location.hash!==dest)history.pushState(null,"",dest);}catch(_){}route(dest);}
 addEventListener("hashchange",()=>route());
 addEventListener("popstate",()=>route(location.hash.slice(1)||"home"));
+
+/* ---------------- VISITE ----------------
+   Dice al server "qualcuno guarda questa pagina", per la dashboard.
+   Niente cookie, niente salvato nel browser, nessun dato personale nel messaggio.
+   Chi ha attivato "Do Not Track" o Global Privacy Control non viene contato.
+   Senza API (la versione da vedere in locale) non fa niente. */
+const VISITE=(()=>{
+  if(!API||navigator.globalPrivacyControl||navigator.doNotTrack==="1"||window.doNotTrack==="1")return{vista(){}};
+  let pagina="home",prima=true,attivo=Date.now(),timer=null,ultima="";
+  const fonte=()=>{
+    try{const q=new URLSearchParams(location.search),u=q.get("utm_source")||q.get("da");if(u)return u.slice(0,40);
+      const r=document.referrer?new URL(document.referrer).hostname:"";return r&&r!==location.hostname?r:"";}catch(_){return"";}
+  };
+  const manda=e=>{
+    const b={e,p:pagina,d:innerWidth<700?"m":"d"};
+    if(e==="vista"&&prima){b.f=fonte();prima=false;}
+    try{fetch(API+"/visita",{method:"POST",keepalive:true,credentials:"omit",headers:{"Content-Type":"application/json"},body:JSON.stringify(b)}).catch(()=>{});}catch(_){}
+  };
+  /* "sono ancora qui" ogni 40 secondi, solo con la pagina davanti e fino a 30 minuti senza toccare niente */
+  const batti=()=>{clearInterval(timer);timer=setInterval(()=>{
+    if(document.hidden||Date.now()-attivo>30*60000)return;manda("ping");},40000);};
+  ["pointerdown","keydown","scroll"].forEach(t=>addEventListener(t,()=>{attivo=Date.now();},{passive:true}));
+  document.addEventListener("visibilitychange",()=>{if(!document.hidden){attivo=Date.now();manda("ping");}});
+  batti();
+  return{vista(p){if(p===ultima)return;ultima=p;pagina=p;manda("vista");}};
+})();
 
 /* ---------------- SCROLL: barra di avanzamento + dock compatto ---------------- */
 const prog=$("#progress"),dock=$("#dock");
