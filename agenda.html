@@ -2,165 +2,488 @@
 <html lang="it">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Agenda — L'Arte del Vino</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Dashboard — L'Arte del Vino</title>
 <meta name="robots" content="noindex, nofollow">
 <meta name="theme-color" content="#4A1226">
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Bitter:wght@500;600;700&display=swap');
-:root{--bg:#F4F1EC;--bg2:#EFE9E0;--card:#fff;--cream:#FBF7F0;--ink:#1C1A17;--muted:#78706A;--faint:#A79F97;
---line:#EFE9E0;--line2:#E6DFD4;--wine:#7A1230;--wine-deep:#4A1226;--wine-soft:#F6E7EB;--gold:#B9873A;
---gold-soft:#FBF0D8;--gold-ink:#6B5111;--green:#2E7A51;--green-soft:#E8F1EA;--green-ink:#1F5436;
---sh-1:0 1px 2px rgba(45,28,18,.06),0 2px 6px rgba(45,28,18,.05);
---sh-2:0 2px 4px rgba(45,28,18,.07),0 8px 20px rgba(45,28,18,.09);
---r:22px;--serif:'Bitter',Georgia,serif;--sans:'Manrope',system-ui,sans-serif}
+/* I font stanno sul sito stesso: la sicurezza del sito blocca quelli esterni. */
+@font-face{font-family:Manrope;font-weight:400;font-display:swap;src:url(fonts/manrope-400.woff2) format("woff2")}
+@font-face{font-family:Manrope;font-weight:500;font-display:swap;src:url(fonts/manrope-500.woff2) format("woff2")}
+@font-face{font-family:Manrope;font-weight:600;font-display:swap;src:url(fonts/manrope-600.woff2) format("woff2")}
+@font-face{font-family:Manrope;font-weight:700;font-display:swap;src:url(fonts/manrope-700.woff2) format("woff2")}
+@font-face{font-family:Manrope;font-weight:800;font-display:swap;src:url(fonts/manrope-800.woff2) format("woff2")}
+@font-face{font-family:Lora;font-weight:600;font-display:swap;src:url(fonts/lora-600.woff2) format("woff2")}
+@font-face{font-family:Lora;font-weight:700;font-display:swap;src:url(fonts/lora-700.woff2) format("woff2")}
+
+:root{color-scheme:light;
+  --page:#F4F0EA;--card:#FFFFFF;--soft:#F7F2EB;--ink:#1C1A17;--ink2:#57504A;--muted:#857C74;
+  --line:#ECE5DB;--axis:#CFC6BA;--track:#F1EAE0;
+  --wine:#7A1230;--wine-deep:#4A1226;--wine-soft:#F6E7EB;
+  --s1:#A3234B;--s2:#B8862A;          /* grafici: confermato, in attesa (palette validata) */
+  --good:#0CA30C;--good-ink:#006300;--warn:#FAB219;--warn-ink:#7A5200;--crit:#D03B3B;--crit-ink:#A32222;
+  --sh:0 1px 2px rgba(45,28,18,.06),0 3px 10px rgba(45,28,18,.06);
+  --r:20px;--serif:Lora,Georgia,serif;--sans:Manrope,system-ui,-apple-system,"Segoe UI",sans-serif}
+@media (prefers-color-scheme:dark){:root:where(:not([data-theme="light"])){color-scheme:dark;
+  --page:#161012;--card:#231B1D;--soft:#2C2225;--ink:#F3ECE8;--ink2:#CFC3BE;--muted:#A0938E;
+  --line:#3A2E31;--axis:#54454A;--track:#33282B;--wine-soft:#3A2129;
+  --s1:#CC4F74;--s2:#B8892F;--good-ink:#3CC43C;--warn-ink:#F5C055;--crit-ink:#F08080}}
+:root[data-theme="dark"]{color-scheme:dark;
+  --page:#161012;--card:#231B1D;--soft:#2C2225;--ink:#F3ECE8;--ink2:#CFC3BE;--muted:#A0938E;
+  --line:#3A2E31;--axis:#54454A;--track:#33282B;--wine-soft:#3A2129;
+  --s1:#CC4F74;--s2:#B8892F;--good-ink:#3CC43C;--warn-ink:#F5C055;--crit-ink:#F08080}
+
 *{box-sizing:border-box;margin:0;padding:0}
 [hidden]{display:none!important}
-body{background:var(--bg);color:var(--ink);font:500 16px/1.6 var(--sans);-webkit-font-smoothing:antialiased;padding-bottom:40px}
-h1,h2,h3{font-family:var(--serif);font-weight:700;line-height:1.15}
+html{-webkit-text-size-adjust:100%}
+body{background:var(--page);color:var(--ink);font:500 15.5px/1.55 var(--sans);-webkit-font-smoothing:antialiased;padding-bottom:calc(40px + env(safe-area-inset-bottom))}
+h1,h2,h3{font-family:var(--serif);font-weight:700;line-height:1.2}
 button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
-input,select{font:inherit;width:100%;padding:10px 12px;border:none;border-radius:11px;background:var(--bg);
-  box-shadow:inset 0 0 0 1.5px var(--line2);color:var(--ink)}
-input:focus,select:focus{outline:none;box-shadow:inset 0 0 0 2px var(--wine)}
-.wrap{max-width:860px;margin:0 auto;padding:0 18px}
-header.top{background:linear-gradient(160deg,var(--wine),var(--wine-deep));color:#fff;
-  border-radius:0 0 26px 26px;padding:26px 0 22px;box-shadow:var(--sh-2)}
-header.top h1{font-size:clamp(24px,6vw,34px)}
-header.top p{color:rgba(255,255,255,.76);font-size:14px;margin-top:4px}
-.kpi{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
-.kpi div{background:rgba(255,255,255,.1);border-radius:14px;padding:10px 14px;min-width:92px}
-.kpi b{display:block;font-family:var(--serif);font-size:21px;color:#F0C544}
-.kpi span{font-size:10.5px;text-transform:uppercase;letter-spacing:.09em;color:rgba(255,255,255,.72)}
-section{padding:26px 0 0}
-h2{font-size:21px;margin-bottom:12px}
-.card{background:var(--card);border-radius:var(--r);padding:18px;box-shadow:var(--sh-1);margin-bottom:12px}
-.pren{display:grid;gap:10px;grid-template-columns:62px 1fr;align-items:start}
-.quando{background:var(--wine-soft);color:var(--wine);border-radius:12px;text-align:center;padding:8px 4px;line-height:1.1}
+input,select{font:inherit;width:100%;padding:10px 12px;border:none;border-radius:11px;background:var(--soft);
+  box-shadow:inset 0 0 0 1.5px var(--line);color:var(--ink);min-height:44px}
+input:focus,select:focus{outline:none;box-shadow:inset 0 0 0 2px var(--s1)}
+:focus-visible{outline:2px solid var(--s1);outline-offset:2px}
+.wrap{max-width:1080px;margin:0 auto;padding:0 16px}
+.num{font-variant-numeric:tabular-nums}
+
+/* ---------- testata e schede ---------- */
+header.top{background:linear-gradient(160deg,#7A1230,#4A1226);color:#fff;padding:calc(18px + env(safe-area-inset-top)) 0 0}
+.marchio{font-size:10.5px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:#F0C544}
+.riga-top{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap}
+header.top h1{font-size:clamp(24px,5vw,32px);margin-top:2px}
+#aggiornato{font-size:12.5px;color:rgba(255,255,255,.72)}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0 0;padding-bottom:14px}
+.chip{background:rgba(255,255,255,.1);border-radius:14px;padding:8px 12px;font-size:12.5px;color:rgba(255,255,255,.8);text-align:left}
+.chip b{display:block;color:#fff;font-size:15px;font-weight:700}
+button.chip:hover{background:rgba(255,255,255,.16)}
+.tabs{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none}
+@media(max-width:420px){.tabs{padding:0 6px}.tabs .tab{font-size:13px;padding:12px 7px 11px}.tabs .tab .badge{margin-left:3px;min-width:18px;height:18px}.tabs .tab .punto-live{margin-left:4px}}
+.tabs::-webkit-scrollbar{display:none}
+.tabbar{position:sticky;top:0;z-index:5;background:#4A1226;box-shadow:0 6px 14px rgba(0,0,0,.08)}
+.tab{flex:0 0 auto;color:rgba(255,255,255,.72);font-weight:700;font-size:14px;padding:12px 12px 11px;border-bottom:3px solid transparent;min-height:44px}
+.tab[aria-selected="true"]{color:#fff;border-bottom-color:#F0C544}
+.tab .badge{display:inline-grid;place-items:center;min-width:20px;height:20px;padding:0 6px;border-radius:999px;background:#F0C544;color:#3B2A00;font-size:11px;font-weight:800;margin-left:6px;vertical-align:1px}
+
+/* ---------- impaginazione ---------- */
+main{padding-top:22px}
+.vista>section{margin-bottom:26px}
+.titolo-sez{display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+h2{font-size:20px}
+.sotto{font-size:13px;color:var(--muted)}
+.card{background:var(--card);border-radius:var(--r);padding:18px;box-shadow:var(--sh)}
+.griglia{display:grid;gap:12px}
+@media(min-width:820px){.g2{grid-template-columns:1fr 1fr}.g3{grid-template-columns:2fr 1fr}}
+.card h3{font-family:var(--sans);font-size:15px;font-weight:800}
+.card .testa{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:12px}
+.vuoto{text-align:center;color:var(--muted);font-size:14px;padding:22px}
+
+/* tessere dei numeri */
+.tiles{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
+.tile{background:var(--card);border-radius:16px;padding:14px 16px;box-shadow:var(--sh)}
+.tile span{display:block;font-size:12.5px;color:var(--muted);font-weight:600}
+.tile b{display:block;font-size:24px;font-weight:700;margin-top:2px;letter-spacing:-.01em}
+.tile small{display:block;font-size:12px;color:var(--ink2);margin-top:2px}
+.hero span{font-size:13px;color:var(--muted);font-weight:700}
+.hero b{display:block;font-size:clamp(44px,9vw,56px);font-weight:800;letter-spacing:-.02em;line-height:1.05;margin:4px 0 6px}
+.hero p{font-size:14px;color:var(--ink2)}
+
+/* filtro dell'anno */
+.filtri{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+.seg{display:inline-flex;background:var(--card);border-radius:999px;padding:3px;box-shadow:var(--sh)}
+.seg button{padding:7px 14px;border-radius:999px;font-size:13.5px;font-weight:700;color:var(--ink2);min-height:38px}
+.seg button[aria-pressed="true"]{background:var(--wine);color:#fff}
+
+/* metro del Kleinunternehmer */
+.metro{height:14px;border-radius:999px;background:var(--track);display:flex;gap:2px;overflow:hidden;margin:12px 0 8px}
+.metro i{display:block;height:100%}
+.metro i:first-child{border-radius:999px 0 0 999px}
+.metro .m1{background:var(--s1)}.metro .m2{background:var(--s2)}
+.stato-ku{white-space:nowrap;flex:none;display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:800;border-radius:999px;padding:4px 10px}
+.stato-ku svg{width:15px;height:15px;flex:none}
+.ku-good{background:color-mix(in srgb,var(--good) 14%,transparent);color:var(--good-ink)}
+.ku-warn{background:color-mix(in srgb,var(--warn) 22%,transparent);color:var(--warn-ink)}
+.ku-crit{background:color-mix(in srgb,var(--crit) 16%,transparent);color:var(--crit-ink)}
+.nota{font-size:12.5px;color:var(--muted);margin-top:8px}
+
+/* grafici */
+.legenda{display:flex;gap:14px;flex-wrap:wrap;font-size:12.5px;color:var(--ink2);font-weight:600}
+.legenda i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.grafico{width:100%;position:relative}
+.grafico svg{display:block;width:100%;height:auto;overflow:visible}
+.grafico text{font-family:var(--sans);fill:var(--muted);font-size:11.5px;font-variant-numeric:tabular-nums}
+.grafico text.forte{fill:var(--ink);font-weight:700}
+.grafico text.lab{fill:var(--ink);font-weight:700;font-variant-numeric:normal}
+.grafico text.lab2{fill:var(--muted);font-size:11px;font-variant-numeric:normal}
+.grafico .griglia-l{stroke:var(--line);stroke-width:1}
+.grafico .base{stroke:var(--axis);stroke-width:1}
+.grafico .c1{fill:var(--s1)}.grafico .c2{fill:var(--s2)}.grafico .tr{fill:var(--track)}
+.grafico .obiettivo{stroke:var(--ink2);stroke-width:1}
+.grafico [data-tv]{cursor:default;outline:none}
+.grafico [data-tv].hit{fill:transparent}
+.grafico g.su .c1,.grafico g.su .c2{filter:brightness(1.12)}
+.grafico [data-tv]:focus-visible{stroke:var(--ink);stroke-width:1.5}
+.btn-tab{font-size:12.5px;font-weight:800;color:var(--ink2);background:var(--soft);border-radius:999px;padding:6px 12px;min-height:34px;flex:none}
+#tip{position:fixed;z-index:20;pointer-events:none;background:var(--card);color:var(--ink);border-radius:12px;padding:8px 11px;
+  box-shadow:0 4px 18px rgba(0,0,0,.18);font-size:12.5px;opacity:0;transition:opacity .12s;max-width:240px}
+#tip.on{opacity:1}
+#tip b{display:block;font-size:15px}
+#tip span{color:var(--muted)}
+#tip .k{display:flex;align-items:center;gap:6px;margin-top:2px}
+#tip .k i{width:12px;height:3px;border-radius:2px;display:inline-block}
+
+/* tabelle */
+.tabella{width:100%;border-collapse:collapse;font-size:13.5px}
+.tabella th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:800;padding:8px 8px 8px 0;border-bottom:1px solid var(--line)}
+.tabella td{padding:9px 8px 9px 0;border-bottom:1px solid var(--line);vertical-align:top}
+.tabella td.n,.tabella th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.tabella tr:last-child td{border-bottom:none}
+.tabella tfoot td{font-weight:800;border-top:1.5px solid var(--axis);border-bottom:none}
+.scorre{overflow-x:auto;-webkit-overflow-scrolling:touch}
+@media(max-width:560px){.tabella .m-hide{display:none}.tabella{font-size:13px}}
+.piccolo{font-size:12px;color:var(--muted)}
+
+/* serate e prenotazioni */
+.serata{background:var(--card);border-radius:var(--r);box-shadow:var(--sh);overflow:hidden}
+.serata>.testa{display:flex;gap:12px;align-items:center;padding:14px 16px}
+.quando{background:var(--wine-soft);color:var(--s1);border-radius:12px;text-align:center;padding:7px 4px;line-height:1.1;width:58px;flex:none}
 .quando b{display:block;font-family:var(--serif);font-size:20px}
 .quando i{font-style:normal;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.06em}
-.quando u{display:block;text-decoration:none;font-size:11px;font-weight:700;margin-top:3px}
-.chi b{font-family:var(--serif);font-size:17px}
-.chi p{font-size:13.5px;color:var(--muted)}
-.chi a{color:var(--wine);font-weight:700;text-decoration:none}
-.stato{display:inline-block;border-radius:999px;padding:3px 10px;font-size:10px;font-weight:800;
-  text-transform:uppercase;letter-spacing:.09em;margin-left:6px;vertical-align:2px}
-.s-pagata,.s-confermata{background:var(--green-soft);color:var(--green-ink)}
-.s-tenuta{background:var(--gold-soft);color:var(--gold-ink)}
-.s-scaduta,.s-annullata{background:var(--bg2);color:var(--faint)}
-.s-da_rimborsare{background:#FCE4EC;color:#9B1442}
-.azioni{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;grid-column:1/-1}
-.b{display:inline-block;border-radius:999px;padding:8px 15px;font-size:13px;font-weight:800;box-shadow:var(--sh-1);
-  background:var(--card);color:var(--ink);text-decoration:none;transition:transform .2s}
+.quando u{display:block;text-decoration:none;font-size:10.5px;font-weight:700;margin-top:2px}
+.serata .info{flex:1;min-width:0}
+.serata .info b{font-size:16px}
+.mini{height:8px;border-radius:999px;background:var(--track);display:flex;gap:2px;overflow:hidden;margin-top:7px}
+.mini i{display:block;height:100%}.mini .m1{background:var(--s1)}.mini .m2{background:var(--s2)}
+details.ospiti>summary{cursor:pointer;list-style:none;padding:10px 16px;border-top:1px solid var(--line);font-size:13.5px;font-weight:800;color:var(--ink2)}
+details.ospiti>summary::-webkit-details-marker,.pren>summary::-webkit-details-marker{display:none}
+details.ospiti>summary::after{content:" ›";color:var(--muted)}details.ospiti[open]>summary::after{content:" ⌄"}
+.pren{border-top:1px solid var(--line)}
+.pren>summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:6px;padding:11px 16px;min-height:44px}
+.pren .nome{font-weight:800;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pren .dx{margin-left:auto;font-size:13px;color:var(--ink2);white-space:nowrap;font-variant-numeric:tabular-nums;padding-left:8px}
+.pren .dentro{padding:0 16px 14px;display:grid;gap:4px}
+.pren p{font-size:13.5px;color:var(--ink2)}
+.pren a{color:var(--s1);font-weight:700;text-decoration:none}
+.stato{display:inline-block;flex:none;border-radius:999px;padding:2px 9px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;margin-left:4px}
+.s-pagata,.s-confermata{background:color-mix(in srgb,var(--good) 14%,transparent);color:var(--good-ink)}
+.s-tenuta{background:color-mix(in srgb,var(--s2) 20%,transparent);color:var(--warn-ink)}
+.s-scaduta,.s-annullata{background:var(--soft);color:var(--muted)}
+.azioni{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+.b{display:inline-flex;align-items:center;justify-content:center;gap:6px;border-radius:999px;padding:9px 15px;font-size:13px;font-weight:800;
+  background:var(--soft);color:var(--ink);text-decoration:none;min-height:40px;transition:transform .15s}
 .b.si{background:var(--wine);color:#fff}
-.b.no{background:var(--bg2);color:var(--muted);box-shadow:none}
-.b:hover{transform:translateY(-1px)}
-.vuoto{text-align:center;color:var(--muted);font-size:14px;padding:26px}
-.righe{display:grid;gap:10px}
-.due{display:grid;gap:10px;grid-template-columns:1fr 1fr}
+.b.no{color:var(--muted)}
+.b:active{transform:scale(.97)}
+.b.largo{width:100%}
+.archivio summary{cursor:pointer;font-weight:800;padding:12px 0;list-style:none}
+.archivio summary::-webkit-details-marker{display:none}
+.archivio summary::after{content:" ›";color:var(--muted)}
+.archivio[open] summary::after{content:" ⌄"}
+
+/* da fare */
+.todo{display:flex;gap:12px;align-items:flex-start;padding:14px 0;border-top:1px solid var(--line)}
+.todo:first-of-type{border-top:none;padding-top:4px}
+.todo .ico{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;flex:none;background:var(--soft)}
+.todo .ico svg{width:18px;height:18px}
+.todo .cosa{flex:1;min-width:0}
+.todo .cosa b{display:block}
+.todo .cosa p{font-size:13.5px;color:var(--ink2)}
+.todo .cosa .su{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.todo .azioni .b{padding:7px 12px;min-height:36px;font-size:12.5px}
+.copia{white-space:nowrap}
+.copia{font-family:ui-monospace,Menlo,monospace;font-size:13px;background:var(--soft);border-radius:8px;padding:3px 8px;font-weight:700;color:var(--ink)}
+button.copia::after{content:" ⧉";color:var(--muted);font-family:var(--sans)}
+.tempo{font-size:12px;font-weight:800;border-radius:999px;padding:3px 9px;white-space:nowrap}
+.t-ok{background:var(--soft);color:var(--ink2)}
+.t-poco{background:color-mix(in srgb,var(--crit) 16%,transparent);color:var(--crit-ink)}
+
+/* impostazioni */
+.campi{display:grid;gap:12px}
+.due{display:grid;gap:12px;grid-template-columns:1fr 1fr}
+@media(max-width:560px){.due{grid-template-columns:1fr}}
 .campo{display:grid;gap:5px}
-.campo label{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--muted)}
-.giorni{display:flex;gap:6px;flex-wrap:wrap}
-.giorni label{display:grid;gap:4px;justify-items:center;background:var(--bg);border-radius:12px;padding:8px;
-  min-width:62px;box-shadow:inset 0 0 0 1.5px var(--line2);cursor:pointer}
+.campo label{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.09em;color:var(--muted)}
+.campo small{font-size:12px;color:var(--muted)}
+.giorni{display:grid;grid-template-columns:repeat(auto-fill,minmax(124px,1fr));gap:8px}
+.giorni label{display:grid;gap:4px;background:var(--soft);border-radius:12px;padding:8px}
 .giorni label b{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
-.giorni input[type=text]{padding:5px 6px;text-align:center;font-size:12.5px;font-weight:700}
+.giorni input{padding:6px 8px;min-height:36px;text-align:center;font-size:13px;font-weight:700;background:var(--card)}
+.giorni select{padding:6px 8px;min-height:36px;font-size:12.5px;background:var(--card)}
 .chiusure{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}
-.chiusure span{background:var(--bg2);border-radius:999px;padding:6px 10px;font-size:12.5px;font-weight:700}
-.chiusure span button{color:var(--faint);margin-left:5px}
-#avviso{position:fixed;left:50%;bottom:20px;transform:translate(-50%,16px);background:var(--ink);color:#fff;
-  border-radius:999px;padding:11px 18px;font-size:13.5px;font-weight:700;box-shadow:var(--sh-2);
-  opacity:0;pointer-events:none;transition:.3s;z-index:9}
+.chiusure span{background:var(--soft);border-radius:999px;padding:6px 6px 6px 12px;font-size:13px;font-weight:700;display:inline-flex;align-items:center;gap:4px}
+.chiusure button{width:28px;height:28px;border-radius:50%;color:var(--muted)}
+
+/* visite */
+.live .grande{display:flex;align-items:center;gap:14px}
+.live b.n{font-size:clamp(48px,11vw,64px);font-weight:800;line-height:1;letter-spacing:-.02em}
+.live .etichetta{font-size:13px;font-weight:700;color:var(--muted)}
+.punto{width:12px;height:12px;border-radius:50%;background:var(--good);box-shadow:0 0 0 0 color-mix(in srgb,var(--good) 55%,transparent);animation:batte 2s infinite;flex:none}
+.punto.spento{background:var(--axis);animation:none}
+@keyframes batte{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--good) 55%,transparent)}70%{box-shadow:0 0 0 12px transparent}100%{box-shadow:0 0 0 0 transparent}}
+.tab .punto-live{display:inline-block;width:8px;height:8px;border-radius:50%;background:#5BE05B;margin-left:6px;vertical-align:1px}
+.tab .ingranaggio{display:none;width:20px;height:20px;vertical-align:-5px}
+@media(max-width:420px){.tab .testo-lungo{display:none}.tab .ingranaggio{display:inline-block}}
+.pill-pag{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.pill-pag span{background:var(--soft);border-radius:999px;padding:6px 12px;font-size:13px;font-weight:700}
+.pill-pag b{font-variant-numeric:tabular-nums;margin-left:4px}
+.chip-sel{display:inline-flex;align-items:center;gap:6px;background:var(--wine);color:#fff;border-radius:999px;padding:6px 6px 6px 12px;font-size:13px;font-weight:700}
+.chip-sel button{width:26px;height:26px;border-radius:50%;background:rgba(255,255,255,.18);color:#fff;font-weight:800}
+.grafico .c1.spento{opacity:.28}
+.grafico .c1.sel{filter:brightness(1.1)}
+
+#avviso{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom));transform:translate(-50%,16px);background:var(--ink);color:var(--card);
+  border-radius:999px;padding:11px 18px;font-size:13.5px;font-weight:700;box-shadow:var(--sh);opacity:0;pointer-events:none;transition:.25s;z-index:30}
 #avviso.on{opacity:1;transform:translate(-50%,0)}
 .entra{max-width:420px;margin:12vh auto;text-align:center}
-@media(max-width:560px){.due{grid-template-columns:1fr}}
-@media (prefers-color-scheme:dark){}
+.caricando{opacity:.55;transition:opacity .2s}
+
+@media print{
+  header.top,.tabbar,#avviso,#tip,.azioni,.no-stampa{display:none!important}
+  body{background:#fff;color:#000}
+  body.stampa-serata .vista>*:not(.da-stampare-sez){display:none!important}
+  body.stampa-serata .serata:not(.da-stampare){display:none!important}
+  .card,.serata,.tile{box-shadow:none;border:1px solid #ddd}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 </head>
 <body>
 
-<div id="porta" class="wrap entra">
+<div id="porta" class="wrap entra" hidden>
   <div class="card">
-    <h2>Agenda</h2>
-    <p style="color:var(--muted);font-size:14px;margin:6px 0 14px">Incolla il token che hai messo in AGENDA_TOKEN.</p>
-    <input id="token" type="password" placeholder="token" autocomplete="current-password">
-    <button class="b si" style="width:100%;margin-top:10px" id="entra">Entra</button>
+    <h2>Dashboard</h2>
+    <p class="sotto" style="margin:6px 0 14px">Scrivi la password che hai messo in AGENDA_TOKEN.</p>
+    <input id="token" type="password" placeholder="password" autocomplete="current-password">
+    <button class="b si largo" style="margin-top:10px" id="entra">Entra</button>
   </div>
 </div>
 
 <div id="app" hidden>
-  <header class="top"><div class="wrap">
-    <p style="font-size:10.5px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#F0C544;margin-bottom:2px">L'Arte del Vino</p>
-    <h1>Agenda</h1>
-    <p id="aggiornato">—</p>
-    <div class="kpi">
-      <div><b id="k1">0</b><span>in arrivo</span></div>
-      <div><b id="k2">0</b><span>da confermare</span></div>
-      <div><b id="k3">0 €</b><span>incassato</span></div>
-      <div><b id="k4">0</b><span>questo mese</span></div>
+  <header class="top">
+    <div class="wrap">
+      <div class="riga-top">
+        <div><p class="marchio">L'Arte del Vino</p><h1>Dashboard</h1></div>
+        <p id="aggiornato">—</p>
+      </div>
+      <div class="chips" id="chips"></div>
     </div>
-  </div></header>
+  </header>
+  <div class="tabbar"><div class="wrap tabs" role="tablist">
+    <button class="tab" role="tab" data-vista="panoramica" aria-selected="true">Panoramica</button>
+    <button class="tab" role="tab" data-vista="visite" aria-selected="false">Visite<i class="punto-live" id="tab-live" hidden></i></button>
+    <button class="tab" role="tab" data-vista="serate" aria-selected="false">Serate</button>
+    <button class="tab" role="tab" data-vista="dafare" aria-selected="false">Da fare<span class="badge" id="badge" hidden></span></button>
+    <button class="tab" role="tab" data-vista="impostazioni" aria-selected="false" aria-label="Impostazioni"><span class="testo-lungo">Impostazioni</span><svg class="ingranaggio" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.3 1.8l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.8-.3 1.7 1.7 0 00-1 1.5V21a2 2 0 11-4 0v-.1a1.7 1.7 0 00-1.1-1.5 1.7 1.7 0 00-1.8.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.7 1.7 0 00.3-1.8 1.7 1.7 0 00-1.5-1H3a2 2 0 110-4h.1a1.7 1.7 0 001.5-1.1 1.7 1.7 0 00-.3-1.8l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.8.3H9a1.7 1.7 0 001-1.5V3a2 2 0 114 0v.1a1.7 1.7 0 001 1.5 1.7 1.7 0 001.8-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 00-.3 1.8V9a1.7 1.7 0 001.5 1H21a2 2 0 110 4h-.1a1.7 1.7 0 00-1.5 1z"/></svg></button>
+  </div></div>
 
-  <main class="wrap">
-    <section>
-      <h2>Prossime serate</h2>
-      <div id="prossime" class="righe"></div>
-    </section>
+  <main class="wrap" id="contenuto">
 
-    <section>
-      <h2>Aggiungi a mano</h2>
-      <div class="card">
-        <div class="righe">
+    <!-- ================= PANORAMICA ================= -->
+    <div class="vista" id="v-panoramica">
+      <section>
+        <div class="titolo-sez"><h2>Le prossime serate</h2><span class="sotto" id="prox-sotto"></span></div>
+        <div class="griglia g3">
+          <div class="card">
+            <div class="testa">
+              <div><h3>Posti venduti</h3><p class="sotto">su <span id="posti-lbl">40</span> posti a serata</p></div>
+              <button class="btn-tab" data-tabella="riemp">Tabella</button>
+            </div>
+            <div class="legenda" style="margin-bottom:8px"><span><i style="background:var(--s1)"></i>Pagati</span><span><i style="background:var(--s2)"></i>In attesa di bonifico</span><span><i style="background:var(--track)"></i>Liberi</span></div>
+            <div class="grafico" id="g-riemp" role="img"></div>
+            <div class="scorre" id="t-riemp" hidden></div>
+          </div>
+          <div class="tiles" id="bisogno-tiles" style="align-content:start"></div>
+        </div>
+        <div class="card" style="margin-top:12px">
+          <div class="testa"><div><h3>Cosa ti serve</h3><p class="sotto" id="bisogno-sotto"></p></div></div>
+          <div class="scorre" id="t-bisogno"></div>
+        </div>
+      </section>
+
+      <section>
+        <div class="titolo-sez"><h2>I conti</h2></div>
+        <div class="filtri"><div class="seg" id="anni" role="group" aria-label="Periodo"></div></div>
+        <div class="griglia g2">
+          <div class="card hero" id="hero"></div>
+          <div class="card" id="ku"></div>
+        </div>
+        <div class="tiles" id="kpi" style="margin-top:12px"></div>
+        <div class="griglia g3" style="margin-top:12px">
+          <div class="card">
+            <div class="testa">
+              <div><h3>Incassi mese per mese</h3><p class="sotto">per data della serata</p></div>
+              <button class="btn-tab" data-tabella="mesi">Tabella</button>
+            </div>
+            <div class="legenda" style="margin-bottom:8px"><span><i style="background:var(--s1)"></i>Pagato</span><span><i style="background:var(--s2)"></i>In attesa di bonifico</span><span id="leg-obiettivo" hidden><i style="background:var(--ink2);height:2px;width:12px;vertical-align:3px"></i>Obiettivo del mese</span></div>
+            <div class="grafico" id="g-mesi" role="img"></div>
+            <div class="scorre" id="t-mesi" hidden></div>
+          </div>
+          <div class="card">
+            <div class="testa">
+              <div><h3>Ospiti medi per serata</h3><p class="sotto">per tema</p></div>
+              <button class="btn-tab" data-tabella="temi">Tabella</button>
+            </div>
+            <div class="grafico" id="g-temi" role="img"></div>
+            <div class="scorre" id="t-temi" hidden></div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- ================= VISITE ================= -->
+    <div class="vista" id="v-visite" hidden>
+      <section>
+        <div class="griglia g2">
+          <div class="card live" id="live"></div>
+          <div class="card" id="live-pagine"></div>
+        </div>
+      </section>
+      <section>
+        <div class="titolo-sez"><h2>Com'è andata</h2><span class="sotto" id="vis-sotto"></span></div>
+        <div class="filtri" id="vis-filtri"></div>
+        <div class="tiles" id="vis-kpi"></div>
+        <div class="card" style="margin-top:12px">
+          <div class="testa">
+            <div><h3>Visitatori al giorno</h3><p class="sotto">tocca un giorno per vedere solo quello</p></div>
+            <button class="btn-tab" data-tabella="giorni">Tabella</button>
+          </div>
+          <div class="grafico" id="g-giorni" role="img"></div>
+          <div class="scorre" id="t-giorni" hidden></div>
+        </div>
+        <div class="griglia g2" style="margin-top:12px">
+          <div class="card">
+            <div class="testa"><div><h3>Dal primo clic alla prenotazione</h3><p class="sotto" id="imbuto-sotto">quanti arrivano a ogni passo</p></div>
+              <button class="btn-tab" data-tabella="imbuto">Tabella</button></div>
+            <div class="grafico" id="g-imbuto" role="img"></div>
+            <div class="scorre" id="t-imbuto" hidden></div>
+          </div>
+          <div class="card">
+            <div class="testa"><div><h3>Da dove arrivano</h3><p class="sotto">visitatori per provenienza</p></div>
+              <button class="btn-tab" data-tabella="fonti">Tabella</button></div>
+            <div class="grafico" id="g-fonti" role="img"></div>
+            <div class="scorre" id="t-fonti" hidden></div>
+          </div>
+        </div>
+        <div class="griglia g3" style="margin-top:12px">
+          <div class="card">
+            <div class="testa"><div><h3>A che ora guardano il sito</h3><p class="sotto" id="ore-sotto">pagine viste per ora del giorno</p></div>
+              <button class="btn-tab" data-tabella="ore">Tabella</button></div>
+            <div class="grafico" id="g-ore" role="img"></div>
+            <div class="scorre" id="t-ore" hidden></div>
+          </div>
+          <div class="card">
+            <div class="testa"><div><h3>Pagine più viste</h3></div></div>
+            <div class="scorre" id="t-pagine"></div>
+          </div>
+        </div>
+        <p class="nota" style="margin-top:12px">Conteggio senza cookie: niente viene salvato nel browser dei visitatori e nessuno è riconoscibile. Chi usa "Do Not Track" non viene contato, quindi i numeri veri sono un po' più alti.</p>
+      </section>
+    </div>
+
+    <!-- ================= SERATE ================= -->
+    <div class="vista" id="v-serate" hidden>
+      <section class="da-stampare-sez">
+        <div class="titolo-sez"><h2>In programma</h2><span class="sotto">prossime 6 settimane</span></div>
+        <div class="griglia" id="lista-serate"></div>
+      </section>
+      <section class="no-stampa">
+        <div class="titolo-sez"><h2>Aggiungi a mano</h2><span class="sotto">prenotazioni prese a voce o al telefono</span></div>
+        <div class="card"><div class="campi">
           <div class="due">
-            <div class="campo"><label>Giorno</label><input id="a-data" type="date"></div>
-            <div class="campo"><label>Ora</label><input id="a-ora" type="time" value="18:00"></div>
+            <div class="campo"><label for="a-data">Giorno</label><input id="a-data" type="date"></div>
+            <div class="campo"><label for="a-ora">Ora</label><input id="a-ora" type="time" value="18:00"></div>
           </div>
           <div class="due">
-            <div class="campo"><label>Nome</label><input id="a-nome" type="text"></div>
-            <div class="campo"><label>Telefono</label><input id="a-tel" type="tel"></div>
+            <div class="campo"><label for="a-nome">Nome</label><input id="a-nome" type="text" autocomplete="off"></div>
+            <div class="campo"><label for="a-tel">Telefono</label><input id="a-tel" type="tel" autocomplete="off"></div>
           </div>
           <div class="due">
-            <div class="campo"><label>Persone</label><input id="a-pax" type="number" min="1" value="6"></div>
-            <div class="campo"><label>Totale €</label><input id="a-tot" type="number" min="0" value="294"></div>
+            <div class="campo"><label for="a-pax">Persone</label><input id="a-pax" type="number" min="1" max="40" value="2"></div>
+            <div class="campo"><label for="a-tot">Totale €</label><input id="a-tot" type="number" min="0" step="1" value="98"><small id="a-tot-aiuto"></small></div>
           </div>
-          <div class="campo"><label>Nota</label><input id="a-note" type="text" placeholder="dove, che vini, cosa ricordare"></div>
+          <div class="due">
+            <div class="campo"><label for="a-pag">Pagamento</label><select id="a-pag"><option value="cash">Contanti</option><option value="bank">Bonifico</option><option value="card">Carta (SumUp)</option></select></div>
+            <div class="campo"><label for="a-note">Nota</label><input id="a-note" type="text" placeholder="cosa ricordare"></div>
+          </div>
           <button class="b si" id="aggiungi">Metti in agenda</button>
-        </div>
-      </div>
-    </section>
+        </div></div>
+      </section>
+      <section class="no-stampa">
+        <details class="archivio"><summary>Archivio: serate passate, annullate e scadute</summary>
+          <div class="griglia" id="archivio"></div>
+        </details>
+      </section>
+    </div>
 
-    <section>
-      <h2>Quando lavori</h2>
-      <div class="card">
-        <div class="giorni" id="settimana"></div>
-        <p style="font-size:12.5px;color:var(--muted);margin-top:10px">
-          Scrivi l'ora di inizio, o più ore separate da virgola. Lascia vuoto per non lavorare quel giorno.</p>
-        <div class="due" style="margin-top:14px">
-          <div class="campo"><label>Preavviso minimo (giorni)</label><input id="r-anticipo" type="number" min="0" max="30"></div>
-          <div class="campo"><label>Durata serata (minuti)</label><input id="r-durata" type="number" min="30" max="480" step="15"></div>
-        </div>
-        <button class="b si" id="salvaregole" style="margin-top:12px">Salva</button>
-      </div>
-    </section>
+    <!-- ================= DA FARE ================= -->
+    <div class="vista" id="v-dafare" hidden>
+      <section>
+        <div class="titolo-sez"><h2>Bonifici da controllare</h2><span class="sotto">cerca la causale nell'app della banca</span></div>
+        <div class="card" id="todo-bonifici"></div>
+      </section>
+      <section>
+        <div class="titolo-sez"><h2>Serate da spingere</h2><span class="sotto">prossimi 14 giorni, meno di metà sala</span></div>
+        <div class="card" id="todo-spingere"></div>
+      </section>
+      <section>
+        <div class="titolo-sez"><h2>Scadute di recente</h2><span class="sotto">se il bonifico arriva in ritardo, confermale da qui</span></div>
+        <div class="card" id="todo-scadute"></div>
+      </section>
+    </div>
 
-    <section>
-      <h2>Giorni chiusi</h2>
-      <div class="card">
-        <div class="due">
-          <div class="campo"><label>Chiudi un giorno</label><input id="c-data" type="date"></div>
-          <div style="align-self:end"><button class="b" id="chiudi">Chiudi</button></div>
+    <!-- ================= IMPOSTAZIONI ================= -->
+    <div class="vista" id="v-impostazioni" hidden>
+      <section>
+        <div class="titolo-sez"><h2>I tuoi numeri</h2><span class="sotto">servono solo per i conti della dashboard</span></div>
+        <div class="card"><div class="campi">
+          <div class="due">
+            <div class="campo"><label for="c-costo">Vino per ospite (€)</label><input id="c-costo" type="number" min="0" step="0.5"><small>Quanto paghi a Partenope per ogni ospite.</small></div>
+            <div class="campo"><label for="c-obiettivo">Obiettivo al mese (€)</label><input id="c-obiettivo" type="number" min="0" step="100"><small>0 = nessun obiettivo.</small></div>
+          </div>
+          <div class="due">
+            <div class="campo"><label for="c-vini">Etichette per serata</label><input id="c-vini" type="number" min="1" max="20"></div>
+            <div class="campo"><label for="c-ml">Ml per assaggio</label><input id="c-ml" type="number" min="5" max="300" step="5"><small>Per calcolare le bottiglie da 0,75 l.</small></div>
+          </div>
+          <div class="campo"><label for="c-ku">Limite Kleinunternehmer (€ all'anno)</label><input id="c-ku" type="number" min="0" step="500"><small>25.000 € nel 2026. Chiedi conferma al tuo Steuerberater.</small></div>
+          <button class="b si" id="salvaconti">Salva i numeri</button>
+        </div></div>
+      </section>
+      <section>
+        <div class="titolo-sez"><h2>Quando lavori</h2><span class="sotto">ora di inizio e tema per ogni giorno</span></div>
+        <div class="card"><div class="campi">
+          <div class="giorni" id="settimana"></div>
+          <p class="piccolo">Scrivi l'ora di inizio, o più ore separate da virgola. Lascia vuoto per non lavorare quel giorno.</p>
+          <div class="due">
+            <div class="campo"><label for="r-posti">Posti per serata</label><input id="r-posti" type="number" min="1" max="200"></div>
+            <div class="campo"><label for="r-anticipo">Si prenota fino a (giorni prima)</label><input id="r-anticipo" type="number" min="0" max="30"></div>
+          </div>
+          <div class="campo"><label for="r-durata">Durata della serata (minuti)</label><input id="r-durata" type="number" min="30" max="480" step="15"></div>
+          <button class="b si" id="salvaregole">Salva gli orari</button>
+        </div></div>
+      </section>
+      <section>
+        <div class="titolo-sez"><h2>Giorni chiusi</h2></div>
+        <div class="card">
+          <div class="due">
+            <div class="campo"><label for="c-data">Chiudi un giorno</label><input id="c-data" type="date"></div>
+            <div style="align-self:end"><button class="b" id="chiudi">Chiudi quel giorno</button></div>
+          </div>
+          <div class="chiusure" id="chiusure"></div>
         </div>
-        <div class="chiusure" id="chiusure"></div>
-      </div>
-    </section>
-
-    <section>
-      <h2>Archivio</h2>
-      <div id="passate" class="righe"></div>
-    </section>
+      </section>
+      <section>
+        <div class="titolo-sez"><h2>Esporta</h2></div>
+        <div class="card">
+          <p class="sotto" style="margin-bottom:10px">Tutte le prenotazioni in un file per Excel o per il tuo Steuerberater.</p>
+          <button class="b" id="esporta">Scarica il file CSV</button>
+          <button class="b no" id="esci" style="margin-left:6px">Esci da questo dispositivo</button>
+        </div>
+      </section>
+    </div>
   </main>
 </div>
 
-<div id="avviso"></div>
+<div id="tip" role="status" aria-live="polite"></div>
+<div id="avviso" role="status"></div>
 
 <script src="js/agenda.js" defer></script>
 </body>
