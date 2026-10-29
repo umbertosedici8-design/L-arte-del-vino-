@@ -7,15 +7,79 @@
 const LOCALE = "./dati";
 let blobs = null;
 
+/* consistency "strong": chi legge vede SUBITO quello che un altro ha appena scritto.
+   Con quella di serie (eventual) una modifica può metterci fino a 60 secondi a
+   comparire ovunque: due clienti potevano prendere gli ultimi posti insieme. */
 async function store() {
   if (blobs !== null) return blobs;
   try {
     const { getStore } = await import("@netlify/blobs");
-    blobs = getStore("prenotazioni");
+    blobs = getStore({ name: "prenotazioni", consistency: "strong" });
   } catch {
     blobs = false;                     // nessun Netlify: si va di file
   }
   return blobs;
+}
+
+/* Un secondo cassetto, separato dalle prenotazioni: le visite al sito.
+   Stessa interfaccia (leggi, scrivi, elenca, cancella), stessa scelta Netlify/file. */
+const cassetti = new Map();
+export function cassetto(nome) {
+  if (cassetti.has(nome)) return cassetti.get(nome);
+  let st = null;
+  const apri = async () => {
+    if (st !== null) return st;
+    try { const { getStore } = await import("@netlify/blobs"); st = getStore({ name: nome, consistency: "strong" }); }
+    catch { st = false; }
+    return st;
+  };
+  const cartella = async () => {
+    const fs = await import("node:fs/promises"), path = await import("node:path");
+    return { fs, path, base: path.join(LOCALE, "_" + nome) };
+  };
+  const c = {
+    async leggi(k, difetto = null) {
+      const s = await apri();
+      if (s) { const v = await s.get(k, { type: "json" }); return v ?? difetto; }
+      const { fs, path, base } = await cartella();
+      try { return JSON.parse(await fs.readFile(path.join(base, safe(k) + ".json"), "utf8")); } catch { return difetto; }
+    },
+    async scrivi(k, v) {
+      const s = await apri();
+      if (s) return s.setJSON(k, v);
+      const { fs, path, base } = await cartella();
+      const f = path.join(base, safe(k) + ".json");
+      await fs.mkdir(path.dirname(f), { recursive: true });
+      await fs.writeFile(f, JSON.stringify(v));
+    },
+    async elenca(prefisso) {
+      const s = await apri();
+      if (s) { const { blobs: b } = await s.list({ prefix: prefisso }); return b.map((x) => x.key); }
+      const { fs, path, base } = await cartella();
+      /* in locale: si legge la cartella più vicina e si filtra per prefisso */
+      const fine = prefisso.lastIndexOf("/");
+      const dir = fine >= 0 ? prefisso.slice(0, fine + 1) : "";
+      const giu = async (d) => {
+        let out = [];
+        try {
+          for (const e of await fs.readdir(path.join(base, safe(d) || "."), { withFileTypes: true })) {
+            if (e.isDirectory()) out = out.concat(await giu(d + e.name + "/"));
+            else if (e.name.endsWith(".json")) out.push(d + e.name.slice(0, -5));
+          }
+        } catch {}
+        return out;
+      };
+      return (await giu(dir)).filter((k) => k.startsWith(prefisso));
+    },
+    async cancella(k) {
+      const s = await apri();
+      if (s) return s.delete(k);
+      const { fs, path, base } = await cartella();
+      try { await fs.unlink(path.join(base, safe(k) + ".json")); } catch {}
+    }
+  };
+  cassetti.set(nome, c);
+  return c;
 }
 
 async function fsMod() {

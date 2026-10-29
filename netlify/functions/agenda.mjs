@@ -6,17 +6,30 @@
 
 import {
   ammesso, chiaveDi, salva, regole, ics, posta, nuovoRif, viva,
-  json, errore, preflight, jsonPrivato, CORS_PRIVATO, troppiTentativi, ripulisciRegole, dataVera, corpo
+  json, errore, preflight, jsonPrivato, CORS_PRIVATO, troppiTentativi, giaTroppi, ripulisciRegole, dataVera, corpo, giornoSettimana
 } from "./_comune.mjs";
 import { mailConfermata, mailAnnullata, mailATeConfermata } from "./_mail.mjs";
 import { leggi, scrivi, tutte } from "./_magazzino.mjs";
+import { adesso as liveVisite, statistiche } from "./_visite.mjs";
 
 async function gestisci(req) {
   if (req.method === "OPTIONS") return new Response(null, { status: 204, headers: CORS_PRIVATO });
-  if (troppiTentativi(req)) return jsonPrivato({ errore: "troppi tentativi, riprova fra un minuto" }, 429);
-  if (!(await ammesso(req))) return jsonPrivato({ errore: "non autorizzato" }, 401);
+  /* Due freni separati. Chi sbaglia password ha 10 tentativi ogni 15 minuti, e dopo
+     non viene nemmeno controllato (così non può indovinarla a forza di provare).
+     Tu, entrato, hai fino a 120 richieste al minuto: confermare dieci bonifici
+     di fila non ti blocca. */
+  const QUARTO = 15 * 60000;
+  if (giaTroppi(req, 10, QUARTO, "agenda-ko:")) return jsonPrivato({ errore: "troppi tentativi, riprova fra 15 minuti" }, 429);
+  if (!(await ammesso(req))) {
+    troppiTentativi(req, 10, QUARTO, "agenda-ko:");
+    return jsonPrivato({ errore: "non autorizzato" }, 401);
+  }
+  if (troppiTentativi(req, 120, 60000, "agenda:")) return jsonPrivato({ errore: "troppe richieste, aspetta un minuto" }, 429);
 
   if (req.method === "GET") {
+    const u = new URL(req.url), vista = u.searchParams.get("vista");
+    if (vista === "live") return jsonPrivato({ live: await liveVisite() });
+    if (vista === "visite") return jsonPrivato({ live: await liveVisite(), giorni: await statistiche(u.searchParams.get("giorni")) });
     const pren = await tutte();
     const adesso = Date.now();
     return jsonPrivato({
@@ -76,7 +89,7 @@ async function gestisci(req) {
 
     case "aggiungi": {                       /* una serata presa al telefono */
       const p = {
-        rif: nuovoRif(), stato: "confermata",
+        rif: await nuovoRif(), stato: "confermata",
         data: String(b.data || ""), ora: String(b.ora || ""), durata: R.durataMin,
         titolo: String(b.titolo || "Degustazione").slice(0, 80),
         nome: String(b.nome || "—").slice(0, 80),
@@ -89,6 +102,7 @@ async function gestisci(req) {
       };
       if (!dataVera(p.data) || !/^([01]\d|2[0-3]):[0-5]\d$/.test(p.ora))
         return jsonPrivato({ errore: "data o ora non valide" }, 400);
+      p.tema = (R.temi || {})[String(giornoSettimana(p.data))] || "vino";   /* lunedì vino, martedì Champagne… */
       await salva(p);
       return jsonPrivato({ ok: true, prenotazione: p });
     }

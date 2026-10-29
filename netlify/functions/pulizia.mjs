@@ -5,6 +5,7 @@
 import { salva, viva, json } from "./_comune.mjs";
 import { tutte } from "./_magazzino.mjs";
 import { mailScaduta } from "./_mail.mjs";
+import { pulisciVisite } from "./_visite.mjs";
 
 export default async () => {
   const adesso = Date.now();
@@ -18,6 +19,7 @@ export default async () => {
     }
   }
   if (liberati) console.log(`[pulizia] ${liberati} blocchi sciolti`);
+  try { await pulisciVisite(); } catch (e) { console.error("[pulizia visite]", e); }
   return json({ liberati });
 };
 

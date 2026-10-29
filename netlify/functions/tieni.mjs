@@ -62,7 +62,7 @@ async function gestisci(req) {
     ? adesso + R.minutiBlocco * 60000
     : Math.max(adesso + 60 * 60000, Math.min(adesso + (R.oreBonifico || 48) * 3600000, inizio - 2 * 3600000));
   const p = {
-    rif: nuovoRif(),
+    rif: await nuovoRif(),
     stato: "tenuta",
     data, ora, durata: R.durataMin,
     titolo: { vino: "Serata Vino", bolle: "Serata Champagne", fort: "Serata Vini fortificati" }[tema],

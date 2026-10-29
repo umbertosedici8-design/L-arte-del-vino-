@@ -21,12 +21,20 @@ export const REGOLE_DI_PARTENZA = {
   orizzonteGiorni: 120,    // fin dove si può guardare avanti
   chiusure: [],            // ["2026-12-24", …] sere in cui non si fa
   minutiBlocco: 20,        // quanto dura il blocco mentre uno paga con la carta
-  oreBonifico: 48          // con il bonifico il posto resta tenuto fino a 48 ore
+  oreBonifico: 48,         // con il bonifico il posto resta tenuto fino a 48 ore
+  /* Solo per i conti della dashboard: non cambiano niente per i clienti. */
+  conti: {
+    costoOspite: 5,        // € di vino pagati a Partenope per ogni ospite (200 € / 40)
+    viniSerata: 5,         // quante etichette si assaggiano in una serata
+    mlAssaggio: 50,        // ml versati per ogni assaggio
+    limiteKU: 25000,       // tetto annuo del Kleinunternehmer (§ 19 UStG)
+    obiettivoMese: 0       // incasso che vuoi fare al mese (0 = nessun obiettivo)
+  }
 };
 
 export async function regole() {
   const r = await leggi("regole", null);
-  return { ...REGOLE_DI_PARTENZA, ...(r || {}) };
+  return { ...REGOLE_DI_PARTENZA, ...(r || {}), conti: { ...REGOLE_DI_PARTENZA.conti, ...((r && r.conti) || {}) } };
 }
 
 /* ---------- date, senza librerie ---------- */
@@ -71,6 +79,15 @@ export function ripulisciRegole(x, base) {
     out.temi = tm;
   }
   if (Array.isArray(o.chiusure)) out.chiusure = o.chiusure.filter(dataVera).slice(0, 400);
+  if (o.conti && typeof o.conti === "object" && !Array.isArray(o.conti)) {
+    const c = { ...REGOLE_DI_PARTENZA.conti, ...(base && base.conti) };
+    const dec = (v, min, max) => (Number.isFinite(+v) && +v >= min && +v <= max ? Math.round(+v * 100) / 100 : undefined);
+    for (const [k, lo, hi, f] of [["costoOspite", 0, 500, dec], ["viniSerata", 1, 20, num], ["mlAssaggio", 5, 300, num],
+                                   ["limiteKU", 0, 1000000, num], ["obiettivoMese", 0, 1000000, num]]) {
+      const v = f(o.conti[k], lo, hi); if (v !== undefined) c[k] = v;
+    }
+    out.conti = c;
+  }
   return { ...base, ...out };
 }
 export const giornoSettimana = (iso) => {
@@ -149,10 +166,18 @@ function testo(stato, liberi = 0, ora = "") {
 
 /* ---------- numero di prenotazione ---------- */
 const ALFABETO = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-export function nuovoRif() {
-  let s = "";
-  for (let i = 0; i < 4; i++) s += ALFABETO[Math.floor(Math.random() * ALFABETO.length)];
-  return `CS-${new Date().getFullYear()}-${s}`;
+/* Numero di prenotazione: CS-anno-6 caratteri, scelti con il generatore sicuro.
+   Prima di darlo si controlla che non esista già: due clienti non avranno mai
+   la stessa causale, e nessuna prenotazione può sovrascriverne un'altra. */
+export async function nuovoRif() {
+  for (let tentativo = 0; tentativo < 20; tentativo++) {
+    const byte = crypto.getRandomValues(new Uint8Array(6));
+    let s = "";
+    for (const x of byte) s += ALFABETO[x % ALFABETO.length];   /* 256 è multiplo di 32: nessuna lettera favorita */
+    const rif = `CS-${new Date().getFullYear()}-${s}`;
+    if (!(await leggi(`prenotazioni/${rif}`))) return rif;
+  }
+  throw new Error("nessun numero libero dopo 20 tentativi");
 }
 
 export const chiaveDi = (rif) => `prenotazioni/${rif}`;
@@ -249,15 +274,22 @@ export const jsonPrivato = (dati, stato = 200) =>
 /* Freno semplice: tanti tentativi dallo stesso indirizzo = porta chiusa.
    Non ferma un attacco serio, ma toglie di mezzo i tentativi a tappeto. */
 const colpi = new Map();
-export function troppiTentativi(req, max = 20, finestra = 60000) {
+export function troppiTentativi(req, max = 20, finestra = 60000, gruppo = "") {
   if (process.env.PROVA_LOCALE === "1") max *= 40;   /* sul tuo computer non dà fastidio */
-  max = Number(process.env.LIMITE_AL_MINUTO) || max;
+  if (!gruppo) max = Number(process.env.LIMITE_AL_MINUTO) || max;
   /* Solo l'indirizzo che mette Netlify: X-Forwarded-For lo scrive chi chiama,
      quindi non ci si può fidare (cambiandolo ogni volta si aggira il freno). */
-  const ip = req.headers.get("x-nf-client-connection-ip") || "ignoto";
+  const ip = gruppo + (req.headers.get("x-nf-client-connection-ip") || "ignoto");
   const ora = Date.now();
   const v = (colpi.get(ip) || []).filter(t => ora - t < finestra);
   v.push(ora); colpi.set(ip, v);
   if (colpi.size > 2000) colpi.clear();
   return v.length > max;
+}
+/** Quante volte è già successo, senza contarne un'altra. */
+export function giaTroppi(req, max, finestra = 60000, gruppo = "") {
+  if (process.env.PROVA_LOCALE === "1") max *= 40;
+  const ip = gruppo + (req.headers.get("x-nf-client-connection-ip") || "ignoto");
+  const ora = Date.now();
+  return (colpi.get(ip) || []).filter(t => ora - t < finestra).length >= max;
 }
