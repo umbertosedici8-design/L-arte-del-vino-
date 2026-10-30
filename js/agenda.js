@@ -29,7 +29,8 @@ const giornoSett=iso=>dUTC(iso).getUTCDay();
 const dataBreve=iso=>{const d=dUTC(iso);return `${GG[d.getUTCDay()]} ${d.getUTCDate()} ${MESI[d.getUTCMonth()]}`;};
 const dataLunga=iso=>dUTC(iso).toLocaleDateString("it-IT",{weekday:"long",day:"numeric",month:"long",timeZone:"UTC"});
 
-function avvisa(t){const a=$("#avviso");a.textContent=t;a.classList.add("on");clearTimeout(a._t);a._t=setTimeout(()=>a.classList.remove("on"),2600);}
+function erroreEntrata(t){const e=$("#porta-err");if(e&&!$("#porta").hidden){e.textContent=t;e.hidden=false;}}
+function avvisa(t){erroreEntrata(t);const a=$("#avviso");a.textContent=t;a.classList.add("on");clearTimeout(a._t);a._t=setTimeout(()=>a.classList.remove("on"),2600);}
 
 /* ---------- dal server ---------- */
 async function chiama(metodo,corpo,query=""){
@@ -38,10 +39,11 @@ async function chiama(metodo,corpo,query=""){
     r=await fetch(`${API}/agenda${query}`,{method:metodo,cache:"no-store",
       headers:{"Content-Type":"application/json","Authorization":"Bearer "+TOKEN},
       body:corpo?JSON.stringify(corpo):undefined});
-  }catch(e){avvisa("Niente connessione, riprova");return null;}
+  }catch(e){avvisa("Niente connessione con il server, riprova");return null;}
   if(r.status===401){try{localStorage.removeItem("agenda_token");}catch(e){}TOKEN="";mostraPorta();avvisa("Password non valida");return null;}
-  if(r.status===429){avvisa("Troppi tentativi, aspetta un minuto");return null;}
-  try{return await r.json();}catch(e){return null;}
+  if(r.status===429){const d=await r.json().catch(()=>({}));avvisa(d.errore?d.errore.charAt(0).toUpperCase()+d.errore.slice(1):"Troppi tentativi, riprova fra 15 minuti");return null;}
+  if(!r.ok&&r.status>=500){avvisa("Il server ha un problema ("+r.status+"): riprova tra poco");return null;}
+  try{return await r.json();}catch(e){avvisa("Risposta strana dal server ("+r.status+")");return null;}
 }
 
 /* ---------- le regole del gioco ---------- */
@@ -785,7 +787,7 @@ $("#esci").addEventListener("click",()=>{if(!confirm("Esco da questo dispositivo
 
 /* ---------- entrata ---------- */
 function mostraPorta(){$("#porta").hidden=false;$("#app").hidden=true;setTimeout(()=>$("#token").focus(),50);}
-$("#entra").addEventListener("click",()=>{TOKEN=$("#token").value.trim();if(TOKEN)avvia();});
+$("#entra").addEventListener("click",()=>{TOKEN=$("#token").value.trim();$("#porta-err").hidden=true;if(TOKEN)avvia();else erroreEntrata("Scrivi la password");});
 $("#token").addEventListener("keydown",e=>{if(e.key==="Enter")$("#entra").click();});
 let timer=null,larghezzaVista=innerWidth;
 async function avvia(){
