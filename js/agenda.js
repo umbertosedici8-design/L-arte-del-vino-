@@ -47,7 +47,8 @@ async function chiama(metodo,corpo,query=""){
 /* ---------- le regole del gioco ---------- */
 const R=()=>DATI.regole||{};
 const POSTI=()=>num(R().posti)||40;
-const CONTI=()=>({costoOspite:5,viniSerata:5,mlAssaggio:50,limiteKU:25000,obiettivoMese:0,...(R().conti||{})});
+const CONTI=()=>{const c=R().conti||{};return{viniSerata:5,limiteKU:25000,obiettivoMese:0,...c,
+  ml:{vino:100,bolle:100,fort:50,...(c.ml||{})},bottiglia:{vino:15,bolle:18,fort:15,...(c.bottiglia||{})}};};
 const temaDi=p=>p.tema||(R().temi||{})[giornoSett(p.data)]||"vino";
 const pagata=p=>p.stato==="confermata"||p.stato==="pagata";
 const inAttesa=p=>p.stato==="tenuta"&&p.occupa!==false;
@@ -83,10 +84,11 @@ function conta(s){
   s.incassoAttesa=s.pren.filter(inAttesa).reduce((n,p)=>n+num(p.totale),0);
   return s;
 }
-function fabbisogno(ospiti){
-  const c=CONTI();
-  const perEtichetta=ospiti>0?Math.ceil(ospiti*c.mlAssaggio/750):0;
-  return{perEtichetta,bottiglie:perEtichetta*c.viniSerata,vino:ospiti*c.costoOspite};
+/* Bottiglie da 0,75 l per ogni etichetta della serata, arrotondate in su: una bottiglia aperta si paga intera. */
+function fabbisogno(ospiti,tema){
+  const c=CONTI(),t=TEMI[tema]?tema:"vino";
+  const perEtichetta=ospiti>0?Math.ceil(ospiti*num(c.ml[t])/750):0,bottiglie=perEtichetta*c.viniSerata;
+  return{perEtichetta,bottiglie,vino:bottiglie*num(c.bottiglia[t])};
 }
 
 /* ================= GRAFICI (SVG disegnato a mano: niente librerie esterne) ================= */
@@ -233,24 +235,24 @@ function disegnaPanoramica(){
     prossime.map(v=>[dataBreve(v.data)+" · "+v.ora,TEMI[v.tema]||v.tema,v.pagati,v.attesa,v.liberi]),[0,0,1,1,1]);
 
   const quattro=serateFuture(28);
-  const osp=quattro.reduce((n,v)=>n+v.ospiti,0),f=fabbisogno(0);
-  const bott=quattro.reduce((n,v)=>n+fabbisogno(v.ospiti).bottiglie,0);
-  const vino=quattro.reduce((n,v)=>n+fabbisogno(v.ospiti).vino,0);
+  const osp=quattro.reduce((n,v)=>n+v.ospiti,0);
+  const bott=quattro.reduce((n,v)=>n+fabbisogno(v.ospiti,v.tema).bottiglie,0);
+  const vino=quattro.reduce((n,v)=>n+fabbisogno(v.ospiti,v.tema).vino,0);
   const capienza=quattro.reduce((n,v)=>n+v.posti,0);
   $("#bisogno-tiles").innerHTML=
     tessera("Ospiti nelle prossime 4 settimane",String(osp),capienza?`${Math.round(osp/capienza*100)} % dei ${capienza} posti`:"")+
-    tessera("Bottiglie da preparare",String(bott),`${c.viniSerata} etichette · ${c.mlAssaggio} ml ad assaggio`)+
-    tessera("Vino da pagare a Partenope",euro(vino),`${euroC(c.costoOspite)} per ospite`);
+    tessera("Bottiglie da preparare",String(bott),`${c.viniSerata} calici a testa · ${c.ml.vino} ml (fortificati ${c.ml.fort} ml)`)+
+    tessera("Vino da pagare a Partenope",euro(vino),osp?`${euroC(vino/osp)} a ospite in media`:"");
   $("#bisogno-sotto").textContent="Conta anche chi deve ancora fare il bonifico. I numeri si cambiano in Impostazioni.";
   const righeB=prossime.filter(v=>v.ospiti>0);
   $("#t-bisogno").innerHTML=righeB.length?tabella(
     ["Serata","Ospiti","Bottiglie","Per etichetta","Vino","Incasso","Margine"],
-    righeB.map(v=>{const fb=fabbisogno(v.ospiti),inc=v.incasso+v.incassoAttesa;
+    righeB.map(v=>{const fb=fabbisogno(v.ospiti,v.tema),inc=v.incasso+v.incassoAttesa;
       return[`${dataBreve(v.data)} · ${TEMI[v.tema]||v.tema}`,v.ospiti,fb.bottiglie,fb.perEtichetta,euro(fb.vino),euro(inc),euro(inc-fb.vino)];}),
     [0,1,1,1,1,1,1],
-    ["Totale",righeB.reduce((n,v)=>n+v.ospiti,0),righeB.reduce((n,v)=>n+fabbisogno(v.ospiti).bottiglie,0),"",
-     euro(righeB.reduce((n,v)=>n+fabbisogno(v.ospiti).vino,0)),euro(righeB.reduce((n,v)=>n+v.incasso+v.incassoAttesa,0)),
-     euro(righeB.reduce((n,v)=>n+v.incasso+v.incassoAttesa-fabbisogno(v.ospiti).vino,0))],[3,5])
+    ["Totale",righeB.reduce((n,v)=>n+v.ospiti,0),righeB.reduce((n,v)=>n+fabbisogno(v.ospiti,v.tema).bottiglie,0),"",
+     euro(righeB.reduce((n,v)=>n+fabbisogno(v.ospiti,v.tema).vino,0)),euro(righeB.reduce((n,v)=>n+v.incasso+v.incassoAttesa,0)),
+     euro(righeB.reduce((n,v)=>n+v.incasso+v.incassoAttesa-fabbisogno(v.ospiti,v.tema).vino,0))],[3,5])
     :`<p class="vuoto">Ancora nessun ospite nelle prossime serate.</p>`;
 
   /* ---- i conti, per anno ---- */
@@ -262,14 +264,14 @@ function disegnaPanoramica(){
   const pag=P.filter(pagata),att=P.filter(inAttesa);
   const incassato=pag.reduce((n,p)=>n+num(p.totale),0),attesa=att.reduce((n,p)=>n+num(p.totale),0);
   const ospitiPag=pag.reduce((n,p)=>n+pax(p),0);
-  const utile=incassato-ospitiPag*c.costoOspite;
-  $("#hero").innerHTML=`<span>Incassato ${ANNO==="tutto"?"in tutto":"nel "+esc(ANNO)}</span><b>${euro(incassato)}</b>
-    <p>${attesa>0?`+ ${euro(attesa)} in attesa di bonifico · `:""}${euro(utile)} restano dopo il vino</p>`;
-
   /* serate svolte: quelle già passate con almeno un ospite pagato */
   const perSerata=new Map();
   for(const p of P){if(!viva(p))continue;const k=chiave(p);if(!perSerata.has(k))perSerata.set(k,{data:p.data,ora:p.ora,tema:temaDi(p),pren:[]});perSerata.get(k).pren.push(p);}
   const tutte=[...perSerata.values()].map(conta);
+  const vinoPagato=tutte.reduce((n,v)=>n+fabbisogno(v.pagati,v.tema).vino,0);
+  const utile=incassato-vinoPagato;
+  $("#hero").innerHTML=`<span>Incassato ${ANNO==="tutto"?"in tutto":"nel "+esc(ANNO)}</span><b>${euro(incassato)}</b>
+    <p>${attesa>0?`+ ${euro(attesa)} in attesa di bonifico · `:""}${euro(utile)} restano dopo il vino</p>`;
   const svolte=tutte.filter(s=>s.data<o&&s.pagati>0);
   const riemp=svolte.length?svolte.reduce((n,s)=>n+s.pagati/s.posti,0)/svolte.length:0;
   const medioSerata=svolte.length?svolte.reduce((n,s)=>n+s.incasso,0)/svolte.length:0;
@@ -277,7 +279,7 @@ function disegnaPanoramica(){
     tessera("Ospiti che hanno pagato",ospitiPag.toLocaleString("it-IT"),`${pag.length} prenotazioni`)+
     tessera("Serate svolte",String(svolte.length),svolte.length?`${Math.round(riemp*100)} % di sala piena in media`:"ancora nessuna")+
     tessera("Incasso medio a serata",svolte.length?euro(medioSerata):"—",svolte.length?`${euro(ospitiPag?incassato/ospitiPag:0)} a ospite`:"")+
-    tessera("Vino pagato a Partenope",euro(ospitiPag*c.costoOspite),`${euroC(c.costoOspite)} × ${ospitiPag} ospiti`);
+    tessera("Vino pagato a Partenope",euro(vinoPagato),ospitiPag?`${euroC(vinoPagato/ospitiPag)} a ospite`:"");
 
   disegnaKU(anni);
 
@@ -378,7 +380,7 @@ function disegnaSerate(){
   const primo=!$("#lista-serate").childElementCount;
   $("#lista-serate").innerHTML=serate.length?serate.map((v,i)=>{
     const d=dUTC(v.data),p1=v.pagati/v.posti*100,p2=v.attesa/v.posti*100;
-    const fb=fabbisogno(v.ospiti),k=esc(v.data+" "+v.ora);
+    const fb=fabbisogno(v.ospiti,v.tema),k=esc(v.data+" "+v.ora);
     const apri=primo?i===0:aperte.has(v.data+" "+v.ora);
     return `<div class="serata" data-idx="${i}">
       <div class="testa">
@@ -440,8 +442,8 @@ function disegnaDaFare(){
 /* ================= IMPOSTAZIONI ================= */
 function disegnaImpostazioni(){
   const r=R(),c=CONTI();
-  $("#c-costo").value=c.costoOspite;$("#c-obiettivo").value=c.obiettivoMese;$("#c-vini").value=c.viniSerata;
-  $("#c-ml").value=c.mlAssaggio;$("#c-ku").value=c.limiteKU;
+  $("#c-obiettivo").value=c.obiettivoMese;$("#c-vini").value=c.viniSerata;$("#c-ku").value=c.limiteKU;
+  for(const t of Object.keys(TEMI)){$("#c-ml-"+t).value=c.ml[t];$("#c-bt-"+t).value=c.bottiglia[t];}
   $("#settimana").innerHTML=[1,2,3,4,5,6,0].map(n=>`<label><b>${GG[n]}</b>
     <input type="text" inputmode="numeric" data-g="${n}" value="${esc(((r.settimana||{})[n]||[]).join(","))}" placeholder="—" aria-label="Ore di ${GGL[n]}">
     <select data-tema="${n}" aria-label="Tema di ${GGL[n]}">${Object.entries(TEMI).map(([k,v])=>`<option value="${k}"${((r.temi||{})[n]||"vino")===k?" selected":""}>${v}</option>`).join("")}</select></label>`).join("");
@@ -679,14 +681,15 @@ $("#salvaregole").addEventListener("click",async()=>{
   if(r&&r.ok){avvisa("Orari salvati");carica();}else avvisa(r?.errore||"Non ha funzionato");
 });
 $("#salvaconti").addEventListener("click",async()=>{
-  const conti={costoOspite:+$("#c-costo").value,viniSerata:+$("#c-vini").value,mlAssaggio:+$("#c-ml").value,
+  const ml={},bottiglia={};for(const t of Object.keys(TEMI)){ml[t]=+$("#c-ml-"+t).value;bottiglia[t]=+$("#c-bt-"+t).value;}
+  const conti={ml,bottiglia,viniSerata:+$("#c-vini").value,
     limiteKU:+$("#c-ku").value,obiettivoMese:+$("#c-obiettivo").value};
   const r=await chiama("POST",{azione:"regole",regole:{conti}});
   if(r&&r.ok){avvisa("Numeri salvati");carica();}else avvisa(r?.errore||"Non ha funzionato");
 });
 function prezzoSuggerito(){
   const d=$("#a-data").value;if(!d)return;
-  const tema=(R().temi||{})[giornoSett(d)]||"vino",prezzi={vino:49,bolle:69,fort:64};
+  const tema=(R().temi||{})[giornoSett(d)]||"vino",prezzi={vino:55,bolle:75,fort:64};
   const n=Math.max(1,+$("#a-pax").value||1);
   $("#a-tot").value=prezzi[tema]*n;
   $("#a-tot-aiuto").textContent=`${TEMI[tema]}: ${prezzi[tema]} € a persona`;
