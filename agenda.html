@@ -203,6 +203,9 @@ button.copia::after{content:" ⧉";color:var(--muted);font-family:var(--sans)}
 .campo{display:grid;gap:5px}
 .campo label{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.09em;color:var(--muted)}
 .campo small{font-size:12px;color:var(--muted)}
+.tema-conti{display:grid;grid-template-columns:auto 1fr 1fr;gap:8px 10px;align-items:center}
+.tema-conti b{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.09em;color:var(--muted)}
+.tema-conti span{font-weight:800;font-size:14px}
 .giorni{display:grid;grid-template-columns:repeat(auto-fill,minmax(124px,1fr));gap:8px}
 .giorni label{display:grid;gap:4px;background:var(--soft);border-radius:12px;padding:8px}
 .giorni label b{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
@@ -375,7 +378,7 @@ button.copia::after{content:" ⧉";color:var(--muted);font-family:var(--sans)}
             <div class="scorre" id="t-pagine"></div>
           </div>
         </div>
-        <p class="nota" style="margin-top:12px">Conteggio senza cookie: niente viene salvato nel browser dei visitatori e nessuno è riconoscibile. Chi usa "Do Not Track" non viene contato, quindi i numeri veri sono un po' più alti.</p>
+        <p class="nota" style="margin-top:12px">Conteggio senza cookie: niente viene salvato nel browser dei visitatori e nessuno è riconoscibile. Chi usa «Do Not Track» o «Global Privacy Control» non viene contato, quindi i numeri veri sono un po' più alti.</p>
       </section>
     </div>
 
@@ -398,7 +401,7 @@ button.copia::after{content:" ⧉";color:var(--muted);font-family:var(--sans)}
           </div>
           <div class="due">
             <div class="campo"><label for="a-pax">Persone</label><input id="a-pax" type="number" min="1" max="40" value="2"></div>
-            <div class="campo"><label for="a-tot">Totale €</label><input id="a-tot" type="number" min="0" step="1" value="98"><small id="a-tot-aiuto"></small></div>
+            <div class="campo"><label for="a-tot">Totale €</label><input id="a-tot" type="number" min="0" step="1" value="110"><small id="a-tot-aiuto"></small></div>
           </div>
           <div class="due">
             <div class="campo"><label for="a-pag">Pagamento</label><select id="a-pag"><option value="cash">Contanti</option><option value="bank">Bonifico</option><option value="card">Carta (SumUp)</option></select></div>
@@ -435,13 +438,16 @@ button.copia::after{content:" ⧉";color:var(--muted);font-family:var(--sans)}
       <section>
         <div class="titolo-sez"><h2>I tuoi numeri</h2><span class="sotto">servono solo per i conti della dashboard</span></div>
         <div class="card"><div class="campi">
-          <div class="due">
-            <div class="campo"><label for="c-costo">Vino per ospite (€)</label><input id="c-costo" type="number" min="0" step="0.5"><small>Quanto paghi a Partenope per ogni ospite.</small></div>
-            <div class="campo"><label for="c-obiettivo">Obiettivo al mese (€)</label><input id="c-obiettivo" type="number" min="0" step="100"><small>0 = nessun obiettivo.</small></div>
+          <div class="tema-conti">
+            <span></span><b>ml a calice</b><b>€ a bottiglia</b>
+            <span>Vino</span><input id="c-ml-vino" type="number" min="5" max="300" step="5" aria-label="ml a calice, vino"><input id="c-bt-vino" type="number" min="0" step="0.5" aria-label="Euro a bottiglia, vino">
+            <span>Champagne</span><input id="c-ml-bolle" type="number" min="5" max="300" step="5" aria-label="ml a calice, Champagne"><input id="c-bt-bolle" type="number" min="0" step="0.5" aria-label="Euro a bottiglia, Champagne">
+            <span>Fortificati</span><input id="c-ml-fort" type="number" min="5" max="300" step="5" aria-label="ml a calice, fortificati"><input id="c-bt-fort" type="number" min="0" step="0.5" aria-label="Euro a bottiglia, fortificati">
           </div>
+          <p class="piccolo">Quello che paghi a Partenope per una bottiglia da 0,75 l e quanto versi in ogni calice. Servono per contare bottiglie e costi.</p>
           <div class="due">
-            <div class="campo"><label for="c-vini">Etichette per serata</label><input id="c-vini" type="number" min="1" max="20"></div>
-            <div class="campo"><label for="c-ml">Ml per assaggio</label><input id="c-ml" type="number" min="5" max="300" step="5"><small>Per calcolare le bottiglie da 0,75 l.</small></div>
+            <div class="campo"><label for="c-vini">Calici a serata</label><input id="c-vini" type="number" min="1" max="20"><small>Uno ogni mezz'ora dalle 18:30.</small></div>
+            <div class="campo"><label for="c-obiettivo">Obiettivo al mese (€)</label><input id="c-obiettivo" type="number" min="0" step="100"><small>0 = nessun obiettivo.</small></div>
           </div>
           <div class="campo"><label for="c-ku">Limite Kleinunternehmer (€ all'anno)</label><input id="c-ku" type="number" min="0" step="500"><small>25.000 € nel 2026. Chiedi conferma al tuo Steuerberater.</small></div>
           <button class="b si" id="salvaconti">Salva i numeri</button>

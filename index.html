@@ -28,14 +28,16 @@
 <meta property="og:type" content="website">
 <meta property="og:title" content="L'Arte del Vino — Degustazioni e lezioni di vino a Berlino">
 <meta property="og:image" content="logo-icona.png">
-<meta property="og:description" content="Degustazioni guidate da Partenope 081 a Berlino, corsi serali, ripetizioni WSET e formazione di sala. In italiano, tedesco, spagnolo o inglese.">
+<meta property="og:description" content="Degustazioni guidate da Partenope 081 a Berlino, corsi serali, ripetizioni WSET e formazione per il personale di sala. In italiano, tedesco, spagnolo o inglese.">
 <meta property="og:url" content="https://lartedelvino.de/">
 <meta property="og:locale" content="it_IT">
 <meta property="og:locale:alternate" content="de_DE">
+<meta property="og:locale:alternate" content="en_GB">
+<meta property="og:locale:alternate" content="es_ES">
 <meta property="og:site_name" content="L'Arte del Vino">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="canonical" href="https://lartedelvino.de/">
-<meta name="description" content="L'Arte del Vino — Christian Scognamiglio, sommelier a Berlino: degustazioni a casa, corsi serali, ripetizioni WSET e formazione per il personale di sala. In quattro lingue.">
+<meta name="description" content="L'Arte del Vino — Christian Scognamiglio, sommelier a Berlino: serate di degustazione da Partenope 081, corsi serali, ripetizioni WSET e formazione per il personale di sala. In quattro lingue.">
 <style>
 /* ------------------------------------------------------------------
    I CARATTERI STANNO QUI ACCANTO, non sui server di Google.
@@ -143,9 +145,10 @@ h3{font-size:var(--t-xl);line-height:var(--lh-tight)}
   text-transform:uppercase;letter-spacing:.09em}
 .brand-art{width:26px;height:26px;object-fit:contain;background:var(--wine-soft);border-radius:50%;padding:3px}
 .lang{display:flex;background:var(--card);border-radius:999px;padding:4px;box-shadow:var(--sh-2)}
-.lang button{font-size:var(--t-xs);font-weight:800;color:var(--muted);padding:12px 16px;border-radius:999px;
+.lang button{font-size:var(--t-xs);font-weight:800;color:var(--muted);padding:12px 13px;border-radius:999px;min-width:40px;
   transition:background .25s,color .25s}
 .lang button[aria-pressed="true"]{background:var(--wine);color:#fff}
+@media(max-width:400px){.lang{padding:3px}.lang button{padding:11px 8px;min-width:34px}.brand-txt small{display:none}}
 
 #dockbar{position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:70;
   display:flex;align-items:center;gap:8px;max-width:calc(100vw - 14px)}
@@ -1737,20 +1740,22 @@ body{background:linear-gradient(180deg,#F6F1EA 0%,#F3ECE3 45%,#EFE6DB 100%)}
   "areaServed": { "@type": "City", "name": "Berlin", "address":
     { "@type": "PostalAddress", "addressLocality": "Berlin", "addressCountry": "DE" } },
   "knowsLanguage": ["it", "de", "es", "en"],
-  "priceRange": "49-354 EUR",
+  "priceRange": "45-390 EUR",
   "currenciesAccepted": "EUR",
   "paymentAccepted": "Bonifico",
   "hasOfferCatalog": {
     "@type": "OfferCatalog", "name": "Servizi",
     "itemListElement": [
-      { "@type": "Offer", "priceCurrency": "EUR", "price": "49",
+      { "@type": "Offer", "priceCurrency": "EUR", "price": "55",
         "eligibleQuantity": { "@type": "QuantitativeValue", "unitText": "a persona" },
-        "itemOffered": { "@type": "Service", "name": "Degustazione guidata di vino",
-          "description": "Sei vini, due ore, da Partenope 081. Bottiglie, bicchieri e schede inclusi." } },
-      { "@type": "Offer", "priceCurrency": "EUR", "price": "49",
+        "itemOffered": { "@type": "Service", "name": "Serata di degustazione guidata",
+          "description": "Cinque calici in tre ore, dalle 18:00 alle 21:00, da Partenope 081: il lunedì vino, il martedì Champagne, il mercoledì vini fortificati. Calici, stuzzichini e schede inclusi." } },
+      { "@type": "Offer", "priceCurrency": "EUR", "price": "179",
+        "eligibleQuantity": { "@type": "QuantitativeValue", "unitText": "a persona" },
         "itemOffered": { "@type": "Service", "name": "Corso serale di vino",
           "description": "Quattro incontri serali per piccoli gruppi." } },
-      { "@type": "Offer", "priceCurrency": "EUR", "price": "49",
+      { "@type": "Offer", "priceCurrency": "EUR", "price": "45",
+        "eligibleQuantity": { "@type": "QuantitativeValue", "unitText": "all'ora" },
         "itemOffered": { "@type": "Service", "name": "Ripetizioni WSET Level 1 e 2",
           "description": "Preparazione all'esame in italiano, tedesco, spagnolo o inglese." } },
       { "@type": "Offer", "priceCurrency": "EUR", "price": "150",
@@ -1761,6 +1766,8 @@ body{background:linear-gradient(180deg,#F6F1EA 0%,#F3ECE3 45%,#EFE6DB 100%)}
   }
 }
 </script>
+<script src="js/lingua.js"></script>
+<style>html.attesa-lingua body{opacity:0;animation:mostraPagina 0s 1.2s forwards}@keyframes mostraPagina{to{opacity:1}}</style>
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs>
@@ -1774,13 +1781,13 @@ body{background:linear-gradient(180deg,#F6F1EA 0%,#F3ECE3 45%,#EFE6DB 100%)}
   <header>
     <span class="ava"><img class="ava-art" src="" alt="" aria-hidden="true"></span>
     <span class="who"><b data-i="chT">Chiedi pure</b><small data-i="chS">Risposte rapide dalle FAQ · Christian risponde su WhatsApp</small></span>
-    <button class="x" id="chatx" aria-label="Chiudi">×</button>
+    <button class="x" id="chatx" aria-label="chiudi" data-ia="aChiudi">×</button>
   </header>
   <div class="msgs" id="msgs" aria-live="polite"></div>
   <div class="chips" id="chatchips"></div>
   <div class="ask">
     <input id="chatin" type="text" autocomplete="off">
-    <button id="chatsend" aria-label="Invia"><svg viewBox="0 0 24 24"><path d="M21 3 10.5 13.5M21 3 14 21l-3.5-7.5L3 10Z"/></svg></button>
+    <button id="chatsend" aria-label="invia" data-ia="aInvia"><svg viewBox="0 0 24 24"><path d="M21 3 10.5 13.5M21 3 14 21l-3.5-7.5L3 10Z"/></svg></button>
   </div>
   <a class="wa" id="chatwa" href="https://wa.me/4915207030279"><svg viewBox="0 0 24 24"><path d="M4 20l1.3-3.8A8 8 0 1 1 8 19z"/></svg><span data-i="chWA">Scrivi a Christian su WhatsApp</span></a>
 </aside>
@@ -1794,26 +1801,26 @@ body{background:linear-gradient(180deg,#F6F1EA 0%,#F3ECE3 45%,#EFE6DB 100%)}
   <div style="background:#4A1226;color:#fff;padding:18px 20px;font:600 16px/1.5 system-ui,sans-serif;text-align:center">
     Questo sito ha bisogno di JavaScript per funzionare. Attivalo, oppure scrivimi
     direttamente a <a href="mailto:christian@lartedelvino.de" style="color:#E8C87A">christian@lartedelvino.de</a>.
-    <br><span lang="de">Diese Seite braucht JavaScript. Bitte aktivieren \u2014 oder schreib mir einfach.</span>
+    <br><span lang="de">Diese Seite braucht JavaScript. Bitte aktiviere es – oder schreib mir einfach.</span>
   </div>
 </noscript>
 <header class="top">
   <a class="brand" href="#home"><img class="brand-art" src="" alt="" aria-hidden="true"><span class="brand-txt"><b>L'Arte del Vino</b><small>Christian Scognamiglio</small></span></a>
-  <div class="lang"><button data-lang="it" aria-pressed="true">IT</button><button data-lang="de" aria-pressed="false">DE</button></div>
+  <div class="lang" role="group" aria-label="Lingua · Sprache · Language · Idioma"><button data-lang="it" aria-pressed="true" lang="it" aria-label="Italiano">IT</button><button data-lang="de" aria-pressed="false" lang="de" aria-label="Deutsch">DE</button><button data-lang="en" aria-pressed="false" lang="en" aria-label="English">EN</button><button data-lang="es" aria-pressed="false" lang="es" aria-label="Español">ES</button></div>
 </header>
 <div id="dockbar">
-<nav id="dock" aria-label="menu">
-  <a href="#home" data-view="home" aria-label="Home"><svg viewBox="0 0 24 24" class="i-home" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10.5V20h13v-9.5"/><path d="M10 20v-5h4v5"/></svg><span data-i="nav1">Home</span></a>
-  <a href="#privati" data-view="privati" aria-label="Privati"><svg viewBox="0 0 24 24" class="i-glass" aria-hidden="true"><path class="wine" d="M7.9 7.5h8.2l-.5 2.7a3.8 3.8 0 0 1-7.2 0Z"/><path d="M7 3h10l-1.2 7.2a3.8 3.8 0 0 1-7.6 0Z"/><path d="M12 14v6"/><path d="M8.5 20h7"/></svg><span data-i="nav2">Privati</span></a>
-  <a href="#ristoranti" data-view="ristoranti" aria-label="Ristoranti"><svg viewBox="0 0 24 24" class="i-cibo" aria-hidden="true"><g class="fork"><path d="M6 3v7a2 2 0 0 0 2 2v9"/><path d="M6 3v5M10 3v5"/><path d="M10 3v7a2 2 0 0 1-2 2"/></g><g class="knife"><path d="M17 3c-1.7 1-2.5 3-2.5 6 0 1.8 1 2.6 2.5 3v9"/></g></svg><span data-i="nav3">Ristoranti</span></a>
-  <a href="#info" data-view="info" aria-label="Info"><svg viewBox="0 0 24 24" class="i-info" aria-hidden="true"><circle class="ring" cx="12" cy="12" r="9"/><path d="M12 11v5"/><path class="dot" d="M12 8h.01"/></svg><span data-i="nav4">Info</span></a>
-  <a href="#contatto" data-view="contatto" class="cta" aria-label="Richiedi"><svg viewBox="0 0 24 24" class="i-send" aria-hidden="true"><g class="plane"><path d="M21 3 10.5 13.5"/><path d="M21 3 14 21l-3.5-7.5L3 10Z"/></g></svg><span data-i="nav5">Richiedi</span></a>
+<nav id="dock" aria-label="menu" data-ia="aMenu">
+  <a href="#home" data-view="home" aria-label="Home" data-ia="nav1"><svg viewBox="0 0 24 24" class="i-home" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10.5V20h13v-9.5"/><path d="M10 20v-5h4v5"/></svg><span data-i="nav1">Home</span></a>
+  <a href="#privati" data-view="privati" aria-label="Privati" data-ia="nav2"><svg viewBox="0 0 24 24" class="i-glass" aria-hidden="true"><path class="wine" d="M7.9 7.5h8.2l-.5 2.7a3.8 3.8 0 0 1-7.2 0Z"/><path d="M7 3h10l-1.2 7.2a3.8 3.8 0 0 1-7.6 0Z"/><path d="M12 14v6"/><path d="M8.5 20h7"/></svg><span data-i="nav2">Privati</span></a>
+  <a href="#ristoranti" data-view="ristoranti" aria-label="Ristoranti" data-ia="nav3"><svg viewBox="0 0 24 24" class="i-cibo" aria-hidden="true"><g class="fork"><path d="M6 3v7a2 2 0 0 0 2 2v9"/><path d="M6 3v5M10 3v5"/><path d="M10 3v7a2 2 0 0 1-2 2"/></g><g class="knife"><path d="M17 3c-1.7 1-2.5 3-2.5 6 0 1.8 1 2.6 2.5 3v9"/></g></svg><span data-i="nav3">Ristoranti</span></a>
+  <a href="#info" data-view="info" aria-label="Info" data-ia="nav4"><svg viewBox="0 0 24 24" class="i-info" aria-hidden="true"><circle class="ring" cx="12" cy="12" r="9"/><path d="M12 11v5"/><path class="dot" d="M12 8h.01"/></svg><span data-i="nav4">Info</span></a>
+  <a href="#contatto" data-view="contatto" class="cta" aria-label="Richiedi" data-ia="nav5"><svg viewBox="0 0 24 24" class="i-send" aria-hidden="true"><g class="plane"><path d="M21 3 10.5 13.5"/><path d="M21 3 14 21l-3.5-7.5L3 10Z"/></g></svg><span data-i="nav5">Richiedi</span></a>
 </nav>
-<div id="aux"><button id="cartbtn" aria-label="Carrello">
+<div id="aux"><button id="cartbtn" aria-label="Carrello" data-ia="caShort">
   <svg viewBox="0 0 24 24" aria-hidden="true"><path class="basket" d="M4.5 8.5h15l-1.4 9.2a2 2 0 0 1-2 1.7H7.9a2 2 0 0 1-2-1.7Z"/><path class="handle" d="M8.8 8.5a3.2 3.2 0 0 1 6.4 0"/><circle class="bot" cx="10" cy="13" r=".9"/><circle class="bot2" cx="14" cy="13" r=".9"/></svg>
   <span class="lab" data-i="caShort">Carrello</span><span class="badge" id="cartbadge">0</span>
 </button>
-<button id="chatbtn" aria-label="Chat" aria-expanded="false">
+<button id="chatbtn" aria-label="Chat" data-ia="chatL" aria-expanded="false">
   <svg viewBox="0 0 24 24" aria-hidden="true"><path class="bubble" d="M4 5.5h16v11H9l-5 3.5V5.5Z"/><circle class="d1" cx="9" cy="11" r="1.2"/><circle class="d2" cx="12.5" cy="11" r="1.2"/><circle class="d3" cx="16" cy="11" r="1.2"/></svg>
   <span class="lab" data-i="chatL">Chat</span><span class="badge" id="chatbadge">1</span>
 </button></div>
@@ -1825,11 +1832,11 @@ body{background:linear-gradient(180deg,#F6F1EA 0%,#F3ECE3 45%,#EFE6DB 100%)}
 <header class="hero" style="--pic:url(foto/sfondo-testata.jpg)"><div class="bubbles" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="wrap">
   <div class="pill" data-i="pill">Berlino · WSET Level 2 · 4 lingue</div>
   <h1><span data-i="h1a">Il vino spiegato</span> <i data-i="h1b">a tavola.</i></h1>
-  <p data-i="lede">Tre serate fisse a settimana da Partenope 081: il lunedì il vino, il martedì lo Champagne, il mercoledì i vini fortificati. Quaranta posti, alle 18:00, con un sommelier che spiega senza salire in cattedra. E per ristoranti e aziende, formazione su misura.</p>
+  <p data-i="lede">Tre serate fisse a settimana da Partenope 081: il lunedì il vino, il martedì lo Champagne, il mercoledì i vini fortificati. Quaranta posti, dalle 18:00 alle 21:00, con un sommelier che spiega senza salire in cattedra. E per ristoranti e aziende, formazione su misura.</p>
   <div class="btns"><a class="btn" href="#privati/p-prenota" data-i="ctaBook">Prenota un posto</a><a class="btn ghost" href="#privati" data-i="cta2">Tutte le formule</a></div>
   <div class="benefits">
-    <div><svg viewBox="0 0 24 24"><path d="M8 3h8l-1 7a3 3 0 0 1-6 0zM12 13v7M8 20h8"/></svg><b data-i="b1">Tutto incluso</b><span data-i="b1s">Vini, calici da degustazione, schede e acqua. Tu porti solo la curiosità.</span></div>
-    <div><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><b data-i="b2">Due ore che volano</b><span data-i="b2s">Un filo conduttore, nessuna lezione frontale: si assaggia, si confronta, si chiacchiera.</span></div>
+    <div><svg viewBox="0 0 24 24"><path d="M8 3h8l-1 7a3 3 0 0 1-6 0zM12 13v7M8 20h8"/></svg><b data-i="b1">Tutto incluso</b><span data-i="b1s">Cinque vini, calici da degustazione, stuzzichini, schede e acqua. Tu porti solo la curiosità.</span></div>
+    <div><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><b data-i="b2">Tre ore che volano</b><span data-i="b2s">Un filo conduttore, nessuna lezione frontale: si assaggia, si confronta, si chiacchiera.</span></div>
     <div><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h10M4 18h7"/></svg><b data-i="b3">Nella tua lingua</b><span data-i="b3s">Italiano, tedesco, spagnolo o inglese: chiedi pure in quella che preferisci.</span></div>
   </div>
   <img class="hero-art" src="" alt="" aria-hidden="true">
@@ -1851,7 +1858,7 @@ body{background:linear-gradient(180deg,#F6F1EA 0%,#F3ECE3 45%,#EFE6DB 100%)}
   <div class="langline"><span data-i="langL">Parlo quattro lingue: tocca una bandiera e la segno nella prenotazione.</span><span class="flags" data-flags-hero=""></span><span class="picked-label" data-pick></span></div>
 </div></header>
 
-<section class="wrap numeri-sec" aria-label="in numeri">
+<section class="wrap numeri-sec" aria-label="in numeri" data-ia="aNumeri">
   <div class="numeri" id="numeri">
     <div class="nstat"><span class="n-glass" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#gl"/></svg></span><b data-to="40">40</b><span data-i="n1">posti a serata</span></div>
     <div class="nstat"><span class="n-glass" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#gl"/></svg></span><b data-to="3">3</b><span data-i="n2">serate a settimana</span></div>
@@ -1865,7 +1872,7 @@ body{background:linear-gradient(180deg,#F6F1EA 0%,#F3ECE3 45%,#EFE6DB 100%)}
   <div class="cards two">
     <a class="card path" href="#privati">
       <span class="p-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3h10l-1 7a4 4 0 0 1-8 0Z"/><path d="M12 14v6"/><path d="M8.5 20h7"/></svg></span>
-      <span class="tagline" data-i="tz1f">da 49 € a persona</span>
+      <span class="tagline" data-i="tz1f">da 55 € a persona</span>
       <h3 data-i="tz1">Per te e i tuoi amici</h3>
       <p data-i="tz1p">Le serate in sala del lunedì, martedì e mercoledì. Presto anche il corso in quattro incontri e le ripetizioni WSET.</p>
       <ul class="p-list"><li data-i="tz1a">Serate di degustazione da Partenope 081</li><li data-i="tz1b">Corso serale in quattro incontri (presto)</li><li data-i="tz1c">Ripetizioni WSET 1 e 2 (presto)</li></ul>
@@ -1897,9 +1904,9 @@ body{background:linear-gradient(180deg,#F6F1EA 0%,#F3ECE3 45%,#EFE6DB 100%)}
 <section class="wrap fascia chiara" id="come">
   <h2 data-i="howT">Come funziona</h2><p class="sub" data-i="howS">Tre passaggi e sei seduto al tavolo: niente moduli lunghi, niente sorprese sul prezzo.</p>
   <div class="steps">
-    <div class="step"><h3 data-i="st1">Scegli la serata</h3><p data-i="st1p">Lunedì vino, martedì Champagne, mercoledì vini fortificati. Scegli la data e quanti posti ti servono, da 1 a 10.</p></div>
+    <div class="step"><h3 data-i="st1">Scegli la serata</h3><p data-i="st1p">Il lunedì vino, il martedì Champagne, il mercoledì vini fortificati. Scegli la data e quanti posti ti servono, da 1 a 10.</p></div>
     <div class="step"><h3 data-i="st2">Paghi e ricevi il biglietto</h3><p data-i="st2p">Paghi con bonifico entro 48 ore: inquadri il QR o copi i dati. Il biglietto con il codice arriva subito.</p></div>
-    <div class="step"><h3 data-i="st3">Ti siedi e assaggi</h3><p data-i="st3p">Alle 18:00 da Partenope 081 trovi calici, schede e vini già alla temperatura giusta. Tu porti solo la voglia di assaggiare.</p></div>
+    <div class="step"><h3 data-i="st3">Ti siedi e assaggi</h3><p data-i="st3p">Alle 18:00 da Partenope 081 trovi calici, schede, stuzzichini e vini già alla temperatura giusta. Il primo calice arriva alle 18:30.</p></div>
   </div>
 </section>
 
@@ -1933,7 +1940,7 @@ body{background:linear-gradient(180deg,#F6F1EA 0%,#F3ECE3 45%,#EFE6DB 100%)}
 <section class="wrap" id="voci">
   <h2 data-i="quoT">Chi c'è già stato</h2>
   <p class="sub" data-i="quoS">Bigliettini lasciati dopo le serate. Scorrono da soli, oppure tocca per passare al prossimo.</p>
-  <div class="deck" id="quotes" aria-label="recensioni"></div>
+  <div class="deck" id="quotes" aria-label="recensioni" data-ia="aRec"></div>
   <div class="deck-dots" id="dots"></div>
 </section>
 
@@ -1950,7 +1957,7 @@ body{background:linear-gradient(180deg,#F6F1EA 0%,#F3ECE3 45%,#EFE6DB 100%)}
 
 <section class="wrap">
   <div class="ctaband">
-    <div><h3 data-i="bandT">Pronto per un calice?</h3><p data-i="bandP">Scegli la serata e prenota il tuo posto in un minuto. Per gruppi oltre 10 persone ed eventi privati scrivimi: rispondo entro 24 ore.</p></div>
+    <div><h3 data-i="bandT">Pronto per un calice?</h3><p data-i="bandP">Scegli la serata e prenota il tuo posto in un minuto. Per gruppi di oltre 10 persone ed eventi privati scrivimi: rispondo entro 24 ore.</p></div>
     <a class="btn dark" href="#privati/p-prenota" data-i="bandB">Prenota un posto</a>
   </div>
 </section>
@@ -1959,13 +1966,13 @@ body{background:linear-gradient(180deg,#F6F1EA 0%,#F3ECE3 45%,#EFE6DB 100%)}
 <main id="v-privati" class="view" hidden>
 
 <header class="phero"><img class="phero-art" src="" alt="" aria-hidden="true"><div class="bubbles" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="wrap">
-  <div class="pill" data-i="tz1f">da 49 € a persona</div>
+  <div class="pill" data-i="tz1f">da 55 € a persona</div>
   <h1 data-i="perT">Per te e i tuoi amici</h1>
   <p data-i="perS">Tre serate fisse a settimana e nessun obbligo di sapere già qualcosa. Vieni da solo, in coppia o in compagnia: compleanni, cene tra colleghi, addii al nubilato.</p>
 </div></header>
 
 <section class="wrap" id="p-prenota">
-  <h2 data-i="bkT">Prenota il tuo posto</h2><p class="sub" data-i="bkS">Scegli il giorno, la data e quanti siete. Quaranta posti a serata, alle 18:00 da Partenope 081.</p>
+  <h2 data-i="bkT">Prenota il tuo posto</h2><p class="sub" data-i="bkS">Scegli il giorno, la data e quanti siete. Quaranta posti a serata, dalle 18:00 alle 21:00 da Partenope 081.</p>
   <div class="book" id="book">
     <div class="book-days" id="bookdays" role="tablist"></div>
     <div class="book-body">
@@ -1975,7 +1982,7 @@ body{background:linear-gradient(180deg,#F6F1EA 0%,#F3ECE3 45%,#EFE6DB 100%)}
       <div class="book-row">
         <div class="book-q">
           <h3 class="h-conf" data-i="bkSeats">Quanti posti</h3>
-          <div class="stepper"><button type="button" id="bkminus" aria-label="meno">−</button><input type="number" id="bkq" min="1" max="10" value="2" inputmode="numeric"><button type="button" id="bkplus" aria-label="più">+</button></div>
+          <div class="stepper"><button type="button" id="bkminus" aria-label="meno" data-ia="aMeno">−</button><input type="number" id="bkq" min="1" max="10" value="2" inputmode="numeric"><button type="button" id="bkplus" aria-label="più" data-ia="aPiu">+</button></div>
           <p class="note" id="bkmax"></p>
         </div>
         <div class="book-sum" id="booksum" aria-live="polite"></div>
@@ -1990,7 +1997,7 @@ body{background:linear-gradient(180deg,#F6F1EA 0%,#F3ECE3 45%,#EFE6DB 100%)}
 <div class="onda" aria-hidden="true"><i></i></div>
 <section class="wrap" id="p-formule">
   <div class="cards three">
-    <div class="card"><span class="tagline" data-i="p1tag">Da Partenope 081 · 40 posti a serata</span><h3 data-i="p1h">Le serate in sala</h3><span class="meta-row" data-flags="it de en es" data-lvl="1"></span><p data-i="p1p">Lunedì vino, martedì Champagne, mercoledì vini fortificati, sempre alle 18:00. Vini, calici e schede inclusi; prenoti da 1 a 10 posti.</p>
+    <div class="card"><span class="tagline" data-i="p1tag">Da Partenope 081 · 40 posti a serata</span><h3 data-i="p1h">Le serate in sala</h3><span class="meta-row" data-flags="it de en es" data-lvl="1"></span><p data-i="p1p">Il lunedì vino, il martedì Champagne, il mercoledì vini fortificati, dalle 18:00 alle 21:00. Cinque calici, stuzzichini e schede inclusi; prenoti da 1 a 10 posti.</p>
       <span class="price"><span class="from" data-i="from">a partire da</span>49 € <small data-i="p1price">a persona, vini inclusi</small></span>
       <div class="go"><a class="btn big" href="#privati/p-prenota" data-i="bkGo">Scegli la serata</a> <a class="btn line" href="#contatto?tipo=5" data-i="ctaGroup">Gruppo o evento privato</a></div></div>
     <div class="card"><span class="tagline" data-i="p2tag">Corso serale · 3–8 persone</span><h3 data-i="p2h">Quattro incontri</h3><span class="meta-row" data-flags="it de en es" data-lvl="2"></span><p data-i="p2p">Otto ore in tutto: degustare con metodo, riconoscere i vitigni, capire i territori, abbinare. Ventiquattro vini nel percorso. In arrivo: scrivimi per sapere quando parte.</p>
@@ -2000,7 +2007,7 @@ body{background:linear-gradient(180deg,#F6F1EA 0%,#F3ECE3 45%,#EFE6DB 100%)}
       <span class="price">45 € <small data-i="p3price">all'ora · pacchetto da 5 ore 200 €</small></span>
       <div class="go"><button type="button" class="btn big locked" disabled aria-disabled="true"><svg class="lkb" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10.5" width="14" height="10" rx="2.6"/><path d="M8.3 10.5V8a3.7 3.7 0 0 1 7.4 0v2.5"/></svg><span data-i="lockSoon">Presto disponibile</span></button> <a class="btn line" href="#corso/ripetizioni" data-i="p3go">Come funzionano</a></div></div>
   </div>
-  <p class="ust" data-i="ust">Prezzi finali. In base al §19 UStG non viene addebitata l'IVA (regime dei piccoli imprenditori, Kleinunternehmerregelung).</p>
+  <p class="ust" data-i="ust">Prezzi finali. In base al § 19 UStG non viene addebitata l'IVA (regime dei piccoli imprenditori, Kleinunternehmerregelung).</p>
 </section>
 
 <section class="wrap fascia chiara" id="abbina">
@@ -2020,13 +2027,13 @@ body{background:linear-gradient(180deg,#F6F1EA 0%,#F3ECE3 45%,#EFE6DB 100%)}
       <div class="field f-format"><label  data-i="lFormato">Formula</label>
         <select class="formato"><option value="home" data-i="oHome">Serata in sala</option><option value="corso" data-i="oCorso" disabled>🔒 Corso in quattro incontri (presto)</option><option value="team" data-i="oTeam">Team building / gruppo</option><option value="uno" data-i="oUno" disabled>🔒 Ripetizioni WSET (presto)</option></select></div>
       <div class="field f-tipo"><label data-i="lTipo">Tema</label>
-        <select class="tipo"><option value="vino" data-i="oTVino">Lunedì · Vino (49 €)</option><option value="bolle" data-i="oTBolle">Martedì · Champagne (69 €)</option><option value="fort" data-i="oTFort">Mercoledì · Vini fortificati (64 €)</option></select></div>
+        <select class="tipo"><option value="vino" data-i="oTVino">Lunedì · Vino (55 €)</option><option value="bolle" data-i="oTBolle">Martedì · Champagne (75 €)</option><option value="fort" data-i="oTFort">Mercoledì · Vini fortificati (64 €)</option></select></div>
       <div class="field f-people"><label  data-i="lPersone">Quante persone</label>
-        <div class="stepper"><button type="button" data-step="-1" data-t=".persone" aria-label="meno">−</button><input type="number" class="persone" min="1" max="40" value="6"><button type="button" data-step="1" data-t=".persone" aria-label="più">+</button></div></div>
+        <div class="stepper"><button type="button" data-step="-1" data-t=".persone" aria-label="meno" data-ia="aMeno">−</button><input type="number" class="persone" min="1" max="40" value="6"><button type="button" data-step="1" data-t=".persone" aria-label="più" data-ia="aPiu">+</button></div></div>
       <div class="field f-hours"><label  data-i="lOre">Quante ore</label>
-        <div class="stepper"><button type="button" data-step="-1" data-t=".ore" aria-label="meno">−</button><input type="number" class="ore" min="1" max="8" value="2"><button type="button" data-step="1" data-t=".ore" aria-label="più">+</button></div></div>
+        <div class="stepper"><button type="button" data-step="-1" data-t=".ore" aria-label="meno" data-ia="aMeno">−</button><input type="number" class="ore" min="1" max="8" value="2"><button type="button" data-step="1" data-t=".ore" aria-label="più" data-ia="aPiu">+</button></div></div>
       <div class="field f-wines"><label  data-i="lVini">Quanti vini</label>
-        <div class="stepper"><button type="button" data-step="-1" data-t=".vini" aria-label="meno">−</button><input type="number" class="vini" min="0" max="10" value="6"><button type="button" data-step="1" data-t=".vini" aria-label="più">+</button></div></div>
+        <div class="stepper"><button type="button" data-step="-1" data-t=".vini" aria-label="meno" data-ia="aMeno">−</button><input type="number" class="vini" min="0" max="10" value="6"><button type="button" data-step="1" data-t=".vini" aria-label="più" data-ia="aPiu">+</button></div></div>
     </div>
     <div class="conf">
       <h3 class="h-box" data-i="prevT">Preventivo indicativo</h3>
@@ -2041,24 +2048,24 @@ body{background:linear-gradient(180deg,#F6F1EA 0%,#F3ECE3 45%,#EFE6DB 100%)}
 <section class="wrap" id="pratico">
   <div class="two-col">
     <div class="card white"><h3 data-i="incT">Cosa è incluso</h3>
-      <ul class="check"><li data-i="inc1">Tutti i vini della serata, già alla temperatura giusta</li><li data-i="inc2">Calici da degustazione, uno per ogni vino</li><li data-i="inc3">Schede stampate su cui prendere appunti</li><li data-i="inc4">Acqua, pane neutro e sputacchiera per chi guida</li><li data-i="inc5">Fattura regolare, anche per i regali aziendali</li></ul></div>
+      <ul class="check"><li data-i="inc1">Tutti i vini della serata, già alla temperatura giusta</li><li data-i="inc2">Calici da degustazione, uno per ogni vino</li><li data-i="inc3">Schede stampate su cui prendere appunti</li><li data-i="inc4">Acqua, stuzzichini offerti da Partenope 081 e sputacchiera per chi guida</li><li data-i="inc5">Fattura regolare, anche per i regali aziendali</li></ul></div>
     <div class="card"><h3 data-i="prepT">Come si svolge la serata</h3>
-      <ul class="check"><li data-i="prep1">Arrivi qualche minuto prima delle 18:00: ti accolgo e ti accompagno al tuo posto</li><li data-i="prep2">Si assaggia un vino alla volta, ognuno con la sua storia e una domanda da risolvere insieme</li><li data-i="prep3">Alla fine c'è il giro alla cieca: chi indovina di più si porta a casa la gloria</li><li data-i="prep4">Domande sempre benvenute: nessuno ti interroga</li></ul></div>
+      <ul class="check"><li data-i="prep1">Arrivi qualche minuto prima delle 18:00: ti accolgo e ti accompagno al tuo posto</li><li data-i="prep2">Dalle 18:30 un calice ogni mezz'ora, cinque in tutto, ognuno con la sua storia e una domanda da risolvere insieme</li><li data-i="prep3">L'ultimo calice, alle 20:30, è alla cieca: chi indovina di più si porta a casa la gloria. Si chiude alle 21:00</li><li data-i="prep4">Domande sempre benvenute: nessuno ti interroga</li></ul></div>
   </div>
 </section>
 
 <section class="wrap racconto" id="minuti">
-  <h2 data-i="miT">La serata, minuto per minuto</h2><p class="sub" data-i="miS">Gli orari della serata del lunedì; il mercoledì si chiude un po' prima.</p>
+  <h2 data-i="miT">La serata, minuto per minuto</h2><p class="sub" data-i="miS">Gli orari sono gli stessi per tutte e tre le serate: dalle 18:00 alle 21:00.</p>
   <div class="ra" data-racconto="minuti"></div>
 </section>
 
 <section class="wrap" id="regalo">
-  <div class="voucher"><img class="vou-art" src="" alt="" aria-hidden="true"><div><h3 data-i="vouT">Regala una serata</h3><p data-i="vouP">Un buono per un posto a una serata in sala: vale per tutte e tre, con la differenza per Champagne e fortificati. Arriva come PDF con il nome di chi lo riceve, vale tre anni e la data si sceglie dopo.</p></div><button type="button" class="btn dark addc" data-add="voucher" data-i="vouB">Chiedi un buono</button></div>
+  <div class="voucher"><img class="vou-art" src="" alt="" aria-hidden="true"><div><h3 data-i="vouT">Regala una serata</h3><p data-i="vouP">Un buono per un posto a una delle serate in sala: vale per tutte e tre, pagando la differenza per Champagne e fortificati. Arriva in PDF con il nome di chi lo riceve, vale tre anni e la data si sceglie dopo.</p></div><button type="button" class="btn dark addc" data-add="voucher" data-i="vouB">Chiedi un buono</button></div>
 </section>
 
 <section class="wrap">
   <div class="ctaband">
-    <div><h3 data-i="bandT">Pronto per un calice?</h3><p data-i="bandP">Scegli la serata e prenota il tuo posto in un minuto. Per gruppi oltre 10 persone ed eventi privati scrivimi: rispondo entro 24 ore.</p></div>
+    <div><h3 data-i="bandT">Pronto per un calice?</h3><p data-i="bandP">Scegli la serata e prenota il tuo posto in un minuto. Per gruppi di oltre 10 persone ed eventi privati scrivimi: rispondo entro 24 ore.</p></div>
     <a class="btn dark" href="#privati/p-prenota" data-i="bandB">Prenota un posto</a>
   </div>
 </section>
@@ -2087,7 +2094,7 @@ body{background:linear-gradient(180deg,#F6F1EA 0%,#F3ECE3 45%,#EFE6DB 100%)}
       <span class="price"><span class="from" data-i="from5">a partire da</span>55 € <small data-i="r3price">a persona, vini inclusi</small></span>
       <div class="go"><button type="button" class="btn addc big" data-add="team" data-i="caAdd">Aggiungi al carrello</button> <a class="btn line" href="#contatto?tipo=5" data-i="cta1">Richiedi una data</a></div></div>
   </div>
-  <p class="ust" data-i="ust">Prezzi finali. In base al §19 UStG non viene addebitata l'IVA (regime dei piccoli imprenditori, Kleinunternehmerregelung).</p>
+  <p class="ust" data-i="ust">Prezzi finali. In base al § 19 UStG non viene addebitata l'IVA (regime dei piccoli imprenditori, Kleinunternehmerregelung).</p>
 </section>
 
 <section class="wrap" id="perche">
@@ -2104,11 +2111,11 @@ body{background:linear-gradient(180deg,#F6F1EA 0%,#F3ECE3 45%,#EFE6DB 100%)}
       <div class="field"><label  data-i="lRFormato">Servizio</label>
         <select class="rformato"><option value="staff" data-i="oStaff">Formazione del team</option><option value="evening" data-i="oEvening">Serata per i clienti</option></select></div>
       <div class="field f-people"><label  data-i="lPersone">Quante persone</label>
-        <div class="stepper"><button type="button" data-step="-1" data-t=".persone" aria-label="meno">−</button><input type="number" class="persone" min="1" max="40" value="6"><button type="button" data-step="1" data-t=".persone" aria-label="più">+</button></div></div>
+        <div class="stepper"><button type="button" data-step="-1" data-t=".persone" aria-label="meno" data-ia="aMeno">−</button><input type="number" class="persone" min="1" max="40" value="6"><button type="button" data-step="1" data-t=".persone" aria-label="più" data-ia="aPiu">+</button></div></div>
       <div class="field f-hours"><label  data-i="lOre">Quante ore</label>
-        <div class="stepper"><button type="button" data-step="-1" data-t=".ore" aria-label="meno">−</button><input type="number" class="ore" min="1" max="8" value="2"><button type="button" data-step="1" data-t=".ore" aria-label="più">+</button></div></div>
+        <div class="stepper"><button type="button" data-step="-1" data-t=".ore" aria-label="meno" data-ia="aMeno">−</button><input type="number" class="ore" min="1" max="8" value="2"><button type="button" data-step="1" data-t=".ore" aria-label="più" data-ia="aPiu">+</button></div></div>
       <div class="field f-wines"><label  data-i="lVini">Quanti vini</label>
-        <div class="stepper"><button type="button" data-step="-1" data-t=".vini" aria-label="meno">−</button><input type="number" class="vini" min="0" max="10" value="0"><button type="button" data-step="1" data-t=".vini" aria-label="più">+</button></div></div>
+        <div class="stepper"><button type="button" data-step="-1" data-t=".vini" aria-label="meno" data-ia="aMeno">−</button><input type="number" class="vini" min="0" max="10" value="0"><button type="button" data-step="1" data-t=".vini" aria-label="più" data-ia="aPiu">+</button></div></div>
     </div>
     <div class="conf">
       <h3 class="h-box" data-i="prevT">Preventivo indicativo</h3>
@@ -2180,14 +2187,14 @@ body{background:linear-gradient(180deg,#F6F1EA 0%,#F3ECE3 45%,#EFE6DB 100%)}
 
 <section class="wrap" id="pagamento">
   <div class="two-col">
-    <div class="card white"><h3 data-i="payT">Prezzi e pagamento</h3><ul class="check"><li data-i="pay1">Tutti i prezzi sono finali: niente IVA (§19 UStG, Kleinunternehmerregelung)</li><li data-i="pay2">Si paga con bonifico entro 48 ore dalla prenotazione, e comunque prima della serata; la fattura arriva per email</li><li data-i="pay3">Aziende e ristoranti: bonifico a 14 giorni dalla fattura</li><li data-i="pay4">Nessun acconto: paghi una volta sola</li></ul></div>
-    <div class="card" id="cancellazione"><h3 data-i="canT">Se cambi idea</h3><ul class="check x"><li data-i="can1">Fino a 14 giorni prima: cancellazione gratuita</li><li data-i="can2">Da 13 a 7 giorni prima: 50 %, oppure spostiamo la data senza costi</li><li data-i="can3">Meno di 7 giorni prima: 100 %, perché i vini sono già acquistati</li><li data-i="can4">Se sono io a dover annullare: rimborso completo o nuova data, scegli tu</li></ul></div>
+    <div class="card white"><h3 data-i="payT">Prezzi e pagamento</h3><ul class="check"><li data-i="pay1">Tutti i prezzi sono finali: IVA non applicata (§ 19 UStG, Kleinunternehmerregelung)</li><li data-i="pay2">Si paga con bonifico entro 48 ore dalla prenotazione, e comunque prima della serata; la fattura arriva per email</li><li data-i="pay3">Aziende e ristoranti: bonifico a 14 giorni dalla fattura</li><li data-i="pay4">Nessun acconto: paghi una volta sola</li></ul></div>
+    <div class="card" id="cancellazione"><h3 data-i="canT">Se cambi idea</h3><ul class="check x"><li data-i="can1">Fino a 14 giorni prima: cancellazione gratuita</li><li data-i="can2">Da 13 a 7 giorni prima: 50%, oppure spostiamo la data senza costi</li><li data-i="can3">Meno di 7 giorni prima: 100%, perché i vini sono già acquistati</li><li data-i="can4">Se sono io a dover annullare: rimborso completo o nuova data, scegli tu</li></ul></div>
   </div>
 </section>
 
 <section class="wrap" id="zona">
   <div class="two-col">
-    <div class="card salvia"><h3 data-i="zonT">Dove ci si trova</h3><p data-i="zonP">Le serate si tengono da Partenope 081, a Berlino, sempre alle 18:00. L'indirizzo preciso arriva insieme alla conferma. Per ristoranti e aziende vengo io da voi.</p></div>
+    <div class="card salvia"><h3 data-i="zonT">Dove ci si trova</h3><p data-i="zonP">Le serate si tengono da Partenope 081, a Berlino, sempre dalle 18:00 alle 21:00. L'indirizzo preciso arriva insieme alla conferma. Per ristoranti e aziende vengo io da voi.</p></div>
     <div class="card"><h3 data-i="alcT">Sull'alcol</h3><p data-i="alcP">Le degustazioni sono riservate ai maggiorenni. Le serate si tengono in un locale con licenza; nei vostri locali vale la vostra. Acqua e sputacchiera sono sempre sul tavolo.</p></div>
   </div>
 </section>
@@ -2196,7 +2203,7 @@ body{background:linear-gradient(180deg,#F6F1EA 0%,#F3ECE3 45%,#EFE6DB 100%)}
 
 <section class="wrap">
   <div class="ctaband">
-    <div><h3 data-i="bandT">Pronto per un calice?</h3><p data-i="bandP">Scegli la serata e prenota il tuo posto in un minuto. Per gruppi oltre 10 persone ed eventi privati scrivimi: rispondo entro 24 ore.</p></div>
+    <div><h3 data-i="bandT">Pronto per un calice?</h3><p data-i="bandP">Scegli la serata e prenota il tuo posto in un minuto. Per gruppi di oltre 10 persone ed eventi privati scrivimi: rispondo entro 24 ore.</p></div>
     <a class="btn dark" href="#privati/p-prenota" data-i="bandB">Prenota un posto</a>
   </div>
 </section>
@@ -2206,7 +2213,7 @@ body{background:linear-gradient(180deg,#F6F1EA 0%,#F3ECE3 45%,#EFE6DB 100%)}
 
 <header class="phero"><img class="phero-art" src="" alt="" aria-hidden="true"><div class="bubbles" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="wrap">
   <h1 data-i="cntT">Scrivimi</h1>
-  <p data-i="cntP">Per gruppi oltre 10 persone, eventi privati, ristoranti e aziende: rispondo entro 24 ore con una proposta e un prezzo fisso. Per le serate in sala puoi prenotare direttamente.</p>
+  <p data-i="cntP">Per gruppi di oltre 10 persone, eventi privati, ristoranti e aziende: rispondo entro 24 ore con una proposta e un prezzo fisso. Per le serate in sala puoi prenotare direttamente.</p>
 </div></header>
 
 <section class="wrap" id="modulo">
@@ -2246,9 +2253,9 @@ body{background:linear-gradient(180deg,#F6F1EA 0%,#F3ECE3 45%,#EFE6DB 100%)}
 
 <section class="wrap" id="calendario">
   <h2 data-i="calT">Il calendario delle serate</h2>
-  <p class="sub" data-i="calS">Lunedì vino, martedì Champagne, mercoledì vini fortificati, sempre alle 18:00. Tocca una data per prenotare il tuo posto.</p>
+  <p class="sub" data-i="calS">Il lunedì vino, il martedì Champagne, il mercoledì vini fortificati, sempre dalle 18:00 alle 21:00. Tocca una data per prenotare il tuo posto.</p>
   <div class="cal">
-    <div class="cal-top"><button type="button" id="calprev" aria-label="mese precedente">‹</button><b id="calmonth">—</b><button type="button" id="calnext" aria-label="mese successivo">›</button></div>
+    <div class="cal-top"><button type="button" id="calprev" aria-label="mese precedente" data-ia="aPrev">‹</button><b id="calmonth">—</b><button type="button" id="calnext" aria-label="mese successivo" data-ia="aNext">›</button></div>
     <div class="cal-dow" id="caldow"></div>
     <div class="cal-grid" id="calgrid"></div>
     <div class="cal-legend">
@@ -2288,7 +2295,7 @@ body{background:linear-gradient(180deg,#F6F1EA 0%,#F3ECE3 45%,#EFE6DB 100%)}
         <input id="promoin" type="text" autocomplete="off">
         <button type="button" id="promoadd" data-i="caApply">Applica</button>
       </div>
-      <div class="tot"><div class="big num" id="carttot">—</div><div class="sub2" data-i="iva2">prezzo finale · nessuna IVA (§19 UStG)</div></div>
+      <div class="tot"><div class="big num" id="carttot">—</div><div class="sub2" data-i="iva2">prezzo finale · IVA non applicata (§ 19 UStG)</div></div>
       <a class="btn" id="cartgo" href="#pagamento" style="margin-top:18px" data-i="caGo">Vai al pagamento</a>
       <p class="note" data-i="caN">Non paghi ancora nulla: al passo successivo scegli come pagare.</p>
     </div>
@@ -2298,7 +2305,7 @@ body{background:linear-gradient(180deg,#F6F1EA 0%,#F3ECE3 45%,#EFE6DB 100%)}
 <main id="v-pagamento" class="view" hidden>
 <header class="phero"><img class="phero-art" src="" alt="" aria-hidden="true"><div class="wrap">
   <div class="pill" data-i="payPill">Passo 2 di 3 · Conferma</div>
-  <h1 data-i="payH">Come vuoi pagare</h1>
+  <h1 data-i="payH">Come vuoi pagare?</h1>
   <p data-i="payS">Si paga con bonifico, entro 48 ore dalla prenotazione e comunque prima della serata.</p>
 </div></header>
 
@@ -2308,7 +2315,7 @@ body{background:linear-gradient(180deg,#F6F1EA 0%,#F3ECE3 45%,#EFE6DB 100%)}
     <div class="conf">
       <img class="pay-art" src="" alt="" aria-hidden="true"><h3 class="h-box" data-i="payRec">Il tuo riepilogo</h3>
       <div class="recap" id="recap"></div>
-      <div class="tot"><div class="big num" id="paytot">—</div><div class="sub2" data-i="iva2">prezzo finale · nessuna IVA (§19 UStG)</div></div>
+      <div class="tot"><div class="big num" id="paytot">—</div><div class="sub2" data-i="iva2">prezzo finale · IVA non applicata (§ 19 UStG)</div></div>
 
       <div id="prenbox" hidden>
         <h3 class="h-conf" data-i="payDay">La sera</h3>
@@ -2329,14 +2336,14 @@ body{background:linear-gradient(180deg,#F6F1EA 0%,#F3ECE3 45%,#EFE6DB 100%)}
 
       <button class="btn" id="paygo" style="margin-top:20px" data-i="payGo">Conferma la prenotazione</button>
       <p class="payhint" id="payhint" role="status" aria-live="polite"></p>
-      <p class="note" data-i="payN">Il biglietto arriva subito. La serata è confermata quando arriva il bonifico: se non arriva entro 48 ore, il posto torna libero. La fattura arriva per email.</p>
+      <p class="note" data-i="payN">Il biglietto arriva subito. La serata è confermata appena ricevo il bonifico: se non arriva entro 48 ore, il posto torna libero. La fattura ti arriva per email.</p>
     </div>
 
     <div class="card white">
       <h3 data-i="paySafeT">Come funziona il pagamento</h3>
       <ul class="check">
         <li data-i="pay2b">Bonifico entro 48 ore dalla prenotazione</li>
-        <li data-i="pay3b">Fattura sempre inclusa, con la dicitura del §19 UStG</li>
+        <li data-i="pay3b">Fattura sempre inclusa, con la dicitura del § 19 UStG</li>
         <li data-i="pay4b">Cancellazione gratuita fino a 14 giorni prima</li>
       </ul>
       <p class="note" data-i="paySafeN">I dati della carta non vengono né inviati né salvati da questo sito. Quando attiverò SumUp o Stripe, il pagamento con carta avverrà sulla loro pagina protetta.</p>
@@ -2382,7 +2389,7 @@ body{background:linear-gradient(180deg,#F6F1EA 0%,#F3ECE3 45%,#EFE6DB 100%)}
   <h2>Kontakt</h2><p>Telefon: <a href="tel:+4915207030279">+49 152 0703 0279</a><br>E-Mail: christian@lartedelvino.de</p>
   <h2>Umsatzsteuer</h2><p>Kleinunternehmer im Sinne von § 19 UStG; es wird keine Umsatzsteuer ausgewiesen.</p>
   <h2>Streitschlichtung</h2><p>Ich bin nicht bereit und nicht verpflichtet, an Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle teilzunehmen.</p>
-  <h2>Markenhinweis</h2><p>WSET® ist eine eingetragene Marke der Wine &amp; Spirit Education Trust. Diese Website und die angebotenen Leistungen stehen in keiner Verbindung zu WSET und sind nicht von WSET genehmigt.</p>
+  <h2>Markenhinweis</h2><p>WSET® ist eine eingetragene Marke des Wine &amp; Spirit Education Trust. Diese Website und die angebotenen Leistungen stehen in keiner Verbindung zu WSET und sind nicht von WSET genehmigt.</p>
 </div></section>
 
 </main>
@@ -2393,12 +2400,12 @@ body{background:linear-gradient(180deg,#F6F1EA 0%,#F3ECE3 45%,#EFE6DB 100%)}
   <h2>1. Verantwortlicher</h2><p>Christian Scognamiglio, Thulestraße 38, 13189 Berlin, christian@lartedelvino.de.</p>
   <h2>2. Hosting und Server-Logfiles</h2><p>Diese Website wird bei der Netlify, Inc., 101 2nd Street, San Francisco, CA 94105, USA gehostet. Beim Aufruf verarbeitet Netlify automatisch IP-Adresse, Datum und Uhrzeit, aufgerufene Seite, Browser und Betriebssystem in Logfiles. Rechtsgrundlage: Art. 6 Abs. 1 lit. f DSGVO (sicherer und stabiler Betrieb der Website). Netlify ist nach dem EU-U.S. Data Privacy Framework zertifiziert; die Übermittlung in die USA stützt sich auf den Angemessenheitsbeschluss der EU-Kommission (Art. 45 DSGVO). Die Logfiles speichert Netlify nur so lange, wie es für diesen Zweck nötig ist; Einzelheiten: <a href="https://www.netlify.com/privacy/" rel="noopener">netlify.com/privacy</a>.</p>
   <h2>3. Schriftarten</h2><p>Die verwendeten Schriftarten werden lokal auf dem eigenen Server gehostet. Es findet keine Verbindung zu Servern von Google oder anderen Anbietern statt.</p>
-  <h2>4. Lokale Speicherung</h2><p>Die gewählte Sprache (IT/DE) und der Inhalt des Warenkorbs werden im Browser gespeichert (localStorage), damit sie beim Seitenwechsel erhalten bleiben. Dies ist technisch notwendig (§ 25 Abs. 2 TDDDG) und enthält keine personenbezogenen Daten. Eine Preisschätzung aus dem Rechner wird nur für die Dauer der Sitzung im Browser gehalten (sessionStorage).</p>
+  <h2>4. Lokale Speicherung</h2><p>Die gewählte Sprache und der Inhalt des Warenkorbs werden im Browser gespeichert (localStorage), damit sie beim Seitenwechsel erhalten bleiben. Dies ist technisch notwendig (§ 25 Abs. 2 TDDDG) und enthält keine personenbezogenen Daten. Eine Preisschätzung aus dem Rechner wird nur für die Dauer der Sitzung im Browser gehalten (sessionStorage).</p>
   <h2>5. Kontaktaufnahme</h2><p>Das Anfrageformular erzeugt lediglich eine E-Mail in Ihrem eigenen Mailprogramm; es werden keine Daten an diese Website übermittelt. Bei Kontakt per E-Mail, Telefon oder WhatsApp werden Ihre Angaben zur Bearbeitung der Anfrage gespeichert (Art. 6 Abs. 1 lit. b DSGVO) und nach Abschluss gelöscht, sofern keine gesetzlichen Aufbewahrungspflichten bestehen. WhatsApp wird von der WhatsApp Ireland Ltd. betrieben; bei Nutzung gelten deren Datenschutzbestimmungen.</p>
   <h2>6. Buchungen</h2><p>Wenn Sie einen Abend buchen, verarbeite ich Name, E-Mail-Adresse, Telefonnummer (falls angegeben), Termin, Personenzahl und Betrag, um die Buchung durchzuführen (Art. 6 Abs. 1 lit. b DSGVO). Die Daten liegen beim Hosting-Anbieter Netlify (siehe Nr. 2). Buchungs- und Bestätigungs-E-Mails werden über Resend, Inc. (USA) versendet, die nach dem EU-U.S. Data Privacy Framework zertifiziert ist; mit Resend besteht ein Vertrag zur Auftragsverarbeitung (Art. 28 DSGVO). Gesetzlich vorgeschriebene Unterlagen wie Rechnungen bewahre ich so lange auf, wie es die steuerrechtlichen Fristen verlangen.</p>
-  <h2>7. Besucherzählung ohne Cookies</h2><p>Um zu sehen, wie viele Menschen die Website besuchen, welche Seiten aufgerufen werden und woher die Besucher kommen, zählt der Server Seitenaufrufe. Dabei werden keine Cookies gesetzt und keine Informationen auf Ihrem Gerät gespeichert oder ausgelesen. Aus IP-Adresse und Browserkennung wird mit einem täglich wechselnden, zufälligen Schlüssel eine verkürzte Prüfsumme gebildet, damit derselbe Besuch an einem Tag nicht doppelt gezählt wird. Die IP-Adresse selbst wird nicht gespeichert; die Prüfsumme wird nach Ablauf des Tages gelöscht, übrig bleiben nur Gesamtzahlen (z. B. Besucher pro Tag, Seiten, Herkunftsseite, Telefon oder Computer). Eine Identifizierung einzelner Personen ist nicht möglich. Rechtsgrundlage: Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse an einer datensparsamen Reichweitenmessung). Wenn Ihr Browser „Do Not Track" oder „Global Privacy Control" sendet, wird Ihr Besuch nicht gezählt.</p>
+  <h2>7. Besucherzählung ohne Cookies</h2><p>Um zu sehen, wie viele Menschen die Website besuchen, welche Seiten aufgerufen werden und woher die Besucher kommen, zählt der Server Seitenaufrufe. Dabei werden keine Cookies gesetzt und keine Informationen auf Ihrem Gerät gespeichert oder ausgelesen. Aus IP-Adresse und Browserkennung wird mit einem täglich wechselnden, zufälligen Schlüssel eine verkürzte Prüfsumme gebildet, damit derselbe Besuch an einem Tag nicht doppelt gezählt wird. Die IP-Adresse selbst wird nicht gespeichert; die Prüfsumme wird nach Ablauf des Tages gelöscht, übrig bleiben nur Gesamtzahlen (z. B. Besucher pro Tag, Seiten, Herkunftsseite, Telefon oder Computer). Eine Identifizierung einzelner Personen ist nicht möglich. Rechtsgrundlage: Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse an einer datensparsamen Reichweitenmessung). Wenn Ihr Browser „Do Not Track“ oder „Global Privacy Control“ sendet, wird Ihr Besuch nicht gezählt.</p>
   <h2>8. Ihre Rechte</h2><p>Sie haben das Recht auf Auskunft, Berichtigung, Löschung, Einschränkung der Verarbeitung, Datenübertragbarkeit und Widerspruch (Art. 15–21 DSGVO) sowie auf Beschwerde bei einer Aufsichtsbehörde, z. B. der Berliner Beauftragten für Datenschutz und Informationsfreiheit.</p>
-  <p style="margin-top:18px;font-size:12.5px;opacity:.7">Stand: Oktober 2026. Vorlage — vor Veröffentlichung prüfen lassen.</p>
+  <p style="margin-top:18px;font-size:12.5px;opacity:.7">Stand: Oktober 2026. Vorlage – vor Veröffentlichung prüfen lassen.</p>
 </div></section>
 
 </main>
@@ -2407,7 +2414,7 @@ body{background:linear-gradient(180deg,#F6F1EA 0%,#F3ECE3 45%,#EFE6DB 100%)}
   <div class="cols">
     <div><img class="foot-art" src="" alt="" aria-hidden="true"><h4>L'Arte del Vino</h4><p data-i="fo1">Sommelier a Berlino. Serate di degustazione, corsi e formazione per la sala, in quattro lingue.</p></div>
     <div><h4 data-i="fo2T">Pagine</h4><a href="#privati" data-i="nav2">Privati</a><a href="#ristoranti" data-i="nav3">Ristoranti</a><a href="#corso" data-i="corT">Il corso e le ripetizioni</a><a href="#info" data-i="nav4">Info</a><a href="#contatto" data-i="nav5">Richiedi</a></div>
-    <div><h4 data-i="fo3T">Legale</h4><a href="#impressum">Impressum</a><a href="#datenschutz">Datenschutz</a><a href="#info/cancellazione" data-i="foAgb">Condizioni e cancellazione</a></div>
+    <div><h4 data-i="fo3T">Note legali</h4><a href="#impressum">Impressum</a><a href="#datenschutz">Datenschutz</a><a href="#info/cancellazione" data-i="foAgb">Condizioni e cancellazione</a></div>
   </div>
   <div class="copy">© 2026 L'Arte del Vino · Christian Scognamiglio · Berlin</div>
 </div></footer>
