@@ -63,6 +63,7 @@ function serateFuture(giorni){
   const o=oggi(),fine=piuGiorni(o,giorni),r=R(),mappa=new Map();
   for(let g=o;g<=fine;g=piuGiorni(g,1)){
     if((r.chiusure||[]).includes(g))continue;
+    if(r.primaSerata&&g<r.primaSerata)continue;
     for(const ora of ((r.settimana||{})[giornoSett(g)]||[]))
       mappa.set(g+" "+ora,{data:g,ora,tema:(r.temi||{})[giornoSett(g)]||"vino",pren:[]});
   }
@@ -369,6 +370,7 @@ function pren(p,opzioni={}){
       <p class="piccolo">${rif}</p>
       <div class="azioni">
         ${!fatta&&p.stato!=="annullata"?`<button class="b si" data-conferma="${rif}">Bonifico arrivato</button>`:""}
+        ${fatta?`<button class="b" data-quittung="${rif}">Ricevuta</button>`:""}
         ${p.stato!=="annullata"&&p.stato!=="scaduta"?`<button class="b no" data-annulla="${rif}">Annulla</button>`:""}
       </div>
     </div>
@@ -442,12 +444,12 @@ function disegnaDaFare(){
 /* ================= IMPOSTAZIONI ================= */
 function disegnaImpostazioni(){
   const r=R(),c=CONTI();
-  $("#c-obiettivo").value=c.obiettivoMese;$("#c-vini").value=c.viniSerata;$("#c-ku").value=c.limiteKU;
+  $("#c-obiettivo").value=c.obiettivoMese;$("#c-vini").value=c.viniSerata;$("#c-ku").value=c.limiteKU;$("#c-sn").value=c.steuernummer||"";
   for(const t of Object.keys(TEMI)){$("#c-ml-"+t).value=c.ml[t];$("#c-bt-"+t).value=c.bottiglia[t];}
   $("#settimana").innerHTML=[1,2,3,4,5,6,0].map(n=>`<label><b>${GG[n]}</b>
     <input type="text" inputmode="numeric" data-g="${n}" value="${esc(((r.settimana||{})[n]||[]).join(","))}" placeholder="—" aria-label="Ore di ${GGL[n]}">
     <select data-tema="${n}" aria-label="Tema di ${GGL[n]}">${Object.entries(TEMI).map(([k,v])=>`<option value="${k}"${((r.temi||{})[n]||"vino")===k?" selected":""}>${v}</option>`).join("")}</select></label>`).join("");
-  $("#r-posti").value=POSTI();$("#r-anticipo").value=r.anticipoGiorni??1;$("#r-durata").value=r.durataMin??150;
+  $("#r-posti").value=POSTI();$("#r-anticipo").value=r.anticipoGiorni??1;$("#r-durata").value=r.durataMin??180;$("#r-prima").value=r.primaSerata||"";
   const ch=(r.chiusure||[]).filter(g=>/^\d{4}-\d{2}-\d{2}$/.test(g)&&g>=oggi());
   $("#chiusure").innerHTML=ch.length?ch.map(g=>`<span>${esc(dataBreve(g))} ${esc(g.slice(0,4))}<button data-apri="${esc(g)}" aria-label="Riapri ${esc(g)}">×</button></span>`).join("")
     :`<span style="background:none;padding-left:0;color:var(--muted)">Nessun giorno chiuso in arrivo.</span>`;
@@ -658,12 +660,72 @@ document.addEventListener("click",async e=>{
     if(!confirm("Annullo questa prenotazione e avviso il cliente per mail?"))return;
     const r=await chiama("POST",{azione:"annulla",rif:t.dataset.annulla});
     if(r&&r.ok){avvisa("Annullata");carica();}else avvisa(r?.errore||"Non ha funzionato");return;}
+  if(t.dataset.quittung)return apriQuittung(t.dataset.quittung);
   if(t.dataset.copia){try{await navigator.clipboard.writeText(t.dataset.copia);avvisa("Causale copiata");}catch(err){avvisa(t.dataset.copia);}return;}
   if(t.dataset.apri){const r=await chiama("POST",{azione:"apri",data:t.dataset.apri});if(r&&r.ok){avvisa("Giorno riaperto");carica();}return;}
   if(t.dataset.stampa!==undefined){
     $$(".serata").forEach(s=>{const si=s.dataset.idx===t.dataset.stampa;s.classList.toggle("da-stampare",si);if(si)s.querySelectorAll("details.ospiti").forEach(d=>d.open=true);});
     document.body.classList.add("stampa-serata");print();
     setTimeout(()=>document.body.classList.remove("stampa-serata"),500);return;}
+});
+
+
+/* ================= RICEVUTA (in tedesco, per il cliente) =================
+   Fino a 250 € lordi basta la Kleinbetragsrechnung (§ 33 UStDV): niente Steuernummer
+   e niente indirizzo del cliente. Sopra i 250 € diventa una Rechnung completa. */
+const Q_LISTINO={vino:55,bolle:75,fort:64};
+const Q_NOME={vino:"Weinabend",bolle:"Champagnerabend",fort:"Likörwein-Abend"};
+const Q_SOTTO={vino:"Rot und Weiß im Vergleich",bolle:"Champagner und Schaumwein",fort:"Portwein, Sherry und Co."};
+const Q_VENDITORE={nome:"Christian Scognamiglio",via:"Thulestraße 38",citta:"13189 Berlin",mail:"christian@lartedelvino.de",sito:"lartedelvino.de"};
+const Q_LUOGO="Partenope 081, Simon-Dach-Straße 39, 10245 Berlin";
+const qEuro=n=>new Intl.NumberFormat("de-DE",{style:"currency",currency:"EUR"}).format(num(n));
+const qData=(iso,lungo)=>dUTC(String(iso).slice(0,10)).toLocaleDateString("de-DE",lungo?{weekday:"long",day:"numeric",month:"long",year:"numeric",timeZone:"UTC"}:{day:"2-digit",month:"2-digit",year:"numeric",timeZone:"UTC"});
+const qFine=(ora,min)=>{const[h,m]=String(ora||"18:00").split(":").map(Number);const t=h*60+m+(num(min)||180);return String(Math.floor(t/60)%24).padStart(2,"0")+":"+String(t%60).padStart(2,"0");};
+function apriQuittung(rif){
+  const p=DATI.prenotazioni.find(x=>x.rif===rif);if(!p)return avvisa("Prenotazione non trovata");
+  if(!pagata(p))return avvisa("La ricevuta si fa solo per le prenotazioni pagate");
+  const tema=temaDi(p),n=pax(p),tot=num(p.totale),lp=Q_LISTINO[tema]||Q_LISTINO.vino,lordo=lp*n;
+  const grande=tot>250,sn=(CONTI().steuernummer||"").trim();
+  const righe=[];
+  const desc=`<b>Weinverkostung „${Q_NOME[tema]||"Weinabend"}“</b><small>${esc(Q_SOTTO[tema]||"")}</small><small>${esc(qData(p.data,true))}, ${esc(p.ora)}–${esc(qFine(p.ora,p.durata||R().durataMin))} Uhr · ${esc(Q_LUOGO)}</small>`;
+  if(tot>0&&tot<lordo){
+    righe.push([desc,`${n}`,qEuro(lp),qEuro(lordo)]);
+    const codice=String(p.promo||"").replace(/[^A-Za-z0-9-]/g,"").slice(0,20);
+    righe.push([`Rabatt${codice?" (Code "+esc(codice)+")":""}`,"","",qEuro(tot-lordo)]);
+  } else righe.push([desc,`${n}`,qEuro(tot/n),qEuro(tot)]);
+  const via={cash:"in bar",card:"per Karte"}[p.pagamento]||"per Überweisung";
+  const incasso=String(p.confermataIl||p.pagatoIl||new Date().toISOString()).slice(0,10);
+  const logo=$("#q-logo").innerHTML;
+  $("#q-foglio").innerHTML=`
+    <div class="q-testa">
+      <div class="q-marca">${logo}<div><b>L'Arte del Vino</b><small>Weinverkostungen · Berlin</small></div></div>
+      <div class="q-tit"><h2>${grande?"Rechnung":"Quittung"}</h2>
+        <p>Nr. <b>${esc(p.rif)}</b><br>Datum <b>${esc(qData(oggi()))}</b><br>Leistungsdatum <b>${esc(qData(p.data))}</b></p></div>
+    </div>
+    <div class="q-mitt">${esc(Q_VENDITORE.nome)} · ${esc(Q_VENDITORE.via)} · ${esc(Q_VENDITORE.citta)}</div>
+    <div class="q-cliente"><b>${esc(p.nome||"")}</b>
+      <div class="q-ind" contenteditable="true" spellcheck="false" data-vuoto="${grande?"Anschrift des Kunden (für Rechnungen über 250 € nötig) – hier tippen":"Anschrift (optional) – hier tippen"}"></div></div>
+    <table class="q-tab"><thead><tr><th>Leistung</th><th class="r">Pers.</th><th class="r">Einzelpreis</th><th class="r">Betrag</th></tr></thead>
+      <tbody>${righe.map(r=>`<tr><td>${r[0]}</td><td class="r">${r[1]}</td><td class="r">${r[2]}</td><td class="r">${r[3]}</td></tr>`).join("")}</tbody></table>
+    <div class="q-tot"><div><span>Gesamtbetrag</span><b>${qEuro(tot)}</b></div></div>
+    <div class="q-note">
+      <p>Betrag am ${esc(qData(incasso))} ${via} erhalten. Vielen Dank!</p>
+      <p class="ku">Gemäß § 19 UStG wird keine Umsatzsteuer berechnet (Kleinunternehmerregelung).${grande&&sn?" · Steuernummer: "+esc(sn):""}</p>
+      ${grande&&!sn?`<p class="q-avviso">Sopra 250 € la Rechnung deve avere la Steuernummer: scrivila in Impostazioni → I tuoi numeri. Questa riga non viene stampata.</p>`:""}
+    </div>
+    <div class="q-piede"><em>Danke für den schönen Abend – bis zum nächsten Glas!</em>
+      <span>${esc(Q_VENDITORE.nome)} · ${esc(Q_VENDITORE.mail)} · ${esc(Q_VENDITORE.sito)}</span></div>`;
+  $("#quittung").hidden=false;document.body.style.overflow="hidden";$("#q-stampa").focus();
+}
+function chiudiQuittung(){$("#quittung").hidden=true;document.body.style.overflow="";}
+$("#q-chiudi").addEventListener("click",chiudiQuittung);
+$("#quittung").addEventListener("click",e=>{if(e.target.id==="quittung")chiudiQuittung();});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("#quittung").hidden)chiudiQuittung();});
+$("#q-stampa").addEventListener("click",()=>{
+  const nr=($("#q-foglio .q-tit b")||{}).textContent||"";const prima=document.title;
+  document.title=(nr?nr+" ":"")+"Quittung L'Arte del Vino";      /* nome del PDF salvato */
+  document.body.classList.add("stampa-quittung");print();
+  setTimeout(()=>{document.body.classList.remove("stampa-quittung");document.title=prima;},500);
 });
 
 $("#chiudi").addEventListener("click",async()=>{
@@ -677,13 +739,13 @@ $("#salvaregole").addEventListener("click",async()=>{
   });
   $$("#settimana select[data-tema]").forEach(s=>{temi[s.dataset.tema]=s.value;});
   const r=await chiama("POST",{azione:"regole",regole:{settimana,temi,posti:+$("#r-posti").value||40,
-    anticipoGiorni:+$("#r-anticipo").value||0,durataMin:+$("#r-durata").value||150}});
+    anticipoGiorni:+$("#r-anticipo").value||0,durataMin:+$("#r-durata").value||180,primaSerata:$("#r-prima").value||""}});
   if(r&&r.ok){avvisa("Orari salvati");carica();}else avvisa(r?.errore||"Non ha funzionato");
 });
 $("#salvaconti").addEventListener("click",async()=>{
   const ml={},bottiglia={};for(const t of Object.keys(TEMI)){ml[t]=+$("#c-ml-"+t).value;bottiglia[t]=+$("#c-bt-"+t).value;}
   const conti={ml,bottiglia,viniSerata:+$("#c-vini").value,
-    limiteKU:+$("#c-ku").value,obiettivoMese:+$("#c-obiettivo").value};
+    limiteKU:+$("#c-ku").value,obiettivoMese:+$("#c-obiettivo").value,steuernummer:$("#c-sn").value.trim()};
   const r=await chiama("POST",{azione:"regole",regole:{conti}});
   if(r&&r.ok){avvisa("Numeri salvati");carica();}else avvisa(r?.errore||"Non ha funzionato");
 });

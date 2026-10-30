@@ -1218,15 +1218,16 @@ const LOCKED_K={corso:1,uno:1};
    ============================================================ */
 const SERATE={1:"vino",2:"bolle",3:"fort"};      /* getDay(): 1 lun · 2 mar · 3 mer */
 const ORA_SERATA="18:00",POSTI_SERATA=40,POSTI_MAX=10,POCHI_POSTI=8;
+const PRIMA_SERATA="2026-11-23";      /* la prima serata: prima di questa data non si prenota */
 const LTIPO={calice:"vino",bolle:"bolle",dolce:"fort"};   /* icona del carosello → serata */
 const BOOK={tipo:"vino",data:null,q:2};
 function isoDi(d){return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");}
 function dataDi(x){const [Y,M,D]=String(x).split("-").map(Number);return new Date(Y,M-1,D,12);}
 function temaDi(x){if(!/^\d{4}-\d{2}-\d{2}$/.test(String(x||"")))return null;const d=dataDi(x);return isoDi(d)===x?(SERATE[d.getDay()]||null):null;}
-function dataValida(x){return !!temaDi(x)&&x>isoDi(new Date());}
+function dataValida(x){return !!temaDi(x)&&x>isoDi(new Date())&&x>=PRIMA_SERATA;}
 function prossimeDate(tipo,n){
   const out=[],d=new Date();d.setHours(12,0,0,0);
-  for(let i=1;i<200&&out.length<n;i++){const x=new Date(d.getTime()+i*864e5);if(!tipo||SERATE[x.getDay()]===tipo)if(SERATE[x.getDay()])out.push(isoDi(x));}
+  for(let i=1;i<260&&out.length<n;i++){const x=new Date(d.getTime()+i*864e5);if(isoDi(x)<PRIMA_SERATA)continue;if(!tipo||SERATE[x.getDay()]===tipo)if(SERATE[x.getDay()])out.push(isoDi(x));}
   return out;
 }
 function postiDi(x){const v=(typeof SLOTS==="object"&&SLOTS)?SLOTS[x]:null;return v&&Number.isFinite(v.posti)?Math.max(0,Math.min(POSTI_SERATA,v.posti)):null;}
@@ -1850,7 +1851,7 @@ function seedSlots(){
   const s={},d=new Date();d.setHours(12,0,0,0);
   for(let i=1;i<120;i++){
     const x=new Date(d.getTime()+i*864e5),t=SERATE[x.getDay()];
-    if(t)s[iso(x)]={s:"free",tema:t,ore:[ORA_SERATA]};
+    if(t&&iso(x)>=PRIMA_SERATA)s[iso(x)]={s:"free",tema:t,ore:[ORA_SERATA]};
   }
   return s;
 }
