@@ -446,12 +446,12 @@ function disegnaDaFare(){
 /* ================= IMPOSTAZIONI ================= */
 function disegnaImpostazioni(){
   const r=R(),c=CONTI();
-  $("#c-obiettivo").value=c.obiettivoMese;$("#c-vini").value=c.viniSerata;$("#c-ku").value=c.limiteKU;$("#c-sn").value=c.steuernummer||"";
+  $("#c-obiettivo").value=c.obiettivoMese;$("#c-vini").value=c.viniSerata;$("#c-ku").value=c.limiteKU;if($("#c-sn"))$("#c-sn").value=c.steuernummer||"";
   for(const t of Object.keys(TEMI)){$("#c-ml-"+t).value=c.ml[t];$("#c-bt-"+t).value=c.bottiglia[t];}
   $("#settimana").innerHTML=[1,2,3,4,5,6,0].map(n=>`<label><b>${GG[n]}</b>
     <input type="text" inputmode="numeric" data-g="${n}" value="${esc(((r.settimana||{})[n]||[]).join(","))}" placeholder="—" aria-label="Ore di ${GGL[n]}">
     <select data-tema="${n}" aria-label="Tema di ${GGL[n]}">${Object.entries(TEMI).map(([k,v])=>`<option value="${k}"${((r.temi||{})[n]||"vino")===k?" selected":""}>${v}</option>`).join("")}</select></label>`).join("");
-  $("#r-posti").value=POSTI();$("#r-anticipo").value=r.anticipoGiorni??1;$("#r-durata").value=r.durataMin??180;$("#r-prima").value=r.primaSerata||"";
+  $("#r-posti").value=POSTI();$("#r-anticipo").value=r.anticipoGiorni??1;$("#r-durata").value=r.durataMin??180;if($("#r-prima"))$("#r-prima").value=r.primaSerata||"";
   const ch=(r.chiusure||[]).filter(g=>/^\d{4}-\d{2}-\d{2}$/.test(g)&&g>=oggi());
   $("#chiusure").innerHTML=ch.length?ch.map(g=>`<span>${esc(dataBreve(g))} ${esc(g.slice(0,4))}<button data-apri="${esc(g)}" aria-label="Riapri ${esc(g)}">×</button></span>`).join("")
     :`<span style="background:none;padding-left:0;color:var(--muted)">Nessun giorno chiuso in arrivo.</span>`;
@@ -720,10 +720,11 @@ function apriQuittung(rif){
   $("#quittung").hidden=false;document.body.style.overflow="hidden";$("#q-stampa").focus();
 }
 function chiudiQuittung(){$("#quittung").hidden=true;document.body.style.overflow="";}
-$("#q-chiudi").addEventListener("click",chiudiQuittung);
-$("#quittung").addEventListener("click",e=>{if(e.target.id==="quittung")chiudiQuittung();});
-document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("#quittung").hidden)chiudiQuittung();});
-$("#q-stampa").addEventListener("click",()=>{
+/* se l'HTML è di una versione vecchia questi pezzi non ci sono: il resto deve funzionare lo stesso */
+$("#q-chiudi")?.addEventListener("click",chiudiQuittung);
+$("#quittung")?.addEventListener("click",e=>{if(e.target.id==="quittung")chiudiQuittung();});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&$("#quittung")&&!$("#quittung").hidden)chiudiQuittung();});
+$("#q-stampa")?.addEventListener("click",()=>{
   const nr=($("#q-foglio .q-tit b")||{}).textContent||"";const prima=document.title;
   document.title=(nr?nr+" ":"")+"Quittung L'Arte del Vino";      /* nome del PDF salvato */
   document.body.classList.add("stampa-quittung");print();
@@ -741,13 +742,13 @@ $("#salvaregole").addEventListener("click",async()=>{
   });
   $$("#settimana select[data-tema]").forEach(s=>{temi[s.dataset.tema]=s.value;});
   const r=await chiama("POST",{azione:"regole",regole:{settimana,temi,posti:+$("#r-posti").value||40,
-    anticipoGiorni:+$("#r-anticipo").value||0,durataMin:+$("#r-durata").value||180,primaSerata:$("#r-prima").value||""}});
+    anticipoGiorni:+$("#r-anticipo").value||0,durataMin:+$("#r-durata").value||180,...($("#r-prima")?{primaSerata:$("#r-prima").value||""}:{})}});
   if(r&&r.ok){avvisa("Orari salvati");carica();}else avvisa(r?.errore||"Non ha funzionato");
 });
 $("#salvaconti").addEventListener("click",async()=>{
   const ml={},bottiglia={};for(const t of Object.keys(TEMI)){ml[t]=+$("#c-ml-"+t).value;bottiglia[t]=+$("#c-bt-"+t).value;}
   const conti={ml,bottiglia,viniSerata:+$("#c-vini").value,
-    limiteKU:+$("#c-ku").value,obiettivoMese:+$("#c-obiettivo").value,steuernummer:$("#c-sn").value.trim()};
+    limiteKU:+$("#c-ku").value,obiettivoMese:+$("#c-obiettivo").value,...($("#c-sn")?{steuernummer:$("#c-sn").value.trim()}:{})};
   const r=await chiama("POST",{azione:"regole",regole:{conti}});
   if(r&&r.ok){avvisa("Numeri salvati");carica();}else avvisa(r?.errore||"Non ha funzionato");
 });
@@ -787,7 +788,7 @@ $("#esci").addEventListener("click",()=>{if(!confirm("Esco da questo dispositivo
 
 /* ---------- entrata ---------- */
 function mostraPorta(){$("#porta").hidden=false;$("#app").hidden=true;setTimeout(()=>$("#token").focus(),50);}
-$("#entra").addEventListener("click",()=>{TOKEN=$("#token").value.trim();$("#porta-err").hidden=true;if(TOKEN)avvia();else erroreEntrata("Scrivi la password");});
+$("#entra").addEventListener("click",()=>{TOKEN=$("#token").value.trim();{const e=$("#porta-err");if(e)e.hidden=true;}if(TOKEN)avvia();else erroreEntrata("Scrivi la password");});
 $("#token").addEventListener("keydown",e=>{if(e.key==="Enter")$("#entra").click();});
 let timer=null,larghezzaVista=innerWidth;
 async function avvia(){
