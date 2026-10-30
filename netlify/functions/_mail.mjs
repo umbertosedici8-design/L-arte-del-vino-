@@ -2,7 +2,7 @@
    Tutti i testi stanno qui: per cambiare una frase si tocca solo questo file.
    Ogni mail esiste in italiano, tedesco, inglese e spagnolo: la lingua è quella scelta sul sito. */
 
-import { posta, ics, versoUTC } from "./_comune.mjs";
+import { posta, ics, versoUTC, indirizzo } from "./_comune.mjs";
 
 /* ---------- dati fissi ---------- */
 const LUOGO = { nome: "Partenope 081", via: "Simon-Dach-Straße 39, 10245 Berlin" };
@@ -11,7 +11,7 @@ const BANCA = {
   iban: process.env.BANCA_IBAN || "DE86 1001 2345 0565 1323 01",
   bic: process.env.BANCA_BIC || "TRBKDEBBXXX"
 };
-const SITO = () => (process.env.SITO || "https://lartedelvino.de").replace(/\/+$/, "");
+const SITO = () => indirizzo(process.env.SITO) || "https://lartedelvino.de";
 const link = (u) => `<a href="${u}" style="color:#7a1230">${u.replace(/^https?:\/\//, "")}</a>`;
 
 /* In inglese gli orari si scrivono 6 pm, 6:30 pm. */

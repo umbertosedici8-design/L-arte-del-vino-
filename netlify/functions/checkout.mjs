@@ -3,7 +3,7 @@
    Il sito ci manda il cliente; al pagamento riuscito Stripe chiama webhook.mjs.
    Niente SDK: è una sola chiamata HTTP. */
 
-import { chiaveDi, json, errore, preflight, viva, troppiTentativi, corpo } from "./_comune.mjs";
+import { chiaveDi, json, errore, preflight, viva, troppiTentativi, corpo, indirizzo } from "./_comune.mjs";
 import { leggi } from "./_magazzino.mjs";
 
 const form = (o, pre = "", out = []) => {
@@ -37,7 +37,7 @@ async function gestisci(req) {
     return errore("Stripe non è ancora collegato", 503);
   }
 
-  const sito = process.env.SITO || new URL(req.url).origin;
+  const sito = indirizzo(process.env.SITO) || new URL(req.url).origin;
   const corpo = form({
     mode: "payment",
     locale: p.lingua === "de" ? "de" : "it",

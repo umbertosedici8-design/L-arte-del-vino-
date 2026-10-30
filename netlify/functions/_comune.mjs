@@ -240,10 +240,15 @@ export async function posta({ a, oggetto, testo: corpo, html, allegaICS }) {
 }
 
 /* ---------- risposte ---------- */
+/* Un indirizzo preso da una variabile d'ambiente, ripulito: se nel pannello Netlify
+   finisce per sbaglio un puntino, uno spazio o un a capo, si tiene solo "https://…".
+   Un carattere strano in un'intestazione fa fallire ogni risposta (errore 500). */
+export const indirizzo = (v) => { const m = String(v || "").match(/https?:\/\/[A-Za-z0-9.:-]+/); return m ? m[0] : ""; };
+const ORIGINE = indirizzo(process.env.ORIGINE);
 /* ORIGINE: metti l'indirizzo del tuo sito (es. https://lartedelvino.de).
    Con "*" chiunque può chiamare queste funzioni dal proprio sito. */
 export const CORS = {
-  "Access-Control-Allow-Origin": process.env.ORIGINE || "*",
+  "Access-Control-Allow-Origin": ORIGINE || "*",
   "Access-Control-Allow-Headers": "Content-Type",
   "Access-Control-Allow-Methods": "GET,POST,OPTIONS"
 };
@@ -277,7 +282,7 @@ export async function ammesso(req) {
 
 /* L'agenda non la si apre da un altro sito, mai. */
 export const CORS_PRIVATO = {
-  "Access-Control-Allow-Origin": process.env.ORIGINE || "null",
+  "Access-Control-Allow-Origin": ORIGINE || "null",
   "Access-Control-Allow-Headers": "Content-Type,Authorization",
   "Access-Control-Allow-Methods": "GET,POST,OPTIONS",
   "Cache-Control": "no-store",

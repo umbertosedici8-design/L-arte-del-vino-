@@ -3,7 +3,7 @@
    finché la pagina resta aperta. Niente cookie, niente dati salvati nel browser.
    Risponde sempre 204 e non dice niente a chi chiama. */
 
-import { troppiTentativi, corpo } from "./_comune.mjs";
+import { troppiTentativi, corpo, indirizzo } from "./_comune.mjs";
 import { registra } from "./_visite.mjs";
 
 const vuota = () => new Response(null, { status: 204, headers: { "Cache-Control": "no-store" } });
@@ -12,7 +12,7 @@ export default async (req) => {
   if (req.method !== "POST") return new Response(null, { status: 405 });
   /* stesso sito soltanto: da un altro dominio non si gonfiano i numeri */
   const da = req.headers.get("origin");
-  if (da && da !== new URL(req.url).origin && da !== process.env.SITO && da !== process.env.ORIGINE) return vuota();
+  if (da && da !== new URL(req.url).origin && da !== indirizzo(process.env.SITO) && da !== indirizzo(process.env.ORIGINE)) return vuota();
   if (troppiTentativi(req, 40, 60000, "visita:")) return vuota();
   try {
     const b = await corpo(req, 1024);
