@@ -20,6 +20,7 @@ export const REGOLE_DI_PARTENZA = {
   anticipoGiorni: 1,       // si prenota fino al giorno prima
   orizzonteGiorni: 120,    // fin dove si può guardare avanti
   chiusure: [],            // ["2026-12-24", …] sere in cui non si fa
+  primaSerata: "2026-11-23", // prima di questa data il calendario non offre serate ("" = nessun limite)
   minutiBlocco: 20,        // quanto dura il blocco mentre uno paga con la carta
   oreBonifico: 48,         // con il bonifico il posto resta tenuto fino a 48 ore
   /* Solo per i conti della dashboard: non cambiano niente per i clienti. */
@@ -28,7 +29,8 @@ export const REGOLE_DI_PARTENZA = {
     ml: { vino: 100, bolle: 100, fort: 50 },    // ml versati per calice
     bottiglia: { vino: 15, bolle: 18, fort: 15 },  // € pagati a Partenope per bottiglia da 0,75 l
     limiteKU: 25000,       // tetto annuo del Kleinunternehmer (§ 19 UStG)
-    obiettivoMese: 0       // incasso che vuoi fare al mese (0 = nessun obiettivo)
+    obiettivoMese: 0,      // incasso che vuoi fare al mese (0 = nessun obiettivo)
+    steuernummer: ""       // va sulle Rechnungen sopra 250 € (sotto basta la Kleinbetragsrechnung)
   }
 };
 
@@ -81,9 +83,11 @@ export function ripulisciRegole(x, base) {
     out.temi = tm;
   }
   if (Array.isArray(o.chiusure)) out.chiusure = o.chiusure.filter(dataVera).slice(0, 400);
+  if (o.primaSerata === "" || dataVera(o.primaSerata)) out.primaSerata = o.primaSerata;
   if (o.conti && typeof o.conti === "object" && !Array.isArray(o.conti)) {
     const P0 = REGOLE_DI_PARTENZA.conti, b0 = (base && base.conti) || {};
     const c = { viniSerata: b0.viniSerata ?? P0.viniSerata, limiteKU: b0.limiteKU ?? P0.limiteKU, obiettivoMese: b0.obiettivoMese ?? P0.obiettivoMese,
+                steuernummer: b0.steuernummer ?? P0.steuernummer,
                 ml: { ...P0.ml, ...(b0.ml || {}) }, bottiglia: { ...P0.bottiglia, ...(b0.bottiglia || {}) } };
     const dec = (v, min, max) => (Number.isFinite(+v) && +v >= min && +v <= max ? Math.round(+v * 100) / 100 : undefined);
     for (const [k, lo, hi] of [["viniSerata", 1, 20], ["limiteKU", 0, 1000000], ["obiettivoMese", 0, 1000000]]) {
@@ -92,6 +96,10 @@ export function ripulisciRegole(x, base) {
     for (const t of ["vino", "bolle", "fort"]) {
       const m = o.conti.ml && num(o.conti.ml[t], 5, 300); if (m !== undefined) c.ml[t] = m;
       const e = o.conti.bottiglia && dec(o.conti.bottiglia[t], 0, 1000); if (e !== undefined) c.bottiglia[t] = e;
+    }
+    if (typeof o.conti.steuernummer === "string") {
+      const sn = o.conti.steuernummer.trim().toUpperCase();
+      if (sn === "" || /^[A-Z0-9][A-Z0-9 /-]{4,19}$/.test(sn)) c.steuernummer = sn;
     }
     out.conti = c;
   }
@@ -156,6 +164,7 @@ export async function disponibilita(da, a) {
     const ore = R.settimana[gs] || [];
     if (!ore.length) continue;                       // sera senza degustazione: non compare
     const tema = (R.temi || {})[gs] || "vino";
+    if (R.primaSerata && g < R.primaSerata) continue;   // prima della prima serata: non si offre niente
     if ((R.chiusure || []).includes(g)) { out[g] = { s: "out", tema, posti: 0, ore: [], n: testo("chiuso") }; continue; }
     if (g < minimo) continue;                        // troppo a ridosso
     const ora = ore[0];
