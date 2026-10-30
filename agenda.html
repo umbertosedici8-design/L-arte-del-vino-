@@ -247,6 +247,53 @@ button.copia::after{content:" ⧉";color:var(--muted);font-family:var(--sans)}
   .card,.serata,.tile{box-shadow:none;border:1px solid #ddd}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+/* ---------- ricevuta (Quittung / Rechnung): sempre chiara, come un foglio ---------- */
+#quittung{position:fixed;inset:0;z-index:60;background:rgba(28,16,20,.55);overflow:auto;padding:calc(14px + env(safe-area-inset-top)) 12px 40px}
+.q-barra{max-width:794px;margin:0 auto 12px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.q-barra .piccolo{color:#fff;opacity:.85}
+.foglio{--qv:#7A1230;--qo:#B8862A;--qi:#1C1A17;--qg:#6F645C;--ql:#E9DFD3;
+  max-width:794px;margin:0 auto;background:#fff;color:var(--qi);border-radius:14px;padding:44px 48px 36px;
+  font:500 14px/1.55 var(--sans);box-shadow:0 10px 40px rgba(0,0,0,.25);position:relative;overflow:hidden}
+.foglio::before{content:"";position:absolute;inset:0 0 auto;height:7px;background:linear-gradient(90deg,var(--qv),#4A1226 60%,var(--qo))}
+.q-testa{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;align-items:flex-start}
+.q-marca{display:flex;gap:12px;align-items:center}
+.q-logo{width:58px;height:58px;flex:none}
+.q-marca b{display:block;font:700 24px/1.1 var(--serif);color:var(--qv)}
+.q-marca small{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--qo);font-weight:800}
+.q-tit{text-align:right}
+.q-tit h2{font:700 30px/1 var(--serif);color:var(--qi)}
+.q-tit p{color:var(--qg);font-size:12.5px;margin-top:6px}
+.q-tit p b{color:var(--qi);font-variant-numeric:tabular-nums}
+.q-mitt{margin-top:26px;font-size:11px;color:var(--qg);border-bottom:1px solid var(--ql);padding-bottom:4px;display:inline-block}
+.q-cliente{margin-top:8px;min-height:20px}
+.q-cliente b{font-size:15px}
+.q-ind{white-space:pre-line;outline:none;border-radius:6px;min-height:22px;padding:2px 4px;margin-left:-4px}
+.q-ind:empty::before{content:attr(data-vuoto);color:#B0A59C;font-style:italic}
+.q-ind:focus{background:#FBF6EE;box-shadow:inset 0 0 0 1.5px var(--qo)}
+.q-tab{width:100%;border-collapse:collapse;margin-top:26px;font-variant-numeric:tabular-nums}
+.q-tab th{font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--qg);font-weight:800;text-align:left;padding:0 0 8px;border-bottom:1.5px solid var(--qi)}
+.q-tab td{padding:12px 0;border-bottom:1px solid var(--ql);vertical-align:top}
+.q-tab .r{text-align:right;white-space:nowrap;padding-left:14px}
+.q-tab td small{display:block;color:var(--qg);font-size:12px;margin-top:2px}
+.q-tot{display:flex;justify-content:flex-end;margin-top:14px}
+.q-tot div{background:#F7EFE3;border-radius:12px;padding:12px 18px;display:flex;gap:28px;align-items:baseline}
+.q-tot span{font-size:11px;letter-spacing:.12em;text-transform:uppercase;font-weight:800;color:var(--qv)}
+.q-tot b{font:700 24px/1 var(--serif);font-variant-numeric:tabular-nums}
+.q-note{margin-top:22px;display:grid;gap:4px;font-size:13px}
+.q-note .ku{color:var(--qg);font-size:12px}
+.q-avviso{background:#FDECEC;color:#A32222;border-radius:8px;padding:8px 12px;font-size:12.5px;margin-top:12px}
+.q-piede{margin-top:34px;padding-top:14px;border-top:1px solid var(--ql);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-size:11.5px;color:var(--qg)}
+.q-piede em{font:italic 600 14px var(--serif);color:var(--qv)}
+@media(max-width:560px){.foglio{padding:30px 20px 26px}.q-tit{text-align:left}.q-tot div{gap:16px}}
+@media print{
+  @page{size:A4;margin:14mm}
+  body.stampa-quittung>*:not(#quittung){display:none!important}
+  body.stampa-quittung #quittung{position:static;background:none;padding:0;overflow:visible}
+  body.stampa-quittung .foglio{box-shadow:none;border-radius:0;max-width:none;padding:6mm 2mm}
+  body.stampa-quittung .q-ind:empty,body.stampa-quittung .q-avviso{display:none}
+  .foglio{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
 </style>
 </head>
 <body>
@@ -449,7 +496,10 @@ button.copia::after{content:" ⧉";color:var(--muted);font-family:var(--sans)}
             <div class="campo"><label for="c-vini">Calici a serata</label><input id="c-vini" type="number" min="1" max="20"><small>Uno ogni mezz'ora dalle 18:30.</small></div>
             <div class="campo"><label for="c-obiettivo">Obiettivo al mese (€)</label><input id="c-obiettivo" type="number" min="0" step="100"><small>0 = nessun obiettivo.</small></div>
           </div>
-          <div class="campo"><label for="c-ku">Limite Kleinunternehmer (€ all'anno)</label><input id="c-ku" type="number" min="0" step="500"><small>25.000 € nel 2026. Chiedi conferma al tuo Steuerberater.</small></div>
+          <div class="due">
+            <div class="campo"><label for="c-ku">Limite Kleinunternehmer (€ all'anno)</label><input id="c-ku" type="number" min="0" step="500"><small>25.000 € nel 2026. Chiedi conferma al tuo Steuerberater.</small></div>
+            <div class="campo"><label for="c-sn">Steuernummer per le ricevute</label><input id="c-sn" type="text" maxlength="20" placeholder="es. 31/123/45678" autocomplete="off"><small>Quella che ti dà il Finanzamt per l'attività. Serve solo sopra 250 €.</small></div>
+          </div>
           <button class="b si" id="salvaconti">Salva i numeri</button>
         </div></div>
       </section>
@@ -462,7 +512,10 @@ button.copia::after{content:" ⧉";color:var(--muted);font-family:var(--sans)}
             <div class="campo"><label for="r-posti">Posti per serata</label><input id="r-posti" type="number" min="1" max="200"></div>
             <div class="campo"><label for="r-anticipo">Si prenota fino a (giorni prima)</label><input id="r-anticipo" type="number" min="0" max="30"></div>
           </div>
-          <div class="campo"><label for="r-durata">Durata della serata (minuti)</label><input id="r-durata" type="number" min="30" max="480" step="15"></div>
+          <div class="due">
+            <div class="campo"><label for="r-durata">Durata della serata (minuti)</label><input id="r-durata" type="number" min="30" max="480" step="15"></div>
+            <div class="campo"><label for="r-prima">Prima serata prenotabile</label><input id="r-prima" type="date"><small>Prima di questa data il sito non offre serate. Vuoto = nessun limite.</small></div>
+          </div>
           <button class="b si" id="salvaregole">Salva gli orari</button>
         </div></div>
       </section>
@@ -490,6 +543,11 @@ button.copia::after{content:" ⧉";color:var(--muted);font-family:var(--sans)}
 
 <div id="tip" role="status" aria-live="polite"></div>
 <div id="avviso" role="status"></div>
+<div id="quittung" hidden role="dialog" aria-modal="true" aria-label="Ricevuta">
+  <div class="q-barra no-stampa"><button class="b si" id="q-stampa">Stampa o salva PDF</button><button class="b" id="q-chiudi">Chiudi</button><span class="piccolo">Puoi scrivere l'indirizzo del cliente direttamente sul foglio.</span></div>
+  <article class="foglio" id="q-foglio"></article>
+</div>
+<template id="q-logo"><svg class="q-logo" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><clipPath id="qv"><rect x="24" y="38" width="52" height="20"/></clipPath></defs><path d="M31.8 26.8C31.8 45.8 40.3 54.3 50 54.8C59.7 54.3 68.2 45.8 68.2 26.8Z" fill="#EDC6D2" clip-path="url(#qv)"/><g fill="none" stroke="#7A1230" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="50" cy="50" r="46"/><circle cx="50" cy="50" r="40.5" stroke-width="0.75"/><path d="M31.8 26.8C31.8 45.8 40.3 54.3 50 54.8C59.7 54.3 68.2 45.8 68.2 26.8"/><path d="M31.8 26.8H68.2"/><path d="M50 54.8V70.9"/><path d="M38.4 73.2C38.4 70.2 61.6 70.2 61.6 73.2"/><path d="M38.4 73.2H61.6"/></g><circle cx="50" cy="21.2" r="1.5" fill="#7A1230"/></svg></template>
 
 <script src="js/agenda.js" defer></script>
 </body>
