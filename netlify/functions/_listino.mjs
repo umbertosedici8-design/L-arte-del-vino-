@@ -6,7 +6,7 @@
    che arriva da fuori serve solo per accorgersi se qualcosa non torna. */
 
 export const P = {
-  home: 49, homeBolle: 69, homeFort: 64, homeMin: 1, extraWine: 5, corso: 179, team: 55, teamMin: 8,
+  home: 55, homeBolle: 75, homeFort: 64, homeMin: 1, extraWine: 5, corso: 179, team: 55, teamMin: 8,
   uno: 45, uno5: 200, staff2h: 150, staff4h: 280, staffHour: 65,
   staffExtraPax: 10, eveningBase: 290, eveningPlus: 390, ristWine: 9
 };

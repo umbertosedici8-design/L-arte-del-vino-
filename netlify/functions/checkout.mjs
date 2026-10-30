@@ -23,7 +23,7 @@ async function gestisci(req) {
   if (troppiTentativi(req, 10)) return errore("troppe richieste, riprova fra un minuto", 429);
   let b; try { b = await corpo(req, 4096); } catch { return errore("corpo non leggibile"); }
   const rif = typeof b?.rif === "string" ? b.rif.trim() : "";
-  if (!/^CS-\d{4}-[A-Z0-9]{4}$/.test(rif)) return errore("prenotazione sconosciuta", 404);
+  if (!/^CS-\d{4}-[A-Z0-9]{4,6}$/.test(rif)) return errore("prenotazione sconosciuta", 404);
   const p = await leggi(chiaveDi(rif));
   if (!p) return errore("prenotazione sconosciuta", 404);
   if (!viva(p)) return errore("il blocco è scaduto: riprova a scegliere la data", 410);

@@ -16,7 +16,7 @@ export const REGOLE_DI_PARTENZA = {
   posti: 40,               // posti a sedere per serata
   maxPerPrenotazione: 10,  // quanti posti si prenotano online in una volta
   pochiPosti: 8,           // sotto questa soglia il calendario dice "ultimi posti"
-  durataMin: 150,          // quanto dura una serata, per il calendario
+  durataMin: 180,          // 18:00–21:00: un calice ogni mezz'ora dalle 18:30
   anticipoGiorni: 1,       // si prenota fino al giorno prima
   orizzonteGiorni: 120,    // fin dove si può guardare avanti
   chiusure: [],            // ["2026-12-24", …] sere in cui non si fa
@@ -24,9 +24,9 @@ export const REGOLE_DI_PARTENZA = {
   oreBonifico: 48,         // con il bonifico il posto resta tenuto fino a 48 ore
   /* Solo per i conti della dashboard: non cambiano niente per i clienti. */
   conti: {
-    costoOspite: 5,        // € di vino pagati a Partenope per ogni ospite (200 € / 40)
-    viniSerata: 5,         // quante etichette si assaggiano in una serata
-    mlAssaggio: 50,        // ml versati per ogni assaggio
+    viniSerata: 5,                              // calici a serata: 18:30, 19:00, 19:30, 20:00, 20:30
+    ml: { vino: 100, bolle: 100, fort: 50 },    // ml versati per calice
+    bottiglia: { vino: 15, bolle: 18, fort: 15 },  // € pagati a Partenope per bottiglia da 0,75 l
     limiteKU: 25000,       // tetto annuo del Kleinunternehmer (§ 19 UStG)
     obiettivoMese: 0       // incasso che vuoi fare al mese (0 = nessun obiettivo)
   }
@@ -34,7 +34,9 @@ export const REGOLE_DI_PARTENZA = {
 
 export async function regole() {
   const r = await leggi("regole", null);
-  return { ...REGOLE_DI_PARTENZA, ...(r || {}), conti: { ...REGOLE_DI_PARTENZA.conti, ...((r && r.conti) || {}) } };
+  const P0 = REGOLE_DI_PARTENZA.conti, c = (r && r.conti) || {};
+  return { ...REGOLE_DI_PARTENZA, ...(r || {}),
+           conti: { ...P0, ...c, ml: { ...P0.ml, ...(c.ml || {}) }, bottiglia: { ...P0.bottiglia, ...(c.bottiglia || {}) } } };
 }
 
 /* ---------- date, senza librerie ---------- */
@@ -80,11 +82,16 @@ export function ripulisciRegole(x, base) {
   }
   if (Array.isArray(o.chiusure)) out.chiusure = o.chiusure.filter(dataVera).slice(0, 400);
   if (o.conti && typeof o.conti === "object" && !Array.isArray(o.conti)) {
-    const c = { ...REGOLE_DI_PARTENZA.conti, ...(base && base.conti) };
+    const P0 = REGOLE_DI_PARTENZA.conti, b0 = (base && base.conti) || {};
+    const c = { viniSerata: b0.viniSerata ?? P0.viniSerata, limiteKU: b0.limiteKU ?? P0.limiteKU, obiettivoMese: b0.obiettivoMese ?? P0.obiettivoMese,
+                ml: { ...P0.ml, ...(b0.ml || {}) }, bottiglia: { ...P0.bottiglia, ...(b0.bottiglia || {}) } };
     const dec = (v, min, max) => (Number.isFinite(+v) && +v >= min && +v <= max ? Math.round(+v * 100) / 100 : undefined);
-    for (const [k, lo, hi, f] of [["costoOspite", 0, 500, dec], ["viniSerata", 1, 20, num], ["mlAssaggio", 5, 300, num],
-                                   ["limiteKU", 0, 1000000, num], ["obiettivoMese", 0, 1000000, num]]) {
-      const v = f(o.conti[k], lo, hi); if (v !== undefined) c[k] = v;
+    for (const [k, lo, hi] of [["viniSerata", 1, 20], ["limiteKU", 0, 1000000], ["obiettivoMese", 0, 1000000]]) {
+      const v = num(o.conti[k], lo, hi); if (v !== undefined) c[k] = v;
+    }
+    for (const t of ["vino", "bolle", "fort"]) {
+      const m = o.conti.ml && num(o.conti.ml[t], 5, 300); if (m !== undefined) c.ml[t] = m;
+      const e = o.conti.bottiglia && dec(o.conti.bottiglia[t], 0, 1000); if (e !== undefined) c.bottiglia[t] = e;
     }
     out.conti = c;
   }
