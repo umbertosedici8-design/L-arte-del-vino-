@@ -3,6 +3,7 @@
    Ogni mail esiste in italiano, tedesco, inglese e spagnolo: la lingua è quella scelta sul sito. */
 
 import { posta, ics, versoUTC, indirizzo } from "./_comune.mjs";
+import qrcode from "./_qr.mjs";
 
 /* ---------- dati fissi ---------- */
 const LUOGO = { nome: "Partenope 081", via: "Simon-Dach-Straße 39, 10245 Berlin" };
@@ -45,7 +46,8 @@ const X = {
       calici: (fort) => `Alle 18:30 arriva il primo calice, poi uno ogni mezz'ora: cinque in tutto, ${fort ? "assaggi da 50 ml" : "da 100 ml"}, l'ultimo alla cieca. Sul tavolo trovi gli stuzzichini di Partenope e l'acqua.`,
       vini: "Di ogni vino ti racconto da dove viene, come si degusta e cosa lo rende speciale. Le domande sono benvenute, e non serve sapere niente prima.",
       fine: "Alle 21:00 la degustazione finisce. Dopo puoi restare da Partenope a cena o per un altro bicchiere.",
-      porta: "All'ingresso basta mostrare il numero di prenotazione, anche dal telefono.",
+      porta: "All'ingresso mostra il QR del biglietto qui sopra, anche dal telefono: lo scansiono e sei dentro.",
+      soloDe: "Questa serata si tiene in tedesco.", tk: "Il tuo biglietto", tkS: "Mostralo all'ingresso. Vale per", tkN: "Se il QR non si vede, basta il codice.",
       cal: "In allegato trovi l'appuntamento per il calendario.",
       canc: (c) => `Hai un imprevisto? Fino a 14 giorni prima la cancellazione è gratuita: basta rispondere a questa mail. Tutte le condizioni: ${c}`,
       saluto: "Non vedo l'ora di conoscerti!" },
@@ -77,7 +79,8 @@ const X = {
       calici: (fort) => `Um 18:30 Uhr kommt das erste Glas, danach alle halbe Stunde eins: fünf insgesamt, ${fort ? "Proben à 50 ml" : "jeweils 100 ml"}, das letzte als Blindprobe. Auf dem Tisch stehen Snacks von Partenope und Wasser.`,
       vini: "Ich erzähle dir zu jedem Wein, woher er kommt, wie man ihn verkostet und was ihn besonders macht. Fragen sind ausdrücklich erwünscht – Vorwissen brauchst du keins.",
       fine: "Um 21:00 Uhr ist die Verkostung zu Ende. Danach kannst du gern noch bei Partenope bleiben – zum Essen oder auf ein weiteres Glas.",
-      porta: "Am Eingang reicht es, deine Buchungsnummer zu zeigen – gern auf dem Handy.",
+      porta: "Zeig am Eingang den QR-Code deines Tickets oben, gern auf dem Handy: Ich scanne ihn, und du bist drin.",
+      soloDe: "Der Abend findet auf Deutsch statt.", tk: "Dein Ticket", tkS: "Am Eingang vorzeigen. Gültig für", tkN: "Falls der QR-Code nicht angezeigt wird, reicht der Code.",
       cal: "Den Termin für deinen Kalender findest du im Anhang.",
       canc: (c) => `Kommt etwas dazwischen? Bis 14 Tage vorher stornierst du kostenlos – antworte einfach auf diese Mail. Alle Bedingungen: ${c}`,
       saluto: "Ich freue mich auf dich!" },
@@ -109,7 +112,8 @@ const X = {
       calici: (fort) => `The first glass is poured at 6:30 pm, then one every half hour: five in all, ${fort ? "50 ml pours" : "100 ml each"}, the last one blind. You'll find snacks from Partenope and water on the table.`,
       vini: "For every wine I'll tell you where it comes from, how to taste it and what makes it special. Questions are very welcome, and you don't need to know anything beforehand.",
       fine: "The tasting ends at 9 pm. Afterwards you're welcome to stay at Partenope for dinner or another glass.",
-      porta: "At the door, just show your booking number – on your phone is fine.",
+      porta: "At the door, show the QR code of your ticket above – on your phone is fine: I scan it and you're in.",
+      soloDe: "This evening is held in German.", tk: "Your ticket", tkS: "Show it at the door. Valid for", tkN: "If the QR code doesn't show up, the code is enough.",
       cal: "You'll find the calendar invite attached.",
       canc: (c) => `Something come up? Cancellation is free up to 14 days before the evening – just reply to this email. All terms: ${c}`,
       saluto: "Looking forward to meeting you!" },
@@ -141,7 +145,8 @@ const X = {
       calici: (fort) => `A las 18:30 llega la primera copa, luego una cada media hora: cinco en total, ${fort ? "copas de 50 ml" : "de 100 ml"}, la última a ciegas. En la mesa encuentras el picoteo de Partenope y agua.`,
       vini: "De cada vino te cuento de dónde viene, cómo se cata y qué lo hace especial. Las preguntas son bienvenidas, y no hace falta saber nada antes.",
       fine: "A las 21:00 termina la cata. Después puedes quedarte en Partenope a cenar o a tomar otra copa.",
-      porta: "En la entrada basta con enseñar el número de reserva, también en el móvil.",
+      porta: "En la entrada enseña el QR de tu entrada aquí arriba, también en el móvil: lo escaneo y ya estás dentro.",
+      soloDe: "Esta noche se desarrolla en alemán.", tk: "Tu entrada", tkS: "Enséñala en la entrada. Válida para", tkN: "Si el QR no se ve, basta con el código.",
       cal: "Te adjunto la cita para el calendario.",
       canc: (c) => `¿Te ha surgido un imprevisto? La cancelación es gratuita hasta 14 días antes: responde a este correo. Todas las condiciones: ${c}`,
       saluto: "¡Tengo ganas de conocerte!" },
@@ -180,7 +185,7 @@ function icsCliente(p, l) {
 }
 
 /* ---------- impaginazione comune ---------- */
-function pagina(l, { titolo, righe, riquadro, dopo }) {
+function pagina(l, { titolo, righe, riquadro, dopo, biglietto }) {
   const t = X[l];
   const blocco = (r) => r.map(([k, v]) => `<tr><td style="padding:4px 14px 4px 0;color:#8a6d5a;font-size:13px;white-space:nowrap;vertical-align:top">${esc(k)}</td><td style="padding:4px 0;color:#2b1a14;font-size:15px;font-weight:600">${esc(v)}</td></tr>`).join("");
   const html = `<!doctype html><html lang="${l}"><body style="margin:0;background:#f6eee4;font-family:Georgia,'Times New Roman',serif">
@@ -191,13 +196,20 @@ function pagina(l, { titolo, righe, riquadro, dopo }) {
 <tr><td style="padding:26px 28px 8px;color:#2b1a14;font-size:16px;line-height:1.6;font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif">
 ${righe.map((r) => `<p style="margin:0 0 14px">${r}</p>`).join("")}</td></tr>
 ${riquadro ? `<tr><td style="padding:4px 28px 10px"><table role="presentation" width="100%" style="background:#f6eadb;border-radius:12px;padding:14px 16px;font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif">${blocco(riquadro)}</table></td></tr>` : ""}
+${biglietto ? `<tr><td style="padding:10px 28px 6px" align="center"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#fff;border:2px dashed #c9a46a;border-radius:16px;font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif"><tr><td align="center" style="padding:18px 16px 16px">
+<div style="color:#8a6d5a;font-size:12px;letter-spacing:2px;text-transform:uppercase">${esc(biglietto.titolo)}</div>
+<img src="cid:biglietto-qr" width="${biglietto.lato}" height="${biglietto.lato}" alt="${esc(biglietto.codice)}" style="display:block;width:${biglietto.lato}px;height:${biglietto.lato}px;max-width:100%;margin:12px auto 8px">
+<div style="color:#2b1a14;font-size:24px;font-weight:700;letter-spacing:2px;font-family:Menlo,Consolas,monospace">${esc(biglietto.codice)}</div>
+<div style="color:#5a4a40;font-size:14px;margin-top:6px">${esc(biglietto.sotto)}</div>
+<div style="color:#a08b7c;font-size:12px;margin-top:8px">${esc(biglietto.nota)}</div></td></tr></table></td></tr>` : ""}
 ${dopo ? `<tr><td style="padding:14px 28px 6px;color:#2b1a14;font-size:15px;line-height:1.6;font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif">${dopo.map((r) => `<p style="margin:0 0 12px">${r}</p>`).join("")}</td></tr>` : ""}
 <tr><td style="padding:18px 28px 26px;color:#2b1a14;font-size:16px;font-family:Georgia,serif">${t.ciao},<br><b>Christian</b><br>
 <span style="color:#8a6d5a;font-size:13px;font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif">L'Arte del Vino · ${t.firma} · ${link(SITO())}</span></td></tr>
 </table>
 <p style="max-width:560px;color:#a08b7c;font-size:11px;line-height:1.5;font-family:-apple-system,Helvetica,Arial,sans-serif;margin:14px auto 0">${t.ku}</p>
 </td></tr></table></body></html>`;
-  const testo = [titolo, "", ...righe, "", ...(riquadro || []).map(([k, v]) => `${k}: ${v}`), "", ...(dopo || []),
+  const testo = [titolo, "", ...righe, "", ...(riquadro || []).map(([k, v]) => `${k}: ${v}`), "",
+    ...(biglietto ? [`${biglietto.titolo}: ${biglietto.codice} (${biglietto.sotto})`, ""] : []), ...(dopo || []),
     "", t.ciao + ",", "Christian", `L'Arte del Vino · ${SITO()}`]
     .map((r) => String(r).replace(/<[^>]+>/g, "").replace(/&amp;/g, "&")).join("\n");
   return { html, testo };
@@ -223,18 +235,31 @@ export async function mailRicevuta(p) {
   await posta({ a: p.email, oggetto: t.ric.ogg(serata(p, l), giorno(p, l)), testo: m.testo, html: m.html });
 }
 
+/* Il QR del biglietto, come immagine GIF (nessuna libreria esterna, nessun servizio online).
+   Lo scanner all'ingresso legge solo il codice CS-AAAA-XXXXXX. */
+const SOLO_TEDESCO = new Set(["2026-11-23"]);   /* serate tenute solo in tedesco: la mail lo ricorda */
+function qrBiglietto(p) {
+  const q = qrcode(0, "M");
+  q.addData([p.rif, p.tema || "", p.data || "", n(p), L(p)].join(" | "));
+  q.make();
+  const cella = 8, lato = (q.getModuleCount() + 8) * cella;   /* 4 moduli di margine per lato */
+  return { lato, gif: q.createDataURL(cella, cella * 4).replace(/^data:image\/gif;base64,/, "") };
+}
+
 /* ================= 2. Bonifico arrivato: confermata ================= */
 export async function mailConfermata(p) {
   if (!p.email) return;
-  const l = L(p), t = X[l], c = t.conf;
+  const l = L(p), t = X[l], c = t.conf, qr = qrBiglietto(p);
   const m = pagina(l, {
     titolo: c.tit,
-    righe: [t.saluta(esc(nome(p))), c.riga],
+    righe: [t.saluta(esc(nome(p))), c.riga, ...(SOLO_TEDESCO.has(p.data) ? [`<b>${c.soloDe}</b>`] : [])],
     riquadro: datiSerata(p, l),
+    biglietto: { titolo: c.tk, codice: p.rif, sotto: `${c.tkS} ${t.pers(n(p))}`, nota: c.tkN, lato: Math.min(240, qr.lato) },
     dopo: [`<b>${c.come}</b>`, `• <b>${c.arr}:</b> ${t.mezzi}.`, "• " + c.prima(esc(p.ora)), "• " + c.calici(p.tema === "fort"),
       "• " + c.vini, "• " + c.fine, "• " + c.porta, c.cal, c.canc(link(`${SITO()}/#info/cancellazione`)), c.saluto]
   });
-  await posta({ a: p.email, oggetto: c.ogg(serata(p, l), giorno(p, l)), testo: m.testo, html: m.html, allegaICS: icsCliente(p, l) });
+  await posta({ a: p.email, oggetto: c.ogg(serata(p, l), giorno(p, l)), testo: m.testo, html: m.html, allegaICS: icsCliente(p, l),
+    allegati: [{ filename: "biglietto.gif", content: qr.gif, content_type: "image/gif", content_id: "biglietto-qr" }] });
 }
 
 /* ================= 3. Annullata da te ================= */
