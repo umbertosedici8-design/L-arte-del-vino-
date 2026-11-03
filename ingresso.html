@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ingresso — L'Arte del Vino</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#4A1226">
+<style>
+@font-face{font-family:Manrope;font-weight:500;font-display:swap;src:url(fonts/manrope-500.woff2) format("woff2")}
+@font-face{font-family:Manrope;font-weight:700;font-display:swap;src:url(fonts/manrope-700.woff2) format("woff2")}
+@font-face{font-family:Manrope;font-weight:800;font-display:swap;src:url(fonts/manrope-800.woff2) format("woff2")}
+@font-face{font-family:Lora;font-weight:700;font-display:swap;src:url(fonts/lora-700.woff2) format("woff2")}
+/* Pensata per la porta di un locale con poca luce: fondo scuro, testi grandi, colori che si leggono a un metro. */
+:root{color-scheme:dark;--page:#140D10;--card:#211A1D;--soft:#2C2225;--ink:#F3ECE8;--muted:#A0938E;--line:#3A2E31;
+  --wine:#A3234B;--gold:#E8C87A;--ok:#1F9D55;--warn:#E0A21B;--crit:#D03B3B;
+  --serif:Lora,Georgia,serif;--sans:Manrope,system-ui,-apple-system,"Segoe UI",sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+[hidden]{display:none!important}
+body{background:var(--page);color:var(--ink);font:500 16px/1.5 var(--sans);-webkit-font-smoothing:antialiased;
+  padding:calc(12px + env(safe-area-inset-top)) max(14px,env(safe-area-inset-right)) calc(30px + env(safe-area-inset-bottom)) max(14px,env(safe-area-inset-left))}
+.wrap{max-width:560px;margin:0 auto;display:grid;gap:14px}
+button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
+input{font:inherit;width:100%;padding:12px 14px;border:none;border-radius:12px;background:var(--soft);color:var(--ink);box-shadow:inset 0 0 0 1.5px var(--line);min-height:48px}
+input:focus{outline:none;box-shadow:inset 0 0 0 2px var(--gold)}
+:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.b{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:999px;padding:12px 18px;font-weight:800;font-size:15px;background:var(--soft);min-height:48px}
+.b.si{background:var(--wine);color:#fff}
+.b.largo{width:100%}
+.testa{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.testa small{font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--gold)}
+.testa h1{font:700 26px/1.1 var(--serif)}
+.testa a{color:var(--muted);font-size:14px;font-weight:700;text-decoration:none}
+.serata{background:var(--card);border-radius:18px;padding:14px 16px;display:flex;justify-content:space-between;gap:12px;align-items:center}
+.serata b{font:700 18px var(--serif)}
+.serata span{color:var(--muted);font-size:14px}
+.conta{text-align:right;font-variant-numeric:tabular-nums}
+.conta b{font:800 26px var(--sans);color:var(--gold)}
+/* la fotocamera */
+.cam{position:relative;border-radius:22px;overflow:hidden;background:#000;aspect-ratio:1/1;max-height:62vh;width:100%}
+.cam video{width:100%;height:100%;object-fit:cover;display:block}
+.mirino{position:absolute;inset:16%;border-radius:18px;box-shadow:0 0 0 999px rgba(0,0,0,.35);pointer-events:none}
+.mirino::before,.mirino::after{content:"";position:absolute;inset:0;border:3px solid var(--gold);border-radius:18px;
+  -webkit-mask:linear-gradient(#000 0 0) top/100% 22% no-repeat,linear-gradient(#000 0 0) bottom/100% 22% no-repeat;mask:linear-gradient(#000 0 0) top/100% 22% no-repeat,linear-gradient(#000 0 0) bottom/100% 22% no-repeat}
+.cam .avvio{position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding:20px;gap:12px;align-content:center;color:var(--muted)}
+.cam .luce{position:absolute;right:12px;bottom:12px;background:rgba(0,0,0,.55);color:#fff;border-radius:999px;padding:10px 14px;font-weight:800;font-size:13px}
+.cam .luce[aria-pressed="true"]{background:var(--gold);color:#140D10}
+/* l'esito, grande */
+.esito{position:fixed;inset:0;z-index:20;display:grid;place-items:center;padding:24px;background:rgba(10,6,8,.72)}
+.esito .box{width:100%;max-width:520px;border-radius:26px;padding:28px 24px 22px;color:#fff;display:grid;gap:10px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+.esito .box.ok{background:var(--ok)}.esito .box.warn{background:#9A6A07}.esito .box.crit{background:#A32222}
+.esito .icona{font:800 54px/1 var(--sans)}
+.esito h2{font:700 30px/1.15 var(--serif);text-wrap:balance}
+.esito .nome{font-size:21px;font-weight:800}
+.esito .dett{font-size:16px;opacity:.92}
+.esito .azioni{display:grid;gap:8px;margin-top:10px}
+.esito .b{background:rgba(255,255,255,.18);color:#fff}
+.esito .b.forte{background:#fff;color:#1C1A17}
+/* elenco della serata */
+.lista{background:var(--card);border-radius:18px;padding:6px 14px}
+.lista h3{font:700 17px var(--serif);padding:10px 0 6px}
+.riga{display:flex;align-items:center;gap:10px;padding:10px 0;border-top:1px solid var(--line)}
+.riga .chi{flex:1;min-width:0}
+.riga .chi b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.riga .chi span{font-size:13px;color:var(--muted)}
+.riga .b{padding:8px 14px;min-height:40px;font-size:13px}
+.st{font-size:12px;font-weight:800;border-radius:999px;padding:4px 10px;white-space:nowrap}
+.st.dentro{background:rgba(31,157,85,.2);color:#5DD08D}.st.attesa{background:rgba(224,162,27,.2);color:#F1C35A}
+.vuoto{color:var(--muted);padding:12px 0;font-size:14px}
+.porta{background:var(--card);border-radius:18px;padding:20px;display:grid;gap:10px;margin-top:20vh}
+.porta h1{font:700 24px var(--serif)}
+#err{color:#F08080;font-weight:700}
+#avviso{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom));transform:translateX(-50%);background:var(--ink);color:var(--page);
+  border-radius:999px;padding:10px 18px;font-weight:700;font-size:14px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:30;max-width:90vw;text-align:center}
+#avviso.on{opacity:1}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<div class="wrap porta" id="porta" hidden>
+  <h1>Ingresso</h1>
+  <p style="color:var(--muted)">Scrivi la password dell'agenda (AGENDA_TOKEN).</p>
+  <input id="token" type="password" autocomplete="current-password" placeholder="password">
+  <button class="b si largo" id="entra">Entra</button>
+  <p id="err" role="alert" hidden></p>
+</div>
+
+<div class="wrap" id="app" hidden>
+  <div class="testa"><div><small>L'Arte del Vino</small><h1>Ingresso</h1></div><a href="agenda.html">Agenda →</a></div>
+
+  <div class="serata" id="serata"><div><b>—</b><span></span></div></div>
+
+  <div class="cam" id="cam">
+    <video id="video" playsinline muted autoplay></video>
+    <div class="mirino" aria-hidden="true"></div>
+    <div class="avvio" id="avvio">
+      <p>Inquadra il QR del biglietto: il controllo è automatico.</p>
+      <button class="b si" id="accendi">Accendi la fotocamera</button>
+    </div>
+    <button class="luce" id="luce" aria-pressed="false" hidden>Luce</button>
+  </div>
+
+  <input id="cerca" type="search" placeholder="Oppure cerca un nome o un codice" autocomplete="off" aria-label="Cerca un ospite">
+  <div class="lista" id="lista"></div>
+</div>
+
+<div class="esito" id="esito" hidden role="dialog" aria-modal="true" aria-live="assertive"><div class="box" id="esito-box"></div></div>
+<div id="avviso" role="status"></div>
+
+<script src="js/ingresso.js" defer></script>
+</body>
+</html>

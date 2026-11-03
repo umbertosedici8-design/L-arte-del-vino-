@@ -52,6 +52,7 @@ header.top{background:linear-gradient(160deg,#7A1230,#4A1226);color:#fff;padding
 .riga-top{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap}
 header.top h1{font-size:clamp(24px,5vw,32px);margin-top:2px}
 #aggiornato{font-size:12.5px;color:rgba(255,255,255,.72)}
+.ingresso-link{background:#F0C544;color:#4A1226;border-radius:999px;padding:8px 14px;font-weight:800;font-size:13px;text-decoration:none}
 .chips{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0 0;padding-bottom:14px}
 .chip{background:rgba(255,255,255,.1);border-radius:14px;padding:8px 12px;font-size:12.5px;color:rgba(255,255,255,.8);text-align:left}
 .chip b{display:block;color:#fff;font-size:15px;font-weight:700}
@@ -313,7 +314,7 @@ button.copia::after{content:" ⧉";color:var(--muted);font-family:var(--sans)}
     <div class="wrap">
       <div class="riga-top">
         <div><p class="marchio">L'Arte del Vino</p><h1>Dashboard</h1></div>
-        <p id="aggiornato">—</p>
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><a class="ingresso-link" href="ingresso.html">Ingresso · scanner</a><p id="aggiornato">—</p></div>
       </div>
       <div class="chips" id="chips"></div>
     </div>

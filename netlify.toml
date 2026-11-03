@@ -15,7 +15,7 @@
     Content-Security-Policy = "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; connect-src 'self'; form-action 'self'; frame-ancestors 'none'; base-uri 'self'; object-src 'none'"
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
-    Permissions-Policy = "camera=(), microphone=(), geolocation=(), payment=(), usb=()"
+    Permissions-Policy = "camera=(self), microphone=(), geolocation=(), payment=(), usb=()"
     Cross-Origin-Opener-Policy = "same-origin"
     Cross-Origin-Resource-Policy = "same-origin"
     X-Frame-Options = "DENY"
@@ -29,6 +29,12 @@
 # L'agenda non deve finire su Google ne' restare nella cache.
 [[headers]]
   for = "/agenda.html"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+    Cache-Control = "no-store, max-age=0"
+
+[[headers]]
+  for = "/ingresso.html"
   [headers.values]
     X-Robots-Tag = "noindex, nofollow"
     Cache-Control = "no-store, max-age=0"
