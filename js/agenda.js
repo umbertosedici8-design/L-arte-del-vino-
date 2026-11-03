@@ -66,6 +66,7 @@ function serateFuture(giorni){
   for(let g=o;g<=fine;g=piuGiorni(g,1)){
     if((r.chiusure||[]).includes(g))continue;
     if(r.primaSerata&&g<r.primaSerata)continue;
+    if(r.ultimaSerata&&g>r.ultimaSerata)break;
     for(const ora of ((r.settimana||{})[giornoSett(g)]||[]))
       mappa.set(g+" "+ora,{data:g,ora,tema:(r.temi||{})[giornoSett(g)]||"vino",pren:[]});
   }
@@ -451,7 +452,7 @@ function disegnaImpostazioni(){
   $("#settimana").innerHTML=[1,2,3,4,5,6,0].map(n=>`<label><b>${GG[n]}</b>
     <input type="text" inputmode="numeric" data-g="${n}" value="${esc(((r.settimana||{})[n]||[]).join(","))}" placeholder="—" aria-label="Ore di ${GGL[n]}">
     <select data-tema="${n}" aria-label="Tema di ${GGL[n]}">${Object.entries(TEMI).map(([k,v])=>`<option value="${k}"${((r.temi||{})[n]||"vino")===k?" selected":""}>${v}</option>`).join("")}</select></label>`).join("");
-  $("#r-posti").value=POSTI();$("#r-anticipo").value=r.anticipoGiorni??1;$("#r-durata").value=r.durataMin??180;if($("#r-prima"))$("#r-prima").value=r.primaSerata||"";
+  $("#r-posti").value=POSTI();$("#r-anticipo").value=r.anticipoGiorni??1;$("#r-durata").value=r.durataMin??180;if($("#r-prima"))$("#r-prima").value=r.primaSerata||"";if($("#r-ultima"))$("#r-ultima").value=r.ultimaSerata||"";
   const ch=(r.chiusure||[]).filter(g=>/^\d{4}-\d{2}-\d{2}$/.test(g)&&g>=oggi());
   $("#chiusure").innerHTML=ch.length?ch.map(g=>`<span>${esc(dataBreve(g))} ${esc(g.slice(0,4))}<button data-apri="${esc(g)}" aria-label="Riapri ${esc(g)}">×</button></span>`).join("")
     :`<span style="background:none;padding-left:0;color:var(--muted)">Nessun giorno chiuso in arrivo.</span>`;
@@ -742,7 +743,7 @@ $("#salvaregole").addEventListener("click",async()=>{
   });
   $$("#settimana select[data-tema]").forEach(s=>{temi[s.dataset.tema]=s.value;});
   const r=await chiama("POST",{azione:"regole",regole:{settimana,temi,posti:+$("#r-posti").value||40,
-    anticipoGiorni:+$("#r-anticipo").value||0,durataMin:+$("#r-durata").value||180,...($("#r-prima")?{primaSerata:$("#r-prima").value||""}:{})}});
+    anticipoGiorni:+$("#r-anticipo").value||0,durataMin:+$("#r-durata").value||180,...($("#r-prima")?{primaSerata:$("#r-prima").value||""}:{}),...($("#r-ultima")?{ultimaSerata:$("#r-ultima").value||""}:{})}});
   if(r&&r.ok){avvisa("Orari salvati");carica();}else avvisa(r?.errore||"Non ha funzionato");
 });
 $("#salvaconti").addEventListener("click",async()=>{
