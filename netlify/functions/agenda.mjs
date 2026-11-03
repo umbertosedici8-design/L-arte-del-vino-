@@ -6,7 +6,7 @@
 
 import {
   ammesso, chiaveDi, salva, regole, ics, posta, nuovoRif, viva,
-  json, errore, preflight, jsonPrivato, CORS_PRIVATO, troppiTentativi, giaTroppi, ripulisciRegole, dataVera, corpo, giornoSettimana
+  json, errore, preflight, jsonPrivato, CORS_PRIVATO, troppiTentativi, giaTroppi, ripulisciRegole, dataVera, corpo, giornoSettimana, oggiISO
 } from "./_comune.mjs";
 import { mailConfermata, mailAnnullata, mailATeConfermata } from "./_mail.mjs";
 import { leggi, scrivi, tutte } from "./_magazzino.mjs";
@@ -49,9 +49,12 @@ async function gestisci(req) {
       const p = await leggi(chiaveDi(b.rif));
       if (!p) return jsonPrivato({ errore: "non trovata" }, 404);
       p.stato = "confermata"; p.scade = null; p.confermataIl = new Date().toISOString();
+      if (b.pagamento === "cash" || b.pagamento === "card") p.pagamento = b.pagamento;   /* incassato alla porta */
       await salva(p);
-      try { await mailATeConfermata(p); } catch (e) { console.error("[mail a te]", e); }
-      try { await mailConfermata(p); } catch (e) { console.error("[mail confermata]", e); }
+      if (b.senzaMail !== true) {                /* alla porta il cliente è davanti a te: niente mail "bonifico arrivato" */
+        try { await mailATeConfermata(p); } catch (e) { console.error("[mail a te]", e); }
+        try { await mailConfermata(p); } catch (e) { console.error("[mail confermata]", e); }
+      }
       return jsonPrivato({ ok: true, prenotazione: p });
     }
 
@@ -63,6 +66,24 @@ async function gestisci(req) {
       await salva(p);
       if (b.avvisa !== false) { try { await mailAnnullata(p); } catch (e) { console.error("[mail annullata]", e); } }
       return jsonPrivato({ ok: true });
+    }
+
+    case "ingresso": {                       /* il QR del biglietto, scansionato alla porta */
+      const rif = (String(b.rif || "").toUpperCase().match(/CS-\d{4}-[A-Z0-9]{4,6}/) || [])[0];
+      if (!rif) return jsonPrivato({ ok: true, esito: "sconosciuto" });
+      const p = await leggi(chiaveDi(rif));
+      if (!p) return jsonPrivato({ ok: true, esito: "sconosciuto", rif });
+      const breve = (x) => ({ rif: x.rif, nome: x.nome, persone: x.persone, data: x.data, ora: x.ora, tema: x.tema,
+        totale: x.totale, stato: x.stato, pagamento: x.pagamento, note: x.note, entratoIl: x.entratoIl || null });
+      if (b.annulla) { delete p.entratoIl; await salva(p); return jsonPrivato({ ok: true, esito: "tolto", prenotazione: breve(p) }); }
+      const oggi = oggiISO(R.fuso), pagata = p.stato === "confermata" || p.stato === "pagata";
+      let esito;
+      if (p.stato === "annullata" || p.stato === "scaduta") esito = p.stato;
+      else if (!pagata) esito = "da-pagare";
+      else if (p.entratoIl) esito = "gia-entrato";
+      else if (p.data !== oggi && !b.forza) esito = p.data < oggi ? "passata" : "altra-data";
+      else { p.entratoIl = new Date().toISOString(); await salva(p); esito = "ok"; }
+      return jsonPrivato({ ok: true, esito, prenotazione: breve(p) });
     }
 
     case "chiudi": {                         /* niente serate quel giorno */
