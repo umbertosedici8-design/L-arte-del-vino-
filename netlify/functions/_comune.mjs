@@ -21,6 +21,7 @@ export const REGOLE_DI_PARTENZA = {
   orizzonteGiorni: 120,    // fin dove si può guardare avanti
   chiusure: [],            // ["2026-12-24", …] sere in cui non si fa
   primaSerata: "2026-11-23", // prima di questa data il calendario non offre serate ("" = nessun limite)
+  ultimaSerata: "2026-11-23", // dopo questa data non si prenota ("" = nessun limite): per ora solo la prima serata
   minutiBlocco: 20,        // quanto dura il blocco mentre uno paga con la carta
   oreBonifico: 48,         // con il bonifico il posto resta tenuto fino a 48 ore
   /* Solo per i conti della dashboard: non cambiano niente per i clienti. */
@@ -84,6 +85,7 @@ export function ripulisciRegole(x, base) {
   }
   if (Array.isArray(o.chiusure)) out.chiusure = o.chiusure.filter(dataVera).slice(0, 400);
   if (o.primaSerata === "" || dataVera(o.primaSerata)) out.primaSerata = o.primaSerata;
+  if (o.ultimaSerata === "" || dataVera(o.ultimaSerata)) out.ultimaSerata = o.ultimaSerata;
   if (o.conti && typeof o.conti === "object" && !Array.isArray(o.conti)) {
     const P0 = REGOLE_DI_PARTENZA.conti, b0 = (base && base.conti) || {};
     const c = { viniSerata: b0.viniSerata ?? P0.viniSerata, limiteKU: b0.limiteKU ?? P0.limiteKU, obiettivoMese: b0.obiettivoMese ?? P0.obiettivoMese,
@@ -165,6 +167,7 @@ export async function disponibilita(da, a) {
     if (!ore.length) continue;                       // sera senza degustazione: non compare
     const tema = (R.temi || {})[gs] || "vino";
     if (R.primaSerata && g < R.primaSerata) continue;   // prima della prima serata: non si offre niente
+    if (R.ultimaSerata && g > R.ultimaSerata) break;    // dopo l'ultima data aperta: chiuso
     if ((R.chiusure || []).includes(g)) { out[g] = { s: "out", tema, posti: 0, ore: [], n: testo("chiuso") }; continue; }
     if (g < minimo) continue;                        // troppo a ridosso
     const ora = ore[0];

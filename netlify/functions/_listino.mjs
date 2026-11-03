@@ -19,7 +19,8 @@ export const MINIMI = { home: 1, corso: 3, uno: 1, staff: 1, evening: 1, team: 8
 /** Tetti per riga: una prenotazione online arriva al massimo a 10 posti. */
 export const MASSIMI = { home: 10, voucher: 20 };
 
-export const PROMOS = { PRIMA10: { off: 0.10 } };
+/* solo: il codice vale solo per le serate di quel giorno (il volantino del 23 novembre). */
+export const PROMOS = { PRIMA10: { off: 0.10, solo: "2026-11-23" } };
 
 const ha = (o, k) => Object.prototype.hasOwnProperty.call(o, k);
 const n = (v, d = 0) => (Number.isFinite(+v) ? +v : d);
@@ -63,7 +64,7 @@ export function prezzoRiga(riga) {
 }
 
 /** Il totale vero, calcolato qui. Ritorna anche gli articoli ripuliti. */
-export function conta(articoli, promo) {
+export function conta(articoli, promo, data = "") {
   const righe = [];
   let sub = 0;
   for (const a of (Array.isArray(articoli) ? articoli.slice(0, 20) : [])) {
@@ -73,6 +74,7 @@ export function conta(articoli, promo) {
     sub += p;
   }
   const codice = String(promo || "").toUpperCase().slice(0, 20);
-  const sconto = ha(PROMOS, codice) ? Math.round(sub * PROMOS[codice].off) : 0;
-  return { righe, sub, sconto, promo: ha(PROMOS, codice) ? codice : null, totale: Math.max(0, sub - sconto) };
+  const vale = ha(PROMOS, codice) && (!PROMOS[codice].solo || PROMOS[codice].solo === data);
+  const sconto = vale ? Math.round(sub * PROMOS[codice].off) : 0;
+  return { righe, sub, sconto, promo: vale ? codice : null, totale: Math.max(0, sub - sconto) };
 }

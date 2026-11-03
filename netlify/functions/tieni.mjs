@@ -40,7 +40,7 @@ async function gestisci(req) {
 
   /* IL PREZZO LO FA IL SERVER. Quello che arriva dal telefono serve solo
      per accorgersi se qualcuno ha provato a cambiarlo. */
-  const conto = conta([{ k: "home", q: persone, tipo: tema }], b.promo);
+  const conto = conta([{ k: "home", q: persone, tipo: tema }], b.promo, data);
   const dichiarato = Math.round(Number(b.totale) || 0);
   if (dichiarato && Math.abs(dichiarato - conto.totale) > 1)
     console.warn(`[prezzo] dichiarato ${dichiarato} \u20ac ma il conto giusto \u00e8 ${conto.totale} \u20ac`);
